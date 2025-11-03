@@ -1,78 +1,74 @@
 import React, { useEffect } from 'react';
 
 const HeroSection = () => {
+
   useEffect(() => {
-    // Wait for jQuery and plugins to be ready
+
     if (window.$ && window.$.fn) {
-      const $ = window.$;
+        const $ = window.$;
 
-      // Initialize background images
-      $('.set-bg').each(function () {
-        var bg = $(this).data('setbg');
-        $(this).css('background-image', 'url(' + bg + ')');
-      });
-
-      // Initialize Hero Slider
-      if ($.fn.owlCarousel) {
-        $(".hero-slider").owlCarousel({
-          loop: true,
-          margin: 0,
-          items: 1,
-          dots: true,
-          animateOut: 'fadeOut',
-          animateIn: 'fadeIn',
-          smartSpeed: 1200,
-          autoHeight: false,
-          autoplay: true,
-          mouseDrag: false
+        $('.set-bg').each(function () {
+            var bg = $(this).data('setbg');
+            $(this).css('background-image', 'url(' + bg + ')');
         });
 
-        // Initialize Testimonial Slider
-        $(".testimonial-slider").owlCarousel({
-          items: 1,
-          dots: false,
-          autoplay: true,
-          loop: true,
-          smartSpeed: 1200,
-          nav: true,
-          navText: ["<i class='arrow_left'></i>", "<i class='arrow_right'></i>"]
-        });
-      }
-
-      // Initialize Date Picker
-      if ($.fn.datepicker) {
-        $(".date-input").datepicker({
-          minDate: 0,
-          dateFormat: 'dd MM, yy'
-        });
-      }
-
-      // Initialize Nice Select
-      if ($.fn.niceSelect) {
-        $("select").niceSelect();
-      }
-
-      // Cleanup on unmount
-      return () => {
         if ($.fn.owlCarousel) {
-          $(".hero-slider").trigger('destroy.owl.carousel');
-          $(".testimonial-slider").trigger('destroy.owl.carousel');
+            $(".hero-slider").owlCarousel({
+            loop: true,
+            margin: 0,
+            items: 1,
+            dots: true,
+            animateOut: 'fadeOut',
+            animateIn: 'fadeIn',
+            smartSpeed: 1200,
+            autoHeight: false,
+            autoplay: true,
+            mouseDrag: false
+            });
+
+            $(".testimonial-slider").owlCarousel({
+            items: 1,
+            dots: false,
+            autoplay: true,
+            loop: true,
+            smartSpeed: 1200,
+            nav: true,
+            navText: ["<i class='arrow_left'></i>", "<i class='arrow_right'></i>"]
+            });
         }
+
+        if ($.fn.datepicker) {
+            $(".date-input").datepicker({
+            minDate: 0,
+            dateFormat: 'dd MM, yy'
+            });
+        }
+
         if ($.fn.niceSelect) {
-          $("select").niceSelect('destroy');
+            $("select").niceSelect();
         }
-      };
-    }
-  }, []);
+
+
+        return () => {
+            if ($.fn.owlCarousel) {
+            $(".hero-slider").trigger('destroy.owl.carousel');
+            $(".testimonial-slider").trigger('destroy.owl.carousel');
+            }
+            if ($.fn.niceSelect) {
+            $("select").niceSelect('destroy');
+            }
+        };
+        }
+    }, []);
 
   return (
-    <div>
+    <div>       
       <section className="hero-section">
         <div className="container">
           <div className="row">
             <div className="col-lg-6">
               <div className="hero-text">
-                <h1>Sona A Luxury Hotel</h1>
+                <h1>Ella Nature Life Guest</h1>
                 <p>Here are the best hotel booking sites, including recommendations for international
                   travel and for finding low-priced hotel rooms.</p>
                 <a href="#" className="primary-btn">Discover Now</a>

@@ -1,45 +1,64 @@
 import React from 'react'
+import { Link, useLocation } from 'react-router';
+import { FaUser } from "react-icons/fa";
 
 const Navbar = () => {
+  const location = useLocation();
+  
+  const isActive = (path) => {
+    return location.pathname === path ? 'active' : '';
+  };
+
   return (
-    <header class="header-section">
-        <div class="menu-item">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="logo">
-                            <a href="./index.html">
-                                <img src="img/logo.png" alt="" />
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-lg-10">
-                        <div class="nav-menu">
-                            <nav class="mainmenu">
-                                <ul>
-                                    <li class="active"><a href="./index.html">Home</a></li>
-                                    <li><a href="./rooms.html">Rooms</a></li>
-                                    <li><a href="./about-us.html">About Us</a></li>
-                                    <li><a href="./pages.html">Pages</a>
-                                        <ul class="dropdown">
-                                            <li><a href="./room-details.html">Room Details</a></li>
-                                            <li><a href="./blog-details.html">Blog Details</a></li>
-                                            <li><a href="#">Family Room</a></li>
-                                            <li><a href="#">Premium Room</a></li>
-                                        </ul>
-                                    </li>
-                                    <li><a href="./blog.html">News</a></li>
-                                    <li><a href="./contact.html">Contact</a></li>
-                                </ul>
-                            </nav>
-                            <div class="nav-right search-switch">
-                                <i class="icon_search"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <header className="header-section">
+      <div className="menu-item">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-2">
+              <div className="logo">
+                <Link to="/">
+                  <img src="img/logo.png" alt="" />
+                </Link>
+              </div>
             </div>
+            <div className="col-lg-10">
+              <div className="nav-menu">
+                <nav className="mainmenu">
+                  <ul>
+                    <li className={isActive('/')}>
+                      <Link to="/">Home</Link>
+                    </li>
+                    <li className={isActive('/rooms')}>
+                      <Link to="/rooms">Rooms</Link>
+                    </li>
+                    <li className={isActive('/about')}>
+                      <Link to="/about">About Us</Link>
+                    </li>
+                    <li className={isActive('/gallery')}>
+                      <Link to="/gallery">Gallery</Link>
+                    </li>
+                    <li className={isActive('/pages')}>
+                      <a href="">Pages</a>
+                      <ul className="dropdown">
+                        <li><Link to="/room-details">Room Details</Link></li>
+                        <li><a href="./blog-details.html">Blog Details</a></li>
+                        <li><a href="#">Family Room</a></li>
+                        <li><a href="#">Premium Room</a></li>
+                      </ul>
+                    </li>
+                    <li className={isActive('/contact')}>
+                      <Link to="/contact">Contact</Link>
+                    </li>
+                  </ul>
+                </nav>
+                <div className="nav-right search-switch">
+                  <FaUser size={20} />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </header>
   )
 }
