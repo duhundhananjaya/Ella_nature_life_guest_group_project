@@ -60,7 +60,15 @@ const Login = () => {
                                     <div class="card-header"><h3 class="text-center font-weight-light my-4">Login</h3></div>
                                     <div class="card-body">
                                         {error && (
-                                            <div>{error}</div>
+                                        <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                                            {error}
+                                            <button
+                                            type="button"
+                                            className="btn-close"
+                                            data-bs-dismiss="alert"
+                                            aria-label="Close"
+                                            ></button>
+                                        </div>
                                         )}
                                         <form onSubmit={handleSubmit}>
                                             <div class="form-floating mb-3">
