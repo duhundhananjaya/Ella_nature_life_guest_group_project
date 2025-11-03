@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import AdminHome from '../components/AdminHome';
 import Footer from '../components/Footer';
+import { Outlet } from 'react-router';
 
 const Dashboard = () => {
   return (
@@ -13,7 +14,7 @@ const Dashboard = () => {
                 <Sidebar />
             </div>
             <div id="layoutSidenav_content">
-                <AdminHome />
+                <Outlet />
                 <Footer />
             </div>
         </div>

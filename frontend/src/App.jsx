@@ -4,6 +4,8 @@ import Login from './pages/Login'
 import ProtectedRoutes from './utils/ProtectedRoutes'
 import Root from './utils/Root'
 import Dashboard from './pages/Dashboard'
+import Users from './components/Users'
+import AdminHome from './components/AdminHome'
 
 function App() {
 
@@ -14,6 +16,8 @@ function App() {
         <Route path="/admin-dashboard" element={<ProtectedRoutes requireRole={["admin"]}>
             <Dashboard />
           </ProtectedRoutes>} >
+          <Route index element={<AdminHome />} />
+          <Route path="users" element={<Users />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
