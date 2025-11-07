@@ -234,24 +234,25 @@ const Users = () => {
             <button type="button" className="btn-close shadow-none" onClick={() => setSuccess(null)}></button>
           </div>
         )}
-
         <div className="card shadow-sm mb-4">
-          <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <div>
-              <i className="fas fa-users me-2"></i>
-              <span className="fw-semibold">Users</span>
-            </div>
-
-            <div className="d-flex align-items-center gap-2">
-              <div className="input-group" style={{ width: "200px" }}>
-                <span className="input-group-text bg-white">
-                  <i className="fas fa-search text-muted"></i>
-                </span>
-                <input type="text" className="form-control shadow-none" placeholder="Search users..." onChange={handleSearch}/>
+          <div className="card-header bg-white py-3">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+              <div>
+                <i className="fas fa-users me-2"></i>
+                <span className="fw-semibold">Users</span>
               </div>
-              <button className="btn btn-primary shadow-none" onClick={() => setShowModal(true)}>
-                Add User
-              </button>
+
+              <div className="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2 w-100 w-md-auto justify-content-md-end">
+                <div className="input-group" style={{ maxWidth: "200px" }}>
+                  <span className="input-group-text bg-white">
+                    <i className="fas fa-search text-muted"></i>
+                  </span>
+                  <input type="text" className="form-control shadow-none" placeholder="Search users..." onChange={handleSearch}/>
+                </div>
+                <button className="btn btn-primary shadow-none" onClick={() => setShowModal(true)}>
+                  Add User
+                </button>
+              </div>
             </div>
           </div>
           <div className="card-body p-0">
