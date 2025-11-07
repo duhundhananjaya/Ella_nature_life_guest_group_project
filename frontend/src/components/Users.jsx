@@ -204,6 +204,16 @@ const Users = () => {
     setDeleteUser(null);
   };
 
+  useEffect(() => {
+    if (success || error) {
+        const timer = setTimeout(() => {
+        setSuccess(null);
+        setError(null);
+        }, 5000);
+        return () => clearTimeout(timer);
+    }
+    }, [success, error]);
+
   if (loading) return (
     <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
       <div className="spinner-border text-primary" role="status">

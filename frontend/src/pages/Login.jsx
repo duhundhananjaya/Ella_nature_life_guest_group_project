@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router";
+import { useEffect } from "react";
 import axios from 'axios';
 
 const Login = () => {
@@ -50,6 +51,15 @@ const Login = () => {
             setLoading(false);
         }
     }
+
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => {
+            setError(null);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [error]);
 
   return (
     <div id="layoutAuthentication" style={{
