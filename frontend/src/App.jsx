@@ -6,6 +6,7 @@ import Root from './utils/Root'
 import Dashboard from './pages/Dashboard'
 import Users from './components/Users'
 import AdminHome from './components/AdminHome'
+import Rooms from './components/Rooms'
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
           </ProtectedRoutes>} >
           <Route index element={<AdminHome />} />
           <Route path="users" element={<Users />} />
+          <Route path="rooms" element={<Rooms />} />
         </Route>
 
         <Route path="/login" element={<Login />} />

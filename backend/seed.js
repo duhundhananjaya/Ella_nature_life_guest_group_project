@@ -14,6 +14,7 @@ const register = async () =>{
             email: "admin@gmail.com",
             password: hashPassword,
             address: "admin address",
+            phone_number: "0771234567",
             role: "admin"
 
         })
