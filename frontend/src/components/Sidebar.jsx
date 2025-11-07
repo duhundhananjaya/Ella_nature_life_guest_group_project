@@ -27,6 +27,13 @@ const Sidebar = () => {
                 </NavLink>
                 <NavLink 
                     className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} 
+                    to="/admin-dashboard/features"
+                >
+                    <div className="sb-nav-link-icon"><i className="fas fa-gem"></i></div>
+                    Features
+                </NavLink>
+                <NavLink 
+                    className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} 
                     to="/admin-dashboard/rooms"
                 >
                     <div className="sb-nav-link-icon"><i className="fas fa-door-open"></i></div>

@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import Users from './components/Users'
 import AdminHome from './components/AdminHome'
 import Rooms from './components/Rooms'
+import Features from './components/Features'
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
           </ProtectedRoutes>} >
           <Route index element={<AdminHome />} />
           <Route path="users" element={<Users />} />
+          <Route path="features" element={<Features />} />
           <Route path="rooms" element={<Rooms />} />
         </Route>
 
@@ -29,4 +31,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
