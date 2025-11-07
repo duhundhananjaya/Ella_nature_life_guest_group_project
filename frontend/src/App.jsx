@@ -8,6 +8,7 @@ import Users from './components/Users'
 import AdminHome from './components/AdminHome'
 import Rooms from './components/Rooms'
 import Features from './components/Features'
+import Facilities from './components/Facilities'
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
           <Route index element={<AdminHome />} />
           <Route path="users" element={<Users />} />
           <Route path="features" element={<Features />} />
+          <Route path="facilities" element={<Facilities />} />
           <Route path="rooms" element={<Rooms />} />
         </Route>
 
