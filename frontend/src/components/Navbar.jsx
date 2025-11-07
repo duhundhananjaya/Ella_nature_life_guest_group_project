@@ -40,7 +40,7 @@ const Navbar = () => {
     <>
       <nav className="sb-topnav navbar navbar-expand navbar-dark bg-dark">
 
-        <a className="navbar-brand ps-3" href="">NLG Admin</a>
+        <a className="navbar-brand ps-3" href="">NLG AdminPanel</a>
 
         <button
           className="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0 shadow-none"
@@ -71,10 +71,9 @@ const Navbar = () => {
               <i className="fas fa-user fa-fw"></i>
             </a>
             <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><a className="dropdown-item" href="#!">Profile</a></li>
               <li><a className="dropdown-item" href="#!">Settings</a></li>
-              <li><a className="dropdown-item" href="#!">Activity Log</a></li>
               <li><hr className="dropdown-divider" /></li>
-              {/* 👇 Open logout modal instead of direct logout */}
               <li><button className="dropdown-item" onClick={openLogoutModal}>Logout</button></li>
             </ul>
           </li>

@@ -9,7 +9,7 @@ const Sidebar = () => {
     <nav className="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
         <div className="sb-sidenav-menu">
             <div className="nav">
-                <div className="sb-sidenav-menu-heading">Core</div>
+                <div className="sb-sidenav-menu-heading">Menu</div>
                 <NavLink 
                     end
                     className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} 
