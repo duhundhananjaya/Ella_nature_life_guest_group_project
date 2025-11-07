@@ -8,7 +8,6 @@ const Navbar = () => {
     return location.pathname === path ? 'active' : '';
   };
 
-<<<<<<< Updated upstream
   return (
     <header className="header-section">
       <div className="menu-item">
@@ -53,7 +52,6 @@ const Navbar = () => {
                 </nav>
                 <div className="nav-right search-switch">
                   <FaUser size={20} />
-=======
   useEffect(() => {
     // Canvas menu functionality
     const canvasOpen = document.querySelector('.canvas-open');
@@ -273,8 +271,32 @@ const Navbar = () => {
                       Sign Up
                     </Link>
                   </div>
->>>>>>> Stashed changes
+
                 </div>
+
+                <div className="nav-right flex">
+                  <Link to="/register" className="px-3 py-2 rounded-md font-medium border mr-3" 
+                        style={{backgroundColor: '#0aa149ff',
+                          color: 'white',
+                          border: '2px solid black',
+                        }}
+                    onMouseEnter={(e) => (e.target.style.backgroundColor = '#12861aff')} 
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = '#0fb155ff')}>
+                        Register
+                  </Link>
+
+                  <Link to="/signup" className="px-3 py-2 rounded-md font-medium border"
+                        style={{
+                          backgroundColor: '#0aa149ff',
+                          color: 'white',
+                          border: '2px solid black',
+                        }}
+                    onMouseEnter={(e) => (e.target.style.backgroundColor = '#12861aff')} 
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = '#0fb155ff')}>
+                         Sign Up
+                    </Link>
+                  </div>
+
               </div>
             </div>
           </div>

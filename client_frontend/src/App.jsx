@@ -6,6 +6,7 @@ import About from './pages/About'
 import Gallery from './pages/Gallery'
 import Contact from './pages/Contact'
 import RoomDetails from './pages/RoomDetails'
+import Register from './pages/Register'
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/room-details" element={<RoomDetails />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
   </Router>
   )
