@@ -6,6 +6,7 @@ import userRoutes from './routes/user.js';
 import featureRoutes from './routes/feature.js';
 import facilityRoutes from './routes/facility.js';
 import roomsRoutes from './routes/room.js';
+import clientRoomsRoutes from './routes/clientRoom.js';
 
 const app = express();
 app.use(cors());
@@ -18,6 +19,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/features', featureRoutes);
 app.use('/api/facility', facilityRoutes);
 app.use('/api/rooms', roomsRoutes);
+app.use('/api/client-rooms', clientRoomsRoutes);
 
 app.listen(process.env.PORT, () =>{
     connectDB();
