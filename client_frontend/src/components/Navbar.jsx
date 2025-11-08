@@ -137,10 +137,10 @@ const Navbar = () => {
             <li className={isActive('/gallery')}>
               <Link to="/gallery">Gallery</Link>
             </li>
-            <li className={isActive('/pages')}>
-              <Link to="/pages">Pages</Link>
+            <li className={isActive('')}>
+              <Link to="#">Pages</Link>
               <ul className="dropdown">
-                <li><Link to="/room-details">Room Details</Link></li>
+                <li><Link to="">Room Details</Link></li>
                 <li><Link to="/deluxe-room">Deluxe Room</Link></li>
                 <li><Link to="/family-room">Family Room</Link></li>
                 <li><Link to="/premium-room">Premium Room</Link></li>
@@ -166,7 +166,7 @@ const Navbar = () => {
               <div className="col-lg-2">
                 <div className="logo">
                   <Link to="/">
-                    <img src="img/logo.png" alt="Logo" />
+                    <img src="/img/logo.png" alt="Logo" />
                   </Link>
                 </div>
               </div>
@@ -186,8 +186,8 @@ const Navbar = () => {
                       <li className={isActive('/gallery')}>
                         <Link to="/gallery">Gallery</Link>
                       </li>
-                      <li className={isActive('/pages')}>
-                        <Link to="/pages">Pages</Link>
+                      <li className={isActive('')}>
+                        <Link to="#">Pages</Link>
                         <ul className="dropdown">
                           <li><Link to="/room-details">Room Details</Link></li>
                           <li><Link to="/deluxe-room">Deluxe Room</Link></li>

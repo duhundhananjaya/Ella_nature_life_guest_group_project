@@ -3,6 +3,7 @@ import React from "react";
 const ContactSection = () => {
 
     return (
+        <div style={{ paddingTop: "60px" }}>
         <section className="contact-section spad">
         <div className="container">
             <div className="row">
@@ -10,26 +11,27 @@ const ContactSection = () => {
                 <div className="contact-text">
                 <h2>Contact Info</h2>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                    eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    Set in Ella, 7.2 km from Demodara Nine Arch Bridge.
+                    The property is around 45 km from Hakgala Botanical Garden, 
+                    46 km from Horton Plains National Park and 3.5 km from Ella Railway Station.
                 </p>
                 <table>
                     <tbody>
                     <tr>
                         <td className="c-o">Address:</td>
-                        <td>856 Cordia Extension Apt. 356, Lake, US</td>
+                        <td>Kitelella Road Ella, 90090 Ella, Sri Lanka.</td>
                     </tr>
                     <tr>
                         <td className="c-o">Phone:</td>
-                        <td>(12) 345 67890</td>
+                        <td>+94 774749061</td>
                     </tr>
                     <tr>
                         <td className="c-o">Email:</td>
-                        <td>info.colorlib@gmail.com</td>
+                        <td>saliyadineshka@gmail.com</td>
                     </tr>
                     <tr>
                         <td className="c-o">Fax:</td>
-                        <td>+(12) 345 67890</td>
+                        <td>+94 753728582</td>
                     </tr>
                     </tbody>
                 </table>
@@ -61,7 +63,7 @@ const ContactSection = () => {
             <div className="map mt-5">
             <iframe
                 title="Google Map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.0606825994123!2d-72.8735845851828!3d40.760690042573295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e85b24c9274c91%3A0xf310d41b791bcb71!2sWilliam%20Floyd%20Pkwy%2C%20Mastic%20Beach%2C%20NY%2C%20USA!5e0!3m2!1sen!2sbd!4v1578582744646!5m2!1sen!2sbd"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3956.6962139240187!2d81.037793!3d6.858109!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae4653b2d49906b%3A0xfc6addf36bc29df!2sElla%20Nature%20Life%20Guest%20and%20Restaurant!5e0!3m2!1sen!2slk!4v1731060000000!5m2!1sen!2slk"
                 height="470"
                 style={{ border: 0, width: "100%" }}
                 allowFullScreen
@@ -70,6 +72,7 @@ const ContactSection = () => {
             </div>
         </div>
         </section>
+        </div>
     );
 };
 

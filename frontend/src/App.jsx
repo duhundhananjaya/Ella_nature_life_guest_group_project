@@ -9,6 +9,8 @@ import AdminHome from './components/AdminHome'
 import Rooms from './components/Rooms'
 import Features from './components/Features'
 import Facilities from './components/Facilities'
+import ClerkHome from './components/clerk/ClerkHome'
+import ReceptionistHome from './components/receptionist/ReceptionistHome'
 
 function App() {
 
@@ -24,6 +26,18 @@ function App() {
           <Route path="features" element={<Features />} />
           <Route path="facilities" element={<Facilities />} />
           <Route path="rooms" element={<Rooms />} />
+        </Route>
+
+        <Route path="/clerk-dashboard" element={<ProtectedRoutes requireRole={["clerk"]}>
+            <Dashboard />
+          </ProtectedRoutes>}>
+          <Route index element={<ClerkHome />} />
+        </Route>
+
+        <Route path="/receptionist-dashboard" element={<ProtectedRoutes requireRole={["receptionist"]}>
+            <Dashboard />
+          </ProtectedRoutes>}>
+          <Route index element={<ReceptionistHome />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
