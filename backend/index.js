@@ -11,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public/uploads/icons'));
+app.use(express.static('public/uploads/rooms'));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
