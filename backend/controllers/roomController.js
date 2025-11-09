@@ -1,4 +1,5 @@
 import Room from "../models/Room.js";
+import RoomInstance from "../models/RoomInstance.js";
 import multer from 'multer';
 import fs from "fs";
 import path from "path";
@@ -33,21 +34,62 @@ const upload = multer({
   }
 });
 
+// Helper function to generate room numbers
+const generateRoomNumbers = (roomTypeName, quantity, startingNumber = 1) => {
+  const roomNumbers = [];
+  // Extract prefix from room name (e.g., "Double" from "Double Room")
+  const prefix = roomTypeName.split(' ')[0].substring(0, 2).toUpperCase(); // "DO" for Double
+  
+  for (let i = 0; i < quantity; i++) {
+    const roomNum = startingNumber + i;
+    roomNumbers.push(`${prefix}${roomNum.toString().padStart(3, '0')}`); // DO001, DO002, etc.
+  }
+  
+  return roomNumbers;
+};
+
 const addRoom = async (req, res) => {
   try {
-    const { room_name, area, price, quantity, adult, children, status, description, features, facilities } = req.body;
+    const { room_name, area, price, quantity, adult, children, status, description, features, facilities, room_numbers } = req.body;
 
     const existingRoom = await Room.findOne({ room_name });
     if (existingRoom) {
-      return res.status(400).json({ success: false, message: 'Room already exists' });
+      return res.status(400).json({ success: false, message: 'Room type already exists' });
     }
 
+    // Create room type
     const newRoom = new Room({
       room_name, area, price, quantity, adult, children, status, description, features, facilities
     });
 
     await newRoom.save();
-    return res.status(201).json({ success: true, message: 'Room added successfully' });
+
+    // Generate room instances
+    let roomNumbersArray;
+    if (room_numbers && Array.isArray(room_numbers) && room_numbers.length === quantity) {
+      // Use custom room numbers if provided
+      roomNumbersArray = room_numbers;
+    } else {
+      // Auto-generate room numbers
+      roomNumbersArray = generateRoomNumbers(room_name, quantity);
+    }
+
+    // Create room instances
+    const roomInstances = roomNumbersArray.map(roomNum => ({
+      room_number: roomNum,
+      room_type: newRoom._id,
+      cleaning_status: "clean",
+      occupancy_status: "available"
+    }));
+
+    await RoomInstance.insertMany(roomInstances);
+
+    return res.status(201).json({ 
+      success: true, 
+      message: 'Room type and instances created successfully',
+      room: newRoom,
+      instances: roomInstances
+    });
   } catch (error) {
     console.error('Error adding Room', error);
     return res.status(500).json({ success: false, message: 'Server error' });
@@ -55,43 +97,103 @@ const addRoom = async (req, res) => {
 };
 
 const updateRoom = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const {  room_name, area, price, quantity, adult, children, status, description, features, facilities } = req.body;
+  try {
+    const { id } = req.params;
+    const { room_name, area, price, quantity, adult, children, status, description, features, facilities } = req.body;
 
-        const room = await Room.findById(id);
-            if (!room) {
-            return res.status(404).json({ success: false, message: 'Room not found' });
-        }
-
-        const existingRoom = await Room.findOne({ room_name, _id: { $ne: id } });
-            if (existingRoom) {
-            return res.status(400).json({ success: false, message: 'Room already exists' });
-        }
-
-        room.room_name = room_name;
-        room.area = area;
-        room.price = price;
-        room.quantity = quantity;
-        room.adult = adult;
-        room.children = children;
-        room.status = status;
-        room.description = description;
-        room.features = features;
-        room.facilities = facilities;
-
-        await room.save();
-        return res.status(200).json({ success: true, message: 'Room updated successfully' });
-    } catch (error) {
-        console.error('Error updating User', error);
-        return res.status(500).json({ success: false, message: 'Server error' });
+    const room = await Room.findById(id);
+    if (!room) {
+      return res.status(404).json({ success: false, message: 'Room not found' });
     }
-}
+
+    const existingRoom = await Room.findOne({ room_name, _id: { $ne: id } });
+    if (existingRoom) {
+      return res.status(400).json({ success: false, message: 'Room name already exists' });
+    }
+
+    const oldQuantity = room.quantity;
+    const newQuantity = quantity;
+
+    // Update room type details
+    room.room_name = room_name;
+    room.area = area;
+    room.price = price;
+    room.quantity = quantity;
+    room.adult = adult;
+    room.children = children;
+    room.status = status;
+    room.description = description;
+    room.features = features;
+    room.facilities = facilities;
+
+    await room.save();
+
+    // Handle quantity changes
+    if (newQuantity > oldQuantity) {
+      // Add more room instances
+      const currentInstances = await RoomInstance.countDocuments({ room_type: id });
+      const instancesToAdd = newQuantity - currentInstances;
+      
+      if (instancesToAdd > 0) {
+        const newRoomNumbers = generateRoomNumbers(room_name, instancesToAdd, currentInstances + 1);
+        const newInstances = newRoomNumbers.map(roomNum => ({
+          room_number: roomNum,
+          room_type: id,
+          cleaning_status: "clean",
+          occupancy_status: "available"
+        }));
+        
+        await RoomInstance.insertMany(newInstances);
+      }
+    } else if (newQuantity < oldQuantity) {
+      // Remove excess room instances (only available ones)
+      const instancesToRemove = oldQuantity - newQuantity;
+      const availableInstances = await RoomInstance.find({ 
+        room_type: id, 
+        occupancy_status: "available" 
+      })
+      .sort({ created_at: -1 })
+      .limit(instancesToRemove);
+
+      if (availableInstances.length < instancesToRemove) {
+        return res.status(400).json({ 
+          success: false, 
+          message: `Cannot reduce quantity. Only ${availableInstances.length} rooms are available to remove. Others are occupied/reserved.` 
+        });
+      }
+
+      const idsToRemove = availableInstances.map(inst => inst._id);
+      await RoomInstance.deleteMany({ _id: { $in: idsToRemove } });
+    }
+
+    return res.status(200).json({ success: true, message: 'Room type updated successfully' });
+  } catch (error) {
+    console.error('Error updating Room', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
 
 const getRoom = async (req, res) => {
   try {
     const rooms = await Room.find().populate("features").populate("facilities");
-    return res.status(200).json({ success: true, rooms });
+    
+    // Get instance counts for each room type
+    const roomsWithCounts = await Promise.all(rooms.map(async (room) => {
+      const instances = await RoomInstance.countDocuments({ room_type: room._id });
+      const available = await RoomInstance.countDocuments({ 
+        room_type: room._id, 
+        occupancy_status: "available",
+        cleaning_status: "clean"
+      });
+      
+      return {
+        ...room.toObject(),
+        total_instances: instances,
+        available_instances: available
+      };
+    }));
+    
+    return res.status(200).json({ success: true, rooms: roomsWithCounts });
   } catch (error) {
     console.error('Error fetching rooms', error);
     return res.status(500).json({ success: false, message: 'Server error in getting rooms' });
@@ -107,7 +209,18 @@ const getRoomById = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Room not found' });
     }
     
-    return res.status(200).json({ success: true, room });
+    // Get all instances of this room type
+    const instances = await RoomInstance.find({ room_type: id })
+      .populate("last_cleaned_by", "name email")
+      .sort({ room_number: 1 });
+    
+    return res.status(200).json({ 
+      success: true, 
+      room: {
+        ...room.toObject(),
+        instances
+      }
+    });
   } catch (error) {
     console.error('Error fetching room', error);
     return res.status(500).json({ success: false, message: 'Server error' });
@@ -123,6 +236,23 @@ const deleteRoom = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Room not found' });
     }
 
+    // Check if any instances are occupied
+    const occupiedCount = await RoomInstance.countDocuments({ 
+      room_type: id, 
+      occupancy_status: { $in: ["occupied", "reserved"] }
+    });
+
+    if (occupiedCount > 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Cannot delete room type. ${occupiedCount} room(s) are currently occupied or reserved.` 
+      });
+    }
+
+    // Delete all room instances
+    await RoomInstance.deleteMany({ room_type: id });
+
+    // Delete images
     if (room.images && room.images.length > 0) {
       room.images.forEach((img) => {
         const imagePath = path.join(__dirname, '../public/uploads/rooms', img.image_path);
@@ -133,7 +263,7 @@ const deleteRoom = async (req, res) => {
     }
 
     await Room.findByIdAndDelete(id);
-    return res.status(200).json({ success: true, message: 'Room deleted successfully' });
+    return res.status(200).json({ success: true, message: 'Room type and all instances deleted successfully' });
   } catch (error) {
     console.error('Error deleting room', error);
     return res.status(500).json({ success: false, message: 'Server error' });
@@ -236,4 +366,14 @@ const deleteRoomImage = async (req, res) => {
   }
 };
 
-export { addRoom, upload, updateRoom, getRoom, getRoomById, deleteRoom, uploadRoomImage, setThumbnail, deleteRoomImage };
+export { 
+  addRoom, 
+  upload, 
+  updateRoom, 
+  getRoom, 
+  getRoomById, 
+  deleteRoom, 
+  uploadRoomImage, 
+  setThumbnail, 
+  deleteRoomImage 
+};

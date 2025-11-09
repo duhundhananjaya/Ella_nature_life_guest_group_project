@@ -73,7 +73,7 @@ const HeroSection = () => {
         // Fetch rooms
         const roomsResponse = await axios.get("http://localhost:3000/api/client-rooms");
         const activeRooms = roomsResponse.data.rooms.filter(room => room.status === 'active');
-        setRooms(activeRooms.slice(0, 4)); // Get only first 4 rooms
+        setRooms(activeRooms.slice(0, 3)); // Get only first 4 rooms
         
         // Fetch facilities
         const facilitiesResponse = await axios.get("http://localhost:3000/api/client-rooms/facilities");

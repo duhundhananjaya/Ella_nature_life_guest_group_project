@@ -23,6 +23,11 @@ const Sidebar = () => {
         { name: "Rooms", path: "/receptionist-dashboard/rooms", icon: "fas fa-door-open", end: false },
     ];
 
+    const attendantMenuItems = [
+        { name: "Dashboard", path: "/attendant-dashboard", icon: "fas fa-tachometer-alt", end: true },
+        { name: "Rooms", path: "/attendant-dashboard/rooms", icon: "fas fa-door-open", end: false },
+    ];
+
     const [menuLinks, setMenuLinks] = useState([]);
 
     useEffect(() => {
@@ -32,6 +37,8 @@ const Sidebar = () => {
             setMenuLinks(adminMenuItems);
         } else if (user && user.role === "receptionist") {
             setMenuLinks(receptionistMenuItems);
+        } else if (user && user.role === "attendant") {
+            setMenuLinks(attendantMenuItems);
         }
     }, []);
     
