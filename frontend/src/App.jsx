@@ -11,6 +11,8 @@ import Features from './components/Features'
 import Facilities from './components/Facilities'
 import ClerkHome from './components/clerk/ClerkHome'
 import ReceptionistHome from './components/receptionist/ReceptionistHome'
+import AttendantHome from './components/attendant/AttendantHome'
+import AttendantRoom from './components/attendant/AttendantRoom'
 
 function App() {
 
@@ -38,6 +40,13 @@ function App() {
             <Dashboard />
           </ProtectedRoutes>}>
           <Route index element={<ReceptionistHome />} />
+        </Route>
+
+        <Route path="/attendant-dashboard" element={<ProtectedRoutes requireRole={["attendant"]}>
+            <Dashboard />
+          </ProtectedRoutes>}>
+          <Route index element={<AttendantHome />} />
+          <Route path="rooms" element={<AttendantRoom />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
