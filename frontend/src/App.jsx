@@ -6,6 +6,13 @@ import Root from './utils/Root'
 import Dashboard from './pages/Dashboard'
 import Users from './components/Users'
 import AdminHome from './components/AdminHome'
+import Rooms from './components/Rooms'
+import Features from './components/Features'
+import Facilities from './components/Facilities'
+import ClerkHome from './components/clerk/ClerkHome'
+import ReceptionistHome from './components/receptionist/ReceptionistHome'
+import AttendantHome from './components/attendant/AttendantHome'
+import AttendantRoom from './components/attendant/AttendantRoom'
 
 function App() {
 
@@ -18,6 +25,28 @@ function App() {
           </ProtectedRoutes>} >
           <Route index element={<AdminHome />} />
           <Route path="users" element={<Users />} />
+          <Route path="features" element={<Features />} />
+          <Route path="facilities" element={<Facilities />} />
+          <Route path="rooms" element={<Rooms />} />
+        </Route>
+
+        <Route path="/clerk-dashboard" element={<ProtectedRoutes requireRole={["clerk"]}>
+            <Dashboard />
+          </ProtectedRoutes>}>
+          <Route index element={<ClerkHome />} />
+        </Route>
+
+        <Route path="/receptionist-dashboard" element={<ProtectedRoutes requireRole={["receptionist"]}>
+            <Dashboard />
+          </ProtectedRoutes>}>
+          <Route index element={<ReceptionistHome />} />
+        </Route>
+
+        <Route path="/attendant-dashboard" element={<ProtectedRoutes requireRole={["attendant"]}>
+            <Dashboard />
+          </ProtectedRoutes>}>
+          <Route index element={<AttendantHome />} />
+          <Route path="rooms" element={<AttendantRoom />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
@@ -27,4 +56,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
