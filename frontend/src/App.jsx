@@ -13,6 +13,7 @@ import ClerkHome from './components/clerk/ClerkHome'
 import ReceptionistHome from './components/receptionist/ReceptionistHome'
 import AttendantHome from './components/attendant/AttendantHome'
 import AttendantRoom from './components/attendant/AttendantRoom'
+import RoomCleanings from './components/RoomCleanings'
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="features" element={<Features />} />
           <Route path="facilities" element={<Facilities />} />
           <Route path="rooms" element={<Rooms />} />
+          <Route path="cleaning-details" element={<RoomCleanings />} />
         </Route>
 
         <Route path="/clerk-dashboard" element={<ProtectedRoutes requireRole={["clerk"]}>

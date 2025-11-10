@@ -10,7 +10,6 @@ const Sidebar = () => {
         { name: "Users", path: "/admin-dashboard/users", icon: "fas fa-users", end: false },
         { name: "Features", path: "/admin-dashboard/features", icon: "fas fa-gem", end: false },
         { name: "Facilities", path: "/admin-dashboard/facilities", icon: "fas fa-tools", end: false },
-        { name: "Rooms", path: "/admin-dashboard/rooms", icon: "fas fa-door-open", end: false },
     ];
 
     const clerkMenuItems = [
@@ -61,6 +60,29 @@ const Sidebar = () => {
                     
                     {user?.role === "admin" && (
                         <>
+                            {/* Rooms Collapsible Section */}
+                            <a className="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseRooms" aria-expanded="false" aria-controls="collapseRooms">
+                                <div className="sb-nav-link-icon"><i className="fas fa-door-open"></i></div>
+                                Rooms
+                                <div className="sb-sidenav-collapse-arrow"><i className="fas fa-angle-down"></i></div>
+                            </a>
+                            <div className="collapse" id="collapseRooms" aria-labelledby="headingRooms" data-bs-parent="#sidenavAccordion">
+                                <nav className="sb-sidenav-menu-nested nav">
+                                    <NavLink 
+                                        className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} 
+                                        to="/admin-dashboard/rooms"
+                                    >
+                                        Rooms
+                                    </NavLink>
+                                    <NavLink 
+                                        className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} 
+                                        to="/admin-dashboard/cleaning-details"
+                                    >
+                                        Cleaning Details
+                                    </NavLink>
+                                </nav>
+                            </div>
+
                             <div className="sb-sidenav-menu-heading">Interface</div>
                             <a className="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div className="sb-nav-link-icon"><i className="fas fa-columns"></i></div>
