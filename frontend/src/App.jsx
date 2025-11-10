@@ -14,6 +14,7 @@ import ReceptionistHome from './components/receptionist/ReceptionistHome'
 import AttendantHome from './components/attendant/AttendantHome'
 import AttendantRoom from './components/attendant/AttendantRoom'
 import RoomCleanings from './components/RoomCleanings'
+import ClerkRooms from './components/clerk/ClearkRooms'
 
 function App() {
 
@@ -36,6 +37,7 @@ function App() {
             <Dashboard />
           </ProtectedRoutes>}>
           <Route index element={<ClerkHome />} />
+           <Route path="rooms" element={<ClerkRooms />} />
         </Route>
 
         <Route path="/receptionist-dashboard" element={<ProtectedRoutes requireRole={["receptionist"]}>
