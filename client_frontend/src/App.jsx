@@ -7,6 +7,7 @@ import Gallery from './pages/Gallery'
 import Contact from './pages/Contact'
 import RoomDetails from './pages/RoomDetails'
 import Register from './pages/Register'
+import Login from './pages/Login'
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/room-details" element={<RoomDetails />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
   </Router>
   )

@@ -62,7 +62,7 @@ const Navbar = () => {
                         Register
                   </Link>
 
-                  <Link to="/signup" className="px-3 py-2 rounded-md font-medium border"
+                  <Link to="/login" className="px-3 py-2 rounded-md font-medium border"
                         style={{
                           backgroundColor: '#0aa149ff',
                           color: 'white',
@@ -70,7 +70,7 @@ const Navbar = () => {
                         }}
                     onMouseEnter={(e) => (e.target.style.backgroundColor = '#12861aff')} 
                     onMouseLeave={(e) => (e.target.style.backgroundColor = '#0fb155ff')}>
-                         Sign Up
+                         Login
                     </Link>
                   </div>
               </div>
