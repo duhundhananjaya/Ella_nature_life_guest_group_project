@@ -1,8 +1,9 @@
-import React from 'react'
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from 'react-router';
 
 const Navbar = () => {
-    useEffect(() => {
+  useEffect(() => {
     const sidebarToggle = document.querySelector("#sidebarToggle");
     if (sidebarToggle) {
       const handleClick = (event) => {
@@ -19,33 +20,111 @@ const Navbar = () => {
       return () => sidebarToggle.removeEventListener("click", handleClick);
     }
   }, []);
+
+  
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const openLogoutModal = () => setIsLogoutModalOpen(true);
+  const closeLogoutModal = () => setIsLogoutModalOpen(false);
+
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const { user } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    closeLogoutModal();
+    navigate("/login");
+  };
+
   return (
-    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+    <>
+      <nav className="sb-topnav navbar navbar-expand navbar-dark bg-dark">
 
-            <a class="navbar-brand ps-3" href="index.html">NLG Admin</a>
+        <a className="navbar-brand ps-3" href="">NLG AdminPanel</a>
 
-            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+        <button
+          className="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0 shadow-none"
+          id="sidebarToggle"
+          href="#!"
+        >
+          <i className="fas fa-bars"></i>
+        </button>
 
-            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-                <div class="input-group">
-                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
-                </div>
-            </form>
+        <div className="d-none d-md-inline-block ms-auto me-0 me-md-3 my-2 my-md-0 text-white fw-semibold">
+          {new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </div>
 
-            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#!">Settings</a></li>
-                        <li><a class="dropdown-item" href="#!">Activity Log</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="#!">Logout</a></li>
-                    </ul>
-                </li>
+        <ul className="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+          <li className="nav-item dropdown">
+            <a
+              className="nav-link dropdown-toggle"
+              id="navbarDropdown"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i className="fas fa-user fa-fw"></i>
+            </a>
+            <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><a className="dropdown-item" href="#!">Profile</a></li>
+              <li><a className="dropdown-item" href="#!">Settings</a></li>
+              <li><hr className="dropdown-divider" /></li>
+              <li><button className="dropdown-item" onClick={openLogoutModal}>Logout</button></li>
             </ul>
-        </nav>
-  )
-}
+          </li>
+        </ul>
+      </nav>
+
+      {isLogoutModalOpen && (
+        <>
+          <div
+            className="modal fade show"
+            tabIndex="-1"
+            style={{ display: "block" }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) closeLogoutModal();
+            }}
+          >
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header bg-danger text-white">
+                  <h5 className="modal-title">Confirm Logout</h5>
+                  <button
+                    type="button"
+                    className="btn-close btn-close-white shadow-none"
+                    onClick={closeLogoutModal}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  Are you sure you want to logout?
+                </div>
+                <div className="modal-footer">
+                  <button
+                    className="btn btn-secondary shadow-none"
+                    onClick={closeLogoutModal}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="btn btn-danger shadow-none"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop fade show"></div>
+        </>
+      )}
+    </>
+  );
+};
 
 export default Navbar;

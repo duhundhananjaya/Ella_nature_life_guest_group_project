@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router";
+import { useEffect } from "react";
 import axios from 'axios';
 
 const Login = () => {
@@ -26,6 +27,8 @@ const Login = () => {
 
             if(response.data.success){
                 await login(response.data.user, response.data.token);
+                localStorage.setItem("pos-user", JSON.stringify(response.data.user));
+
                 if(response.data.user.role === "admin"){
                     navigate("/admin-dashboard");
                 }else if(response.data.user.role === "clerk"){
@@ -49,8 +52,22 @@ const Login = () => {
         }
     }
 
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => {
+            setError(null);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [error]);
+
   return (
-    <div id="layoutAuthentication">
+    <div id="layoutAuthentication" style={{
+        background: 'linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab)',
+        backgroundSize: '400% 400%',
+        animation: 'gradient 15s ease infinite',
+        minHeight: '100vh'
+    }}>
             <div id="layoutAuthentication_content">
                 <main>
                     <div class="container">
@@ -80,7 +97,7 @@ const Login = () => {
                                                 <label for="inputPassword">Password</label>
                                             </div>
                                             <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                                <button class="btn btn-primary" type='submit'>{loading ? "Loading..." : "Login"}</button>
+                                                <button class="btn btn-primary shadow-none" type='submit'>{loading ? "Loading..." : "Login"}</button>
                                             </div>
                                         </form>
                                     </div>
@@ -90,6 +107,18 @@ const Login = () => {
                     </div>
                 </main>
             </div>
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; Nature Life Guest</div>
+                        <div>
+                            <a href="#">Privacy Policy</a>
+                            &middot;
+                            <a href="#">Terms &amp; Conditions</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
   )
 }

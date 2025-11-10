@@ -1,5 +1,6 @@
 import React from 'react'
 import { useEffect } from 'react';
+import { Link } from 'react-router';
 
 const AboutSection = () => {
 
@@ -17,7 +18,7 @@ const AboutSection = () => {
     }, []);
 
     return (
-        <div>
+        <div style={{ paddingTop: "60px" }}>
             <div class="breadcrumb-section">
             <div class="container">
                 <div class="row">
@@ -25,7 +26,7 @@ const AboutSection = () => {
                         <div class="breadcrumb-text">
                             <h2>About Us</h2>
                             <div class="bt-option">
-                                <a href="./index.html">Home</a>
+                                <Link to="/">Home</Link>
                                 <span>About Us</span>
                             </div>
                         </div>
@@ -40,10 +41,14 @@ const AboutSection = () => {
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="ap-title">
-                                <h2>Welcome To Sona.</h2>
-                                <p>Built in 1910 during the Belle Epoque period, this hotel is located in the center of
-                                    Paris, with easy access to the city’s tourist attractions. It offers tastefully
-                                    decorated rooms.</p>
+                                <h2>Welcome To Nature Life Guest</h2>
+                                <p>Ella Nature Life Guest & Restaurant offers a peaceful stay surrounded by Ella’s 
+                                    natural beauty. Rooms include modern amenities like a dishwasher, toaster, coffee machine,
+                                     and private bathroom with toiletries and a hairdryer. Some rooms feature balconies with 
+                                     scenic views. Guests can enjoy buffet, à la carte, or continental breakfasts, and the 
+                                     restaurant serves African, American, and Chinese dishes with vegetarian, dairy-free, 
+                                     and halal options. The property provides bike and car rentals for exploring nearby 
+                                     attractions such as Ella Spice Garden (3.9 km) and Little Adam’s Peak (5.9 km).</p>
                             </div>
                         </div>
                         <div class="col-lg-5 offset-lg-1">
@@ -60,7 +65,7 @@ const AboutSection = () => {
                 <div class="about-page-services">
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="ap-service-item set-bg" data-setbg="img/about/about-p1.jpg">
+                            <div class="ap-service-item set-bg" data-setbg="img/about/about-p1.jpg" >
                                 <div class="api-text">
                                     <h3>Restaurants Services</h3>
                                 </div>
