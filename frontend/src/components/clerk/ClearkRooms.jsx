@@ -257,7 +257,6 @@ const ClerkRooms = () => {
                     <th className="py-3">Maintenance Status</th>
                     <th className="py-3">Cleaning Status</th>
                     <th className="py-3">Occupancy</th>
-                    <th className="py-3">Floor</th>
                     <th className="py-3 text-center" style={{ width: '120px' }}>Actions</th>
                   </tr>
                 </thead>
@@ -283,7 +282,6 @@ const ClerkRooms = () => {
                             {room.occupancy_status}
                           </span>
                         </td>
-                        <td className="text-muted">{room.floor || 'N/A'}</td>
                         <td className="text-center">
                           <button 
                             className="btn btn-sm btn-primary shadow-none" 
@@ -339,10 +337,6 @@ const ClerkRooms = () => {
                       <div className="col-6">
                         <p className="mb-1"><strong>Room Type:</strong></p>
                         <p className="text-muted">{selectedRoom.room_type?.room_name}</p>
-                      </div>
-                      <div className="col-6">
-                        <p className="mb-1"><strong>Floor:</strong></p>
-                        <p className="text-muted">{selectedRoom.floor || 'N/A'}</p>
                       </div>
                     </div>
                     <div className="row mt-2">

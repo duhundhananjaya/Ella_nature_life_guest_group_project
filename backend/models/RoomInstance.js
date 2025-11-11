@@ -11,9 +11,6 @@ const roomInstanceSchema = new mongoose.Schema({
     ref: "Room", 
     required: true 
   },
-  floor: { 
-    type: Number 
-  },
   cleaning_status: {
     type: String,
     enum: ["clean", "dirty", "in-progress", "inspected"],

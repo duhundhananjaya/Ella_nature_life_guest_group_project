@@ -8,6 +8,7 @@ import facilityRoutes from './routes/facility.js';
 import roomsRoutes from './routes/room.js';
 import clientRoomsRoutes from './routes/clientRoom.js';
 import roomInstancesRoutes from './routes/roomInstance.js';
+import siteSettingsRoutes from './routes/siteSettings.js';
 
 const app = express();
 app.use(cors());
@@ -22,6 +23,7 @@ app.use('/api/facility', facilityRoutes);
 app.use('/api/rooms', roomsRoutes);
 app.use('/api/room-instances', roomInstancesRoutes);
 app.use('/api/client-rooms', clientRoomsRoutes);
+app.use('/api/site-settings', siteSettingsRoutes);
 
 app.listen(process.env.PORT, () =>{
     connectDB();
