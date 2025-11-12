@@ -33,6 +33,17 @@ const Navbar = () => {
     return rolePathMap[user?.role] || "/profile";
   };
 
+  const getProfileSettingsPath = () => {
+    const user = JSON.parse(localStorage.getItem("pos-user"));
+    const rolePathMap = {
+      admin: "/admin-dashboard/profile-settings",
+      clerk: "/clerk-dashboard/profile-settings",
+      receptionist: "/receptionist-dashboard/profile-settings",
+      attendant: "/attendant-dashboard/profile-settings"
+    };
+    return rolePathMap[user?.role] || "/profile-settings";
+  };
+
   
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const openLogoutModal = () => setIsLogoutModalOpen(true);
@@ -84,7 +95,7 @@ const Navbar = () => {
             </a>
             <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
               <li><Link className="dropdown-item" to={getProfilePath()}>Profile</Link></li>
-              <li><Link className="dropdown-item" to={getProfilePath()}>Settings</Link></li>
+              <li><Link className="dropdown-item" to={getProfileSettingsPath()}>Settings</Link></li>
               <li><hr className="dropdown-divider" /></li>
               <li><button className="dropdown-item" onClick={openLogoutModal}>Logout</button></li>
             </ul>
