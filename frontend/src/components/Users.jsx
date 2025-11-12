@@ -363,42 +363,42 @@ const Users = () => {
                 </div>
                 
                 <div className="modal-body p-4">
-                  {passwordError && (
-                    <div className="col-12 mb-2">
-                      <div className="alert alert-danger py-2 mb-0">
-                        <i className="fas fa-exclamation-triangle me-2"></i>
-                        {passwordError}
-                      </div>
+                {passwordError && (
+                  <div className="col-12 mb-2">
+                    <div className="alert alert-danger py-2 mb-0">
+                      <i className="fas fa-exclamation-triangle me-2"></i>
+                      {passwordError}
                     </div>
-                  )}
+                  </div>
+                )}
+                <form onSubmit={handleSubmit} id="userForm">
                   <div className="row g-3">
                     <div className="col-md-6">
                       <label htmlFor="name" className="form-label fw-medium">
                         Name <span className="text-danger">*</span>
                       </label>
-                      <input type="text" className="form-control shadow-none" id="name" name="name" value={formData.name} onChange={handleInputChange} placeholder="Enter full name" required/>
+                      <input  type="text"  className="form-control shadow-none"  id="name"  name="name"  value={formData.name}  onChange={handleInputChange}  placeholder="Enter full name"  autoComplete="name" required/>
                     </div>
 
                     <div className="col-md-6">
                       <label htmlFor="email" className="form-label fw-medium">
                         Email <span className="text-danger">*</span>
                       </label>
-                      <input type="email" className="form-control shadow-none" id="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="user@example.com" required/>
+                      <input  type="email"  className="form-control shadow-none"  id="email"  name="email"  value={formData.email}  onChange={handleInputChange}  placeholder="user@example.com"  autoComplete="email" required/>
                     </div>
 
                     <div className="col-md-6">
                       <label htmlFor="phone_number" className="form-label fw-medium">
                         Phone Number <span className="text-danger">*</span>
                       </label>
-                      <input type="text" className="form-control shadow-none" id="phone_number" name="phone_number" value={formData.phone_number} onChange={handleInputChange} placeholder="Enter phone number" required/>
+                      <input  type="text"  className="form-control shadow-none"  id="phone_number"  name="phone_number"  value={formData.phone_number}  onChange={handleInputChange}  placeholder="Enter phone number"  autoComplete="tel" required/>
                     </div>
 
                     <div className="col-md-6">
                       <label htmlFor="role" className="form-label fw-medium">
                         Role <span className="text-danger">*</span>
                       </label>
-                      <select className="form-select shadow-none" id="role" name="role" value={formData.role} onChange={handleInputChange} required
-                      >
+                      <select  className="form-select shadow-none"  id="role"  name="role"  value={formData.role}  onChange={handleInputChange}  required>
                         <option value="">Select Role</option>
                         <option value="admin">Admin</option>
                         <option value="clerk">Clerk</option>
@@ -411,7 +411,7 @@ const Users = () => {
                       <label htmlFor="address" className="form-label fw-medium">
                         Address <span className="text-danger">*</span>
                       </label>
-                      <input type="text" className="form-control shadow-none" id="address" name="address" value={formData.address} onChange={handleInputChange} placeholder="Enter address" required/>
+                      <input  type="text"  className="form-control shadow-none"  id="address"  name="address"  value={formData.address}  onChange={handleInputChange}  placeholder="Enter address"  autoComplete="street-address" required/>
                     </div>
 
                     {!editingUser && (
@@ -427,7 +427,7 @@ const Users = () => {
                           <label htmlFor="password" className="form-label fw-medium">
                             Password <span className="text-danger">*</span>
                           </label>
-                          <input type="password" className={`form-control shadow-none ${passwordError && formData.password ? 'is-invalid' : ''}`} id="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="Minimum 6 characters" required/>
+                          <input type="password" className={`form-control shadow-none ${passwordError && formData.password ? 'is-invalid' : ''}`} id="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="Minimum 6 characters" autoComplete="new-password"required/>
                           {formData.password && formData.password.length < 6 && (
                             <small className="text-danger">
                               <i className="fas fa-exclamation-circle me-1"></i>
@@ -440,7 +440,7 @@ const Users = () => {
                           <label htmlFor="confirm_password" className="form-label fw-medium">
                             Confirm Password <span className="text-danger">*</span>
                           </label>
-                          <input type="password" className={`form-control shadow-none ${passwordError && formData.confirm_password ? 'is-invalid' : ''}`} id="confirm_password" name="confirm_password" value={formData.confirm_password} onChange={handleInputChange} placeholder="Re-enter password" required/>
+                          <input type="password" className={`form-control shadow-none ${passwordError && formData.confirm_password ? 'is-invalid' : ''}`} id="confirm_password" name="confirm_password" value={formData.confirm_password} onChange={handleInputChange} placeholder="Re-enter password" autoComplete="new-password"required/>
                           {formData.password && formData.confirm_password && formData.password !== formData.confirm_password && (
                             <small className="text-danger">
                               <i className="fas fa-exclamation-circle me-1"></i>
@@ -451,16 +451,18 @@ const Users = () => {
                       </>
                     )}
                   </div>
-                </div>
+                </form>
+              </div>
 
-                <div className="modal-footer bg-light">
-                  <button type="button" className="btn btn-secondary shadow-none" onClick={handleCloseModal}>
+              <div className="modal-footer bg-light">
+                <button type="button" className="btn btn-secondary shadow-none" onClick={handleCloseModal}>
                   Cancel
-                  </button>
-                  <button type="button" className="btn btn-primary shadow-none" onClick={handleSubmit}>
-                    {editingUser ? 'Update User' : 'Add User'}
-                  </button>
-                </div>
+                </button>
+                <button type="submit" className="btn btn-primary shadow-none"form="userForm">
+                  {editingUser ? 'Update User' : 'Add User'}
+                </button>
+              </div>
+
               </div>
             </div>
           </div>

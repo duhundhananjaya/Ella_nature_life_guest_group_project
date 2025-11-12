@@ -11,7 +11,8 @@ import roomsRoutes from './routes/room.js';
 import clientRoomsRoutes from './routes/clientRoom.js';
 import roomInstancesRoutes from './routes/roomInstance.js';
 import clientAuthRoutes from './routes/clientAuthRoutes.js';
-
+import siteSettingsRoutes from './routes/siteSettings.js';
+import clientSiteSettingsRoutes from './routes/clientSiteSettings.js';
 
 const app = express();
 app.use(cors());
@@ -29,6 +30,8 @@ app.use('/api/facility', facilityRoutes);
 app.use('/api/rooms', roomsRoutes);
 app.use('/api/room-instances', roomInstancesRoutes);
 app.use('/api/client-rooms', clientRoomsRoutes);
+app.use('/api/site-settings', siteSettingsRoutes);
+app.use('/api/client-site-settings', clientSiteSettingsRoutes);
 
 app.use('/api/client/auth', clientAuthRoutes);
 
