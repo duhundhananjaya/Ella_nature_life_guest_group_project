@@ -8,7 +8,6 @@ const getRoomInstances = async (req, res) => {
       cleaning_status, 
       occupancy_status, 
       room_type, 
-      floor 
     } = req.query;
 
     const filter = { is_active: true };
@@ -16,7 +15,6 @@ const getRoomInstances = async (req, res) => {
     if (cleaning_status) filter.cleaning_status = cleaning_status;
     if (occupancy_status) filter.occupancy_status = occupancy_status;
     if (room_type) filter.room_type = room_type;
-    if (floor) filter.floor = parseInt(floor);
 
     const instances = await RoomInstance.find(filter)
       .populate("room_type", "room_name area price adult children")
@@ -164,6 +162,14 @@ const updateMaintenanceStatus = async (req, res) => {
     
     if (maintenance_status === "under-maintenance") {
       instance.occupancy_status = "blocked";
+    }
+
+    if (maintenance_status === "good") {
+      instance.occupancy_status = "available";
+    }
+
+    if (maintenance_status === "needs-repair") {
+      instance.occupancy_status = "available";
     }
     
     if (notes) {
