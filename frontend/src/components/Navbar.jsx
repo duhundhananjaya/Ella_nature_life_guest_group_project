@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router';
 
 const Navbar = () => {
   useEffect(() => {
@@ -20,6 +21,17 @@ const Navbar = () => {
       return () => sidebarToggle.removeEventListener("click", handleClick);
     }
   }, []);
+
+  const getProfilePath = () => {
+    const user = JSON.parse(localStorage.getItem("pos-user"));
+    const rolePathMap = {
+      admin: "/admin-dashboard/profile",
+      clerk: "/clerk-dashboard/profile",
+      receptionist: "/receptionist-dashboard/profile",
+      attendant: "/attendant-dashboard/profile"
+    };
+    return rolePathMap[user?.role] || "/profile";
+  };
 
   
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -71,8 +83,8 @@ const Navbar = () => {
               <i className="fas fa-user fa-fw"></i>
             </a>
             <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li><a className="dropdown-item" href="#!">Profile</a></li>
-              <li><a className="dropdown-item" href="#!">Settings</a></li>
+              <li><Link className="dropdown-item" to={getProfilePath()}>Profile</Link></li>
+              <li><Link className="dropdown-item" to={getProfilePath()}>Settings</Link></li>
               <li><hr className="dropdown-divider" /></li>
               <li><button className="dropdown-item" onClick={openLogoutModal}>Logout</button></li>
             </ul>
