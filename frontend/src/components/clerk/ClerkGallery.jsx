@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const ClerkGallery = () => {
   const [images, setImages] = useState([]);
@@ -10,7 +9,7 @@ const ClerkGallery = () => {
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
 
-  // Fetch gallery
+  // 🖼️ Fetch gallery
   const fetchGallery = async () => {
     setLoading(true);
     try {
@@ -33,20 +32,21 @@ const ClerkGallery = () => {
     fetchGallery();
   }, []);
 
-  // File selection
+  // 📁 File selection
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
     setFile(selected);
     if (selected) setPreview(URL.createObjectURL(selected));
   };
 
-  // Upload image
+  // ⬆️ Upload image
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!file) {
       setError("Please select an image to upload");
       return;
     }
+
     const formData = new FormData();
     formData.append("image", file);
 
@@ -72,7 +72,7 @@ const ClerkGallery = () => {
     }
   };
 
-  // Delete image
+  // ❌ Delete image
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this image?")) return;
     try {
@@ -91,29 +91,13 @@ const ClerkGallery = () => {
     }
   };
 
-  // Handle drag end (reorder)
-  const handleDragEnd = async (result) => {
-    if (!result.destination) return;
-
-    const reordered = Array.from(images);
-    const [removed] = reordered.splice(result.source.index, 1);
-    reordered.splice(result.destination.index, 0, removed);
-    setImages(reordered);
-
-    // Optional: send new order to backend
-    try {
-      await axios.put(
-        "http://localhost:3000/api/gallery/reorder",
-        { images: reordered.map((img) => img._id) },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("pos-token")}`,
-          },
-        }
-      );
-    } catch (err) {
-      console.error("Error updating order:", err);
-    }
+  // 🧩 Optional: Manual reorder without drag
+  const moveImage = (fromIndex, toIndex) => {
+    if (toIndex < 0 || toIndex >= images.length) return;
+    const updated = [...images];
+    const [moved] = updated.splice(fromIndex, 1);
+    updated.splice(toIndex, 0, moved);
+    setImages(updated);
   };
 
   return (
@@ -129,10 +113,18 @@ const ClerkGallery = () => {
         <div className="card shadow-sm mb-4">
           <div className="card-header">Upload New Image</div>
           <div className="card-body">
-            <form onSubmit={handleUpload} className="d-flex gap-3">
+            <form onSubmit={handleUpload} className="d-flex gap-3 align-items-center flex-wrap">
               <input type="file" accept="image/*" onChange={handleFileChange} />
-              {preview && <img src={preview} alt="preview" width={100} height={100} />}
-              <button type="submit" disabled={loading}>
+              {preview && (
+                <img
+                  src={preview}
+                  alt="preview"
+                  width={100}
+                  height={100}
+                  className="rounded border"
+                />
+              )}
+              <button type="submit" className="btn btn-primary" disabled={loading}>
                 {loading ? "Uploading..." : "Upload"}
               </button>
             </form>
@@ -148,47 +140,40 @@ const ClerkGallery = () => {
             ) : images.length === 0 ? (
               <p>No images found</p>
             ) : (
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="gallery" direction="horizontal">
-                  {(provided) => (
-                    <div
-                      className="d-flex flex-wrap gap-3"
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                    >
-                      {images.map((img, index) => (
-                        <Draggable key={img._id} draggableId={img._id} index={index}>
-                          {(provided) => (
-                            <div
-                              className="card"
-                              style={{ width: "180px" }}
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <img
-                                src={`http://localhost:3000/${img.imagePath}`}
-                                alt="Gallery"
-                                className="card-img-top"
-                                style={{ height: "180px", objectFit: "cover" }}
-                              />
-                              <div className="card-footer text-center bg-white">
-                                <button
-                                  className="btn btn-sm btn-danger"
-                                  onClick={() => handleDelete(img._id)}
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
+              <div className="d-flex flex-wrap gap-3">
+                {images.map((img, index) => (
+                  <div className="card text-center" style={{ width: "180px" }} key={img._id}>
+                    <img
+                      src={`http://localhost:3000/${img.imagePath}`}
+                      alt="Gallery"
+                      className="card-img-top"
+                      style={{ height: "180px", objectFit: "cover" }}
+                    />
+                    <div className="card-footer bg-white">
+                      <div className="btn-group d-flex justify-content-center">
+                        <button
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => moveImage(index, index - 1)}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => moveImage(index, index + 1)}
+                        >
+                          ↓
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() => handleDelete(img._id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>
