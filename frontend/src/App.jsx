@@ -17,6 +17,7 @@ import RoomCleanings from './components/RoomCleanings'
 import ClerkRooms from './components/clerk/ClearkRooms'
 import SiteSettings from './components/SiteSettings'
 import Unauthorize from './pages/Unauthorize'
+import Profile from './components/Profile'
 import ClerkGallery from './components/clerk/ClerkGallery'
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
           <Route path="rooms" element={<Rooms />} />
           <Route path="cleaning-details" element={<RoomCleanings />} />
           <Route path="site-settings" element={<SiteSettings />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
         <Route path="/clerk-dashboard" element={<ProtectedRoutes requireRole={["clerk"]}>
@@ -42,13 +44,16 @@ function App() {
           </ProtectedRoutes>}>
           <Route index element={<ClerkHome />} />
            <Route path="rooms" element={<ClerkRooms />} />
+           <Route path="profile" element={<Profile />} />
            <Route path="gallery" element={<ClerkGallery />} />
+
         </Route>
 
         <Route path="/receptionist-dashboard" element={<ProtectedRoutes requireRole={["receptionist"]}>
             <Dashboard />
           </ProtectedRoutes>}>
           <Route index element={<ReceptionistHome />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
         <Route path="/attendant-dashboard" element={<ProtectedRoutes requireRole={["attendant"]}>
@@ -56,6 +61,7 @@ function App() {
           </ProtectedRoutes>}>
           <Route index element={<AttendantHome />} />
           <Route path="rooms" element={<AttendantRoom />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
