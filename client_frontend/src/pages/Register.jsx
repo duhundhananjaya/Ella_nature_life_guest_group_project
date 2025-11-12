@@ -1,386 +1,225 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import authService from '../services/authService';
-import backgroundImage from '../assets/registerpagebackground.jpg'; // Adjust extension if needed (.png, .jpeg, etc.)
+import React, { useState } from "react";
+import bgImage from "../assets/registerpagebackground.jpg";
 
 const Register = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-    country: ''
+    fullName: "",
+    email: "",
+    phone: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+    country: "",
+    agree: false,
   });
 
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-
-  const countries = [
-    'Afghanistan', 'Albania', 'Algeria', 'Argentina', 'Australia', 'Austria',
-    'Bangladesh', 'Belgium', 'Brazil', 'Canada', 'China', 'Colombia',
-    'Denmark', 'Egypt', 'Finland', 'France', 'Germany', 'Greece',
-    'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Italy', 'Japan',
-    'Kenya', 'Malaysia', 'Mexico', 'Netherlands', 'New Zealand', 'Nigeria',
-    'Norway', 'Pakistan', 'Philippines', 'Poland', 'Portugal', 'Russia',
-    'Saudi Arabia', 'Singapore', 'South Africa', 'South Korea', 'Spain',
-    'Sri Lanka', 'Sweden', 'Switzerland', 'Thailand', 'Turkey',
-    'United Arab Emirates', 'United Kingdom', 'United States', 'Vietnam'
-  ];
-
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Clear error for this field
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Full Name validation
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
-    } else if (formData.fullName.trim().length < 2) {
-      newErrors.fullName = 'Full name must be at least 2 characters';
-    }
-
-    // Email validation
-    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
-
-    // Phone validation
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    }
-
-    // Username validation
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
-    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-      newErrors.username = 'Username can only contain letters, numbers, and underscores';
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    // Confirm Password validation
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    // Country validation
-    if (!formData.country) {
-      newErrors.country = 'Please select a country';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setServerError('');
+    console.log(formData);
+    alert("Registration Successful!");
+  };
+  const labelStyle = {
+    fontSize: "15px",
+    fontWeight: "600",
+    color: "#222",
+    marginBottom: "4px",
+    display: "block",
+  };
 
-    if (!validateForm()) {
-      return;
-    }
+  const backgroundStyle = {
+    backgroundImage: `url(${bgImage})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    height: "100vh",
+    width: "100%",
+    position: "fixed",
+    top: 0,
+    left: 0,
+    filter: "blur(8px)",
+    zIndex: 1,
+  };
 
-    setLoading(true);
-
-    try {
-      const response = await authService.register(formData);
-      
-      if (response.data.success) {
-        // Show success message
-        alert('Registration successful! Please check your email to verify your account.');
-        navigate('/login');
-      }
-    } catch (error) {
-      const message = error.response?.data?.message || 'Registration failed. Please try again.';
-      setServerError(message);
-    } finally {
-      setLoading(false);
-    }
+  const overlayStyle = {
+    position: "relative",
+    zIndex: 2,
   };
 
   return (
-    <div 
-      className="min-vh-100 d-flex align-items-center py-5" 
-      style={{
-        position: 'relative',
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      {/* Blur Overlay */}
-      <div 
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backdropFilter: 'blur(5px)',
-          backgroundColor: 'rgba(255, 255, 255, 0.2)',
-          zIndex: 1
-        }}
-      ></div>
+    <div style={{ position: "relative", height: "100vh" }}>
+      {/* Background image with blur */}
+      <div style={backgroundStyle}></div>
 
-      <div className="container" style={{ position: 'relative', zIndex: 2 }}>
-        <div className="row justify-content-center">
-          <div className="col-lg-8 col-md-10">
-            <div className="card shadow-lg border-0 rounded-lg">
-              <div className="card-header bg-primary text-white text-center py-4">
-                <h3 className="mb-0">
-                  <i className="bi bi-person-plus-fill me-2"></i>
-                  Create Your Account
-                </h3>
-                <p className="mb-0 mt-2 text-white-50">Join our hotel booking platform</p>
+      {/* Overlay content */}
+      <div
+        className="d-flex align-items-center justify-content-center min-vh-100"
+        style={overlayStyle}
+      >
+        <div
+          className="card shadow border-0 rounded-3 w-100 mx-3"
+          style={{
+            maxWidth: "400px",
+            backgroundColor: "rgba(255, 255, 255, 0.85)",
+            backdropFilter: "blur(10px)",
+          }}
+        >
+          <div className="card-body p-3 p-md-4">
+            <h4 className="text-center mb-3 fw-semibold text-primary">
+              Create Account
+            </h4>
+
+            <form onSubmit={handleSubmit}>
+              {/* Full Name */}
+              <div className="mb-2">
+                <label className="form-label small" style={labelStyle}>Full Name</label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  required
+                />
               </div>
-              
-              <div className="card-body p-4 p-md-5">
-                {serverError && (
-                  <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                    {serverError}
-                    <button type="button" className="btn-close" onClick={() => setServerError('')}></button>
-                  </div>
-                )}
 
-                <form onSubmit={handleSubmit}>
-                  <div className="row">
-                    {/* Full Name */}
-                    <div className="col-md-6 mb-3">
-                      <label className="form-label fw-bold">
-                        Full Name <span className="text-danger">*</span>
-                      </label>
-                      <div className="input-group">
-                        <span className="input-group-text">
-                          <i className="bi bi-person"></i>
-                        </span>
-                        <input
-                          type="text"
-                          name="fullName"
-                          className={`form-control ${errors.fullName ? 'is-invalid' : ''}`}
-                          placeholder="John Doe"
-                          value={formData.fullName}
-                          onChange={handleChange}
-                        />
-                        {errors.fullName && (
-                          <div className="invalid-feedback">{errors.fullName}</div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Email */}
-                    <div className="col-md-6 mb-3">
-                      <label className="form-label fw-bold">
-                        Email Address <span className="text-danger">*</span>
-                      </label>
-                      <div className="input-group">
-                        <span className="input-group-text">
-                          <i className="bi bi-envelope"></i>
-                        </span>
-                        <input
-                          type="email"
-                          name="email"
-                          className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                          placeholder="john@example.com"
-                          value={formData.email}
-                          onChange={handleChange}
-                        />
-                        {errors.email && (
-                          <div className="invalid-feedback">{errors.email}</div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Phone */}
-                    <div className="col-md-6 mb-3">
-                      <label className="form-label fw-bold">
-                        Phone Number <span className="text-danger">*</span>
-                      </label>
-                      <div className="input-group">
-                        <span className="input-group-text">
-                          <i className="bi bi-telephone"></i>
-                        </span>
-                        <input
-                          type="tel"
-                          name="phone"
-                          className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
-                          placeholder="+94771234567"
-                          value={formData.phone}
-                          onChange={handleChange}
-                        />
-                        {errors.phone && (
-                          <div className="invalid-feedback">{errors.phone}</div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Username */}
-                    <div className="col-md-6 mb-3">
-                      <label className="form-label fw-bold">
-                        Username <span className="text-danger">*</span>
-                      </label>
-                      <div className="input-group">
-                        <span className="input-group-text">
-                          <i className="bi bi-at"></i>
-                        </span>
-                        <input
-                          type="text"
-                          name="username"
-                          className={`form-control ${errors.username ? 'is-invalid' : ''}`}
-                          placeholder="johndoe"
-                          value={formData.username}
-                          onChange={handleChange}
-                        />
-                        {errors.username && (
-                          <div className="invalid-feedback">{errors.username}</div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Password */}
-                    <div className="col-md-6 mb-3">
-                      <label className="form-label fw-bold">
-                        Password <span className="text-danger">*</span>
-                      </label>
-                      <div className="input-group">
-                        <span className="input-group-text">
-                          <i className="bi bi-lock"></i>
-                        </span>
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          name="password"
-                          className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-                          placeholder="Min. 6 characters"
-                          value={formData.password}
-                          onChange={handleChange}
-                        />
-                        <button
-                          className="btn btn-outline-secondary"
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          <i className={`bi bi-eye${showPassword ? '-slash' : ''}`}></i>
-                        </button>
-                        {errors.password && (
-                          <div className="invalid-feedback">{errors.password}</div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Confirm Password */}
-                    <div className="col-md-6 mb-3">
-                      <label className="form-label fw-bold">
-                        Confirm Password <span className="text-danger">*</span>
-                      </label>
-                      <div className="input-group">
-                        <span className="input-group-text">
-                          <i className="bi bi-lock-fill"></i>
-                        </span>
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          name="confirmPassword"
-                          className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
-                          placeholder="Re-enter password"
-                          value={formData.confirmPassword}
-                          onChange={handleChange}
-                        />
-                        {errors.confirmPassword && (
-                          <div className="invalid-feedback">{errors.confirmPassword}</div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Country */}
-                    <div className="col-12 mb-3">
-                      <label className="form-label fw-bold">
-                        Country <span className="text-danger">*</span>
-                      </label>
-                      <div className="input-group">
-                        <span className="input-group-text">
-                          <i className="bi bi-globe"></i>
-                        </span>
-                        <select
-                          name="country"
-                          className={`form-select ${errors.country ? 'is-invalid' : ''}`}
-                          value={formData.country}
-                          onChange={handleChange}
-                        >
-                          <option value="">Select your country</option>
-                          {countries.map(country => (
-                            <option key={country} value={country}>{country}</option>
-                          ))}
-                        </select>
-                        {errors.country && (
-                          <div className="invalid-feedback">{errors.country}</div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Submit Button */}
-                  <div className="d-grid gap-2 mt-4">
-                    <button
-                      type="submit"
-                      className="btn btn-primary btn-lg"
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2"></span>
-                          Creating Account...
-                        </>
-                      ) : (
-                        <>
-                          <i className="bi bi-person-check me-2"></i>
-                          Create Account
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Login Link */}
-                  <div className="text-center mt-4">
-                    <p className="mb-0 text-muted">
-                      Already have an account?{' '}
-                      <Link to="/login" className="text-primary fw-bold text-decoration-none">
-                        Login here
-                      </Link>
-                    </p>
-                  </div>
-                </form>
+              {/* Email */}
+              <div className="mb-2">
+                <label className="form-label small" style={labelStyle}>Email Address</label>
+                <input
+                  type="email"
+                  className="form-control form-control-sm"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
               </div>
-            </div>
+
+              {/* Phone */}
+              <div className="mb-2">
+                <label className="form-label small" style={labelStyle}>Phone Number</label>
+                <input
+                  type="tel"
+                  className="form-control form-control-sm"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              {/* Username */}
+              <div className="mb-2">
+                <label className="form-label small" style={labelStyle}>Username</label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              {/* Password */}
+              <div className="mb-2">
+                <label className="form-label small" style={labelStyle}>Password</label>
+                <input
+                  type="password"
+                  className="form-control form-control-sm"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              {/* Confirm Password */}
+              <div className="mb-2">
+                <label className="form-label small" style={labelStyle}>Confirm Password</label>
+                <input
+                  type="password"
+                  className="form-control form-control-sm"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              {/* Country */}
+              <div style={{ marginBottom: "10px" }}>
+                <label
+                  style={labelStyle}
+                >
+                  Country
+                </label>
+                <select
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "8px",
+                    borderRadius: "4px",
+                    border: "1px solid #007bff",
+                    fontSize: "14px",
+                    outline: "none",
+                    backgroundColor: "#b5c3d1ff",
+                    boxSizing: "border-box",
+                  }}
+                  onFocus={(e) =>
+                    (e.target.style.border = "1px solid #007bff")
+                  }
+                  onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
+                >
+                  <option value="">Select Country</option>
+                  <option value="Sri Lanka">Sri Lanka</option>
+                  <option value="India">India</option>
+                  <option value="USA">USA</option>
+                  <option value="UK">UK</option>
+                </select>
+              </div>
+
+              {/* Terms */}
+              <div className="form-check mb-2">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  name="agree"
+                  checked={formData.agree}
+                  onChange={handleChange}
+                  required
+                />
+                <label className="form-check-label small">
+                  I agree to the Terms & Conditions
+                </label>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="btn btn-primary w-100 py-1 fw-semibold mt-2"
+              >
+                Register
+              </button>
+            </form>
+
+            <p className="text-center mt-3 mb-0 small">
+              Already have an account?{" "}
+              <a href="/login" className="text-decoration-none text-primary">
+                Login
+              </a>
+            </p>
           </div>
         </div>
       </div>
