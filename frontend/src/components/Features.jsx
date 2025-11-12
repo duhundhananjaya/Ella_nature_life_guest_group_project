@@ -237,41 +237,45 @@ const Features = () => {
         </div>
 
       {showModal && (
-        <>
-          <div className="modal fade show" tabIndex="-1" style={{ display: 'block' }} onClick={(e) => {
-              if (e.target === e.currentTarget) handleCloseModal()
-            }}
-          >
-            <div className="modal-dialog modal-dialog-centered modal-lg">
-                <div className="modal-content">
-                    <div className="modal-header bg-primary text-white">
-                        <h5 className="modal-title fw-semibold">
-                            Add Feature
-                        </h5>
-                        <button type="button" className="btn-close btn-close-white shadow-none" onClick={handleCloseModal} aria-label="Close"></button>
-                    </div>
-                    <div className="modal-body p-4">
-                        <div className="row g-3">
-                            <label htmlFor="name" className="form-label fw-medium">
-                                Feature Name <span className="text-danger">*</span>
-                            </label>
-                            <input type="text" className="form-control shadow-none" id="name" name="feature_name" value={formData.feature_name} onChange={handleInputChange} placeholder="Enter feature name" required/>                
-                        </div>
-                    </div>
-                    <div className="modal-footer bg-light">
-                        <button type="button" className="btn btn-secondary shadow-none" onClick={handleCloseModal}>
-                            Cancel
-                        </button>
-                        <button type="button" className="btn btn-primary shadow-none" onClick={handleSubmit}>
-                            Add Feature
-                        </button>
-                    </div>                      
-                </div>
+      <>
+        <div className="modal fade show" tabIndex="-1" style={{ display: 'block' }} onClick={(e) => {
+            if (e.target === e.currentTarget) handleCloseModal()
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered modal-lg">
+            <div className="modal-content">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title fw-semibold">
+                  Add Feature
+                </h5>
+                <button type="button" className="btn-close btn-close-white shadow-none" onClick={handleCloseModal} aria-label="Close"></button>
+              </div>
+              
+              <div className="modal-body p-4">
+                <form onSubmit={handleSubmit} id="featureForm">
+                  <div className="row g-3">
+                    <label htmlFor="feature_name" className="form-label fw-medium">
+                      Feature Name <span className="text-danger">*</span>
+                    </label>
+                    <input type="text" className="form-control shadow-none" id="feature_name" name="feature_name" value={formData.feature_name} onChange={handleInputChange} placeholder="Enter feature name" autoComplete="off"required/>                
+                  </div>
+                </form>
+              </div>
+              
+              <div className="modal-footer bg-light">
+                <button type="button" className="btn btn-secondary shadow-none" onClick={handleCloseModal}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary shadow-none" form="featureForm">
+                  Add Feature
+                </button>
+              </div>                      
             </div>
-           </div>
-          <div className="modal-backdrop fade show"></div>
-        </>
-      )}
+          </div>
+        </div>
+        <div className="modal-backdrop fade show"></div>
+      </>
+    )}
 
       {deleteFeature && (
         <>
