@@ -1,33 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router';
-import authService from '../services/authService';
+import React, { useEffect } from 'react'
+import { Link, useLocation } from 'react-router';
 
 const Navbar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
-  const [showDropdown, setShowDropdown] = useState(false);
-  
-  // Check authentication status
-  useEffect(() => {
-    const checkAuth = () => {
-      const authenticated = authService.isAuthenticated();
-      const userData = authService.getCurrentUser();
-      setIsAuthenticated(authenticated);
-      setUser(userData);
-    };
-    
-    checkAuth();
-    // Re-check on location change
-  }, [location]);
-
-  const handleLogout = () => {
-    authService.logout();
-    setIsAuthenticated(false);
-    setUser(null);
-    navigate('/');
-  };
   
   const isActive = (path) => {
     return location.pathname === path ? 'active' : '';
@@ -113,108 +88,38 @@ const Navbar = () => {
           <i className="icon_close"></i>
         </div>
         
-        {/* Mobile Auth Buttons - Conditional Rendering */}
+        {/* Mobile Auth Buttons */}
         <div className="header-configure-area">
-          {!isAuthenticated ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '15px' }}>
-              <Link 
-                to="/register" 
-                className="bk-btn"
-                style={{
-                  backgroundColor: '#0aa149ff',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '6px',
-                  textAlign: 'center',
-                  textDecoration: 'none',
-                  display: 'block'
-                }}>
-                Register
-              </Link>
-              <Link 
-                to="/login" 
-                className="bk-btn"
-                style={{
-                  backgroundColor: '#0aa149ff',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '6px',
-                  textAlign: 'center',
-                  textDecoration: 'none',
-                  display: 'block'
-                }}>
-                Login
-              </Link>
-            </div>
-          ) : (
-            <div style={{ marginBottom: '15px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  backgroundColor: '#0aa149ff',
-                  color: 'white',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 'bold',
-                  fontSize: '18px',
-                  marginRight: '10px'
-                }}>
-                  {user?.fullName?.charAt(0).toUpperCase() || 'U'}
-                </div>
-                <div>
-                  <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{user?.fullName}</div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>{user?.email}</div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <Link 
-                  to="/profile"
-                  style={{
-                    padding: '8px 12px',
-                    backgroundColor: 'white',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    textDecoration: 'none',
-                    color: '#333',
-                    fontSize: '14px'
-                  }}>
-                  <i className="fa fa-user" style={{ marginRight: '8px' }}></i>
-                  My Profile
-                </Link>
-                <Link 
-                  to="/bookings"
-                  style={{
-                    padding: '8px 12px',
-                    backgroundColor: 'white',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    textDecoration: 'none',
-                    color: '#333',
-                    fontSize: '14px'
-                  }}>
-                  <i className="fa fa-calendar" style={{ marginRight: '8px' }}></i>
-                  My Bookings
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  style={{
-                    padding: '8px 12px',
-                    backgroundColor: '#dc3545',
-                    border: 'none',
-                    borderRadius: '4px',
-                    color: 'white',
-                    fontSize: '14px',
-                    cursor: 'pointer'
-                  }}>
-                  <i className="fa fa-sign-out" style={{ marginRight: '8px' }}></i>
-                  Logout
-                </button>
-              </div>
-            </div>
-          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '15px' }}>
+            <Link 
+              to="/register" 
+              className="bk-btn"
+              style={{
+                backgroundColor: '#0aa149ff',
+                color: 'white',
+                padding: '10px 20px',
+                borderRadius: '6px',
+                textAlign: 'center',
+                textDecoration: 'none',
+                display: 'block'
+              }}>
+              Register
+            </Link>
+            <Link 
+              to="/signup" 
+              className="bk-btn"
+              style={{
+                backgroundColor: '#0aa149ff',
+                color: 'white',
+                padding: '10px 20px',
+                borderRadius: '6px',
+                textAlign: 'center',
+                textDecoration: 'none',
+                display: 'block'
+              }}>
+              Sign Up
+            </Link>
+          </div>
         </div>
 
         {/* This will be cloned by slicknav */}
@@ -295,194 +200,30 @@ const Navbar = () => {
                       </li>
                     </ul>
                   </nav>
-                  
-                  {/* Desktop Auth Buttons - Conditional Rendering */}
                   <div className="nav-right flex">
-                    {!isAuthenticated ? (
-                      <>
-                        <Link 
-                          to="/register" 
-                          className="px-3 py-2 rounded-md font-medium border mr-3" 
-                          style={{
-                            backgroundColor: '#0aa149ff',
-                            color: 'white',                        
-                            transition: 'background-color 0.3s ease'
-                          }}
-                          onMouseEnter={(e) => (e.target.style.backgroundColor = '#12861aff')} 
-                          onMouseLeave={(e) => (e.target.style.backgroundColor = '#0aa149ff')}>
-                          Register
-                        </Link>
+                    <Link 
+                      to="/register" 
+                      className="px-3 py-2 rounded-md font-medium border mr-3" 
+                      style={{
+                        backgroundColor: '#0aa149ff',
+                        color: 'white',                        
+                        transition: 'background-color 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => (e.target.style.backgroundColor = '#12861aff')} 
+                      onMouseLeave={(e) => (e.target.style.backgroundColor = '#0aa149ff')}>
+                      Register
+                    </Link>
 
-                        <Link 
-                          to="/login" 
-                          className="px-3 py-2 rounded-md font-medium border"
-                          style={{
-                            backgroundColor: '#0aa149ff',
-                            color: 'white',
-                            border: '2px solid black',
-                          }}
-                          onMouseEnter={(e) => (e.target.style.backgroundColor = '#12861aff')} 
-                          onMouseLeave={(e) => (e.target.style.backgroundColor = '#0fb155ff')}>
-                          Login
-                        </Link>
-                      </>
-                    ) : (
-                      <div style={{ position: 'relative' }}>
-                        <button
-                          onClick={() => setShowDropdown(!showDropdown)}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            padding: '8px 15px',
-                            backgroundColor: '#0aa149ff',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            transition: 'background-color 0.3s ease'
-                          }}
-                          onMouseEnter={(e) => (e.target.style.backgroundColor = '#12861aff')}
-                          onMouseLeave={(e) => (e.target.style.backgroundColor = '#0aa149ff')}>
-                          <div style={{
-                            width: '32px',
-                            height: '32px',
-                            borderRadius: '50%',
-                            backgroundColor: 'white',
-                            color: '#0aa149ff',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '16px'
-                          }}>
-                            {user?.fullName?.charAt(0).toUpperCase() || 'U'}
-                          </div>
-                          <span>{user?.fullName || 'User'}</span>
-                          <i className={`fa fa-chevron-${showDropdown ? 'up' : 'down'}`} style={{ fontSize: '12px' }}></i>
-                        </button>
-
-                        {/* Dropdown Menu */}
-                        {showDropdown && (
-                          <div
-                            style={{
-                              position: 'absolute',
-                              top: '100%',
-                              right: '0',
-                              marginTop: '8px',
-                              backgroundColor: 'white',
-                              borderRadius: '8px',
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                              minWidth: '220px',
-                              zIndex: 1000,
-                              overflow: 'hidden'
-                            }}
-                            onMouseLeave={() => setShowDropdown(false)}>
-                            {/* User Info */}
-                            <div style={{
-                              padding: '15px',
-                              borderBottom: '1px solid #eee',
-                              backgroundColor: '#f8f9fa'
-                            }}>
-                              <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>
-                                {user?.fullName}
-                              </div>
-                              <div style={{ fontSize: '12px', color: '#666' }}>
-                                {user?.email}
-                              </div>
-                            </div>
-
-                            {/* Menu Items */}
-                            <Link
-                              to="/profile"
-                              onClick={() => setShowDropdown(false)}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '12px 15px',
-                                color: '#333',
-                                textDecoration: 'none',
-                                fontSize: '14px',
-                                borderBottom: '1px solid #eee',
-                                transition: 'background-color 0.2s'
-                              }}
-                              onMouseEnter={(e) => (e.target.style.backgroundColor = '#f8f9fa')}
-                              onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}>
-                              <i className="fa fa-user" style={{ width: '16px' }}></i>
-                              <span>My Profile</span>
-                            </Link>
-
-                            <Link
-                              to="/bookings"
-                              onClick={() => setShowDropdown(false)}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '12px 15px',
-                                color: '#333',
-                                textDecoration: 'none',
-                                fontSize: '14px',
-                                borderBottom: '1px solid #eee',
-                                transition: 'background-color 0.2s'
-                              }}
-                              onMouseEnter={(e) => (e.target.style.backgroundColor = '#f8f9fa')}
-                              onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}>
-                              <i className="fa fa-calendar" style={{ width: '16px' }}></i>
-                              <span>My Bookings</span>
-                            </Link>
-
-                            <Link
-                              to="/favorites"
-                              onClick={() => setShowDropdown(false)}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '12px 15px',
-                                color: '#333',
-                                textDecoration: 'none',
-                                fontSize: '14px',
-                                borderBottom: '1px solid #eee',
-                                transition: 'background-color 0.2s'
-                              }}
-                              onMouseEnter={(e) => (e.target.style.backgroundColor = '#f8f9fa')}
-                              onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}>
-                              <i className="fa fa-heart" style={{ width: '16px' }}></i>
-                              <span>Favorites</span>
-                            </Link>
-
-                            <button
-                              onClick={() => {
-                                setShowDropdown(false);
-                                handleLogout();
-                              }}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '12px 15px',
-                                width: '100%',
-                                border: 'none',
-                                backgroundColor: 'transparent',
-                                color: '#dc3545',
-                                fontSize: '14px',
-                                cursor: 'pointer',
-                                textAlign: 'left',
-                                transition: 'background-color 0.2s'
-                              }}
-                              onMouseEnter={(e) => (e.target.style.backgroundColor = '#fff5f5')}
-                              onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}>
-                              <i className="fa fa-sign-out" style={{ width: '16px' }}></i>
-                              <span>Logout</span>
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                  <Link to="/login" className="px-3 py-2 rounded-md font-medium border"
+                        style={{
+                          backgroundColor: '#0aa149ff',
+                          color: 'white',
+                          border: '2px solid black',
+                        }}
+                    onMouseEnter={(e) => (e.target.style.backgroundColor = '#12861aff')} 
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = '#0fb155ff')}>
+                         Login
+                    </Link>
                   </div>
                 </div>
               </div>

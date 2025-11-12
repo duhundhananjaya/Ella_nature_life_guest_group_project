@@ -1,6 +1,40 @@
 import React from "react";
+import axios from "axios";
+import { useEffect } from "react";
+import { useState } from "react";
 
 const ContactSection = () => {
+    const [loading, setLoading] = useState(false);
+    const [siteSettings, setSiteSettings] = useState([]);
+
+    const fetchSiteSettings = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get("http://localhost:3000/api/client-site-settings");
+            setSiteSettings(response.data.settings);
+        } catch (error) {
+            console.error("Error fetching site settings", error);
+        }finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchSiteSettings();
+    }, []);
+
+    if (loading) return (
+    <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
+      <div className="spinner-border" role="status" style={{ 
+        width: '3rem', 
+        height: '3rem', 
+        borderColor: '#dfa974',
+        borderRightColor: 'transparent',
+        borderWidth: '4px'
+      }}>
+      </div>
+    </div>
+  )
 
     return (
         <div style={{ paddingTop: "60px" }}>
@@ -19,19 +53,19 @@ const ContactSection = () => {
                     <tbody>
                     <tr>
                         <td className="c-o">Address:</td>
-                        <td>Kitelella Road Ella, 90090 Ella, Sri Lanka.</td>
+                        <td>{siteSettings.address}</td>
                     </tr>
                     <tr>
                         <td className="c-o">Phone:</td>
-                        <td>+94 774749061</td>
+                        <td>{siteSettings.phone_number}</td>
                     </tr>
                     <tr>
                         <td className="c-o">Email:</td>
-                        <td>saliyadineshka@gmail.com</td>
+                        <td>{siteSettings.email}</td>
                     </tr>
                     <tr>
                         <td className="c-o">Fax:</td>
-                        <td>+94 753728582</td>
+                        <td>{siteSettings.fax_number}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -63,7 +97,7 @@ const ContactSection = () => {
             <div className="map mt-5">
             <iframe
                 title="Google Map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3956.6962139240187!2d81.037793!3d6.858109!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae4653b2d49906b%3A0xfc6addf36bc29df!2sElla%20Nature%20Life%20Guest%20and%20Restaurant!5e0!3m2!1sen!2slk!4v1731060000000!5m2!1sen!2slk"
+                src={siteSettings.google_map_url}
                 height="470"
                 style={{ border: 0, width: "100%" }}
                 allowFullScreen

@@ -1,6 +1,40 @@
 import React from 'react'
+import axios from "axios";
+import { useEffect } from "react";
+import { useState } from "react";
 
 const Footer = () => {
+    const [loading, setLoading] = useState(false);
+    const [siteSettings, setSiteSettings] = useState([]);
+
+    const fetchSiteSettings = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get("http://localhost:3000/api/client-site-settings");
+            setSiteSettings(response.data.settings);
+        } catch (error) {
+            console.error("Error fetching site settings", error);
+        }finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchSiteSettings();
+    }, []);
+
+    if (loading) return (
+    <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
+      <div className="spinner-border" role="status" style={{ 
+        width: '3rem', 
+        height: '3rem', 
+        borderColor: '#dfa974',
+        borderRightColor: 'transparent',
+        borderWidth: '4px'
+      }}>
+      </div>
+    </div>
+    )
     
   return (
     <div>
@@ -29,9 +63,9 @@ const Footer = () => {
                             <div class="ft-contact">
                                 <h6>Contact Us</h6>
                                 <ul>
-                                    <li>+94 774749061</li>
-                                    <li>saliyadineshka@gmail.com</li>
-                                    <li>Kitelella Road Ella, 90090 Ella, Sri Lanka</li>
+                                    <li>{siteSettings.phone_number}</li>
+                                    <li>{siteSettings.email}</li>
+                                    <li>{siteSettings.address}</li>
                                 </ul>
                             </div>
                         </div>

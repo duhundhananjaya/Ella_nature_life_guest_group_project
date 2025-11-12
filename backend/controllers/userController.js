@@ -103,4 +103,79 @@ const deleteUser = async (req, res) =>{
     }
 }
 
-export {addUser, getUser, updateUser, deleteUser};
+const getUsers = async (req, res) =>{
+    try {
+        const userId = req.user._id;
+
+        const user = await User.findById(userId).select('-password');
+        if(!user){
+            return res.status(404).json({success: false, message: 'User not found'});
+        }
+        return res.status(200).json({ success: true, user});
+    } catch (error) {
+        console.error('Error fetching user profile', error);
+        return res.status(500).json({ success: false, message: 'Server error'});
+    }
+}
+
+const updateUserProfile = async (req, res) =>{
+    try {
+        const userId = req.user._id;
+        const {name, email, address, phone_number} = req.body;
+
+        const updateData = {name, email, address, phone_number};
+
+        const user = await User.findByIdAndUpdate(userId, updateData, {new: true}).select('-password');
+        if(!user){
+            return res.status(404).json({ success: false, message: "User not found"});
+        }
+
+        if (user.email === "admin@gmail.com" && user.name === "admin") {
+            return res.status(403).json({
+                success: false,
+                message: "You cannot update the main admin account",
+            });
+        }
+
+        return res.status(200).json({ success: true, message: "Profile updated successfully", user});
+    } catch (error) {
+        console.error('Error fetching user profile', error);
+        return res.status(500).json({ success: false, message: 'Server error'});
+    }
+}
+
+const updateUserPassword = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { old_password, new_password } = req.body;
+
+    const user = await User.findById(userId).select('+password');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (user.email === 'admin@gmail.com' && user.name === 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'You cannot update the main admin account password',
+      });
+    }
+
+    const isMatch = await bcrypt.compare(old_password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: 'Old password is incorrect' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(new_password, salt);
+
+    await user.save();
+
+    return res.status(200).json({ success: true, message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Error updating user password', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+export {addUser, getUser, updateUser, deleteUser, getUsers, updateUserProfile, updateUserPassword};

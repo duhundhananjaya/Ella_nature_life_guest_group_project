@@ -316,66 +316,62 @@ import { useEffect } from 'react';
         </div>
 
       {showModal && (
-        <>
-          <div className="modal fade show" tabIndex="-1" style={{ display: 'block' }} onClick={(e) => {
-              if (e.target === e.currentTarget) handleCloseModal()
-            }}
-          >
-            <div className="modal-dialog modal-dialog-centered modal-lg">
-                <div className="modal-content">
-                    <div className="modal-header bg-primary text-white">
-                        <h5 className="modal-title fw-semibold">
-                            {editFacility ? "Edit Facility" : "Add Facility"}
-                        </h5>
-                        <button type="button" className="btn-close btn-close-white shadow-none" onClick={handleCloseModal} aria-label="Close"></button>
-                    </div>
-                    <div className="modal-body p-4">
-                        <div className="row mb-3">
-                            <label htmlFor="image" className="form-label fw-medium">
-                                Icon <span className="text-danger">*</span>
-                            </label>
-                            <input 
-                                type="file" 
-                                accept=".jpg, .png, .webp, .jpeg, .svg" 
-                                className="form-control shadow-none" 
-                                name="image" 
-                                onChange={handleInputChange} 
-                                placeholder="Upload facility icon"
-                            />
-                            {editFacility && (
-                                <small className="text-muted mt-1">Leave empty to keep current image</small>
-                            )}
-                        </div>
+      <>
+        <div className="modal fade show" tabIndex="-1" style={{ display: 'block' }} onClick={(e) => {
+            if (e.target === e.currentTarget) handleCloseModal()
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered modal-lg">
+            <div className="modal-content">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title fw-semibold">
+                  {editFacility ? "Edit Facility" : "Add Facility"}
+                </h5>
+                <button type="button" className="btn-close btn-close-white shadow-none" onClick={handleCloseModal} aria-label="Close"></button>
+              </div>
+              
+              <div className="modal-body p-4">
+                <form onSubmit={handleSubmit} id="facilityForm">
+                  <div className="row mb-3">
+                    <label htmlFor="image" className="form-label fw-medium">
+                      Icon {!editFacility && <span className="text-danger">*</span>}
+                    </label>
+                    <input type="file" accept=".jpg, .png, .webp, .jpeg, .svg" className="form-control shadow-none" id="image"name="image" onChange={handleInputChange} placeholder="Upload facility icon"required={!editFacility}/>
+                    {editFacility && (
+                      <small className="text-muted mt-1">Leave empty to keep current image</small>
+                    )}
+                  </div>
 
-                        <div className="row mb-3">
-                            <label htmlFor="name" className="form-label fw-medium">
-                                Facility Name <span className="text-danger">*</span>
-                            </label>
-                            <input type="text" className="form-control shadow-none" id='name' name="facility_name" value={formData.facility_name} onChange={handleInputChange} placeholder="Enter facility name" required/>                
-                        </div>
+                  <div className="row mb-3">
+                    <label htmlFor="facility_name" className="form-label fw-medium">
+                      Facility Name <span className="text-danger">*</span>
+                    </label>
+                    <input type="text" className="form-control shadow-none" id="facility_name" name="facility_name" value={formData.facility_name} onChange={handleInputChange} placeholder="Enter facility name" autoComplete="off"required/>                
+                  </div>
 
-                        <div className="row mb-3">
-                            <label htmlFor="name" className="form-label fw-medium">
-                                Facility Description <span className="text-danger">*</span>
-                            </label>
-                            <textarea type="text" className="form-control shadow-none" rows={5} id="description" name="description" value={formData.description} onChange={handleInputChange} placeholder="Enter description" required></textarea>               
-                        </div>
-                    </div>
+                  <div className="row mb-3">
+                    <label htmlFor="description" className="form-label fw-medium">
+                      Facility Description <span className="text-danger">*</span>
+                    </label>
+                    <textarea className="form-control shadow-none" rows={5} id="description" name="description" value={formData.description} onChange={handleInputChange} placeholder="Enter description" autoComplete="off"required/>               
+                  </div>
+                </form>
+              </div>
 
-                    <div className="modal-footer bg-light">
-                        <button type="button" className="btn btn-secondary shadow-none" onClick={handleCloseModal}>
-                            Cancel
-                        </button>
-                        <button type="button" className="btn btn-primary shadow-none" onClick={handleSubmit}>
-                           {editFacility ? "Update Facility" : "Add Facility"}
-                        </button>
-                    </div>                      
-                </div>
+              <div className="modal-footer bg-light">
+                <button type="button" className="btn btn-secondary shadow-none" onClick={handleCloseModal}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary shadow-none" form="facilityForm">
+                  {editFacility ? "Update Facility" : "Add Facility"}
+                </button>
+              </div>                      
             </div>
-           </div>
-          <div className="modal-backdrop fade show"></div>
-        </>
-      )}
+          </div>
+        </div>
+        <div className="modal-backdrop fade show"></div>
+      </>
+    )}
 
       {deleteFacility && (
         <>
