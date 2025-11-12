@@ -521,61 +521,63 @@ const Rooms = () => {
       </div>
 
       {showModal && (
-        <>
-          <div className="modal fade show" tabIndex="-1" style={{ display: 'block' }} onClick={(e) => {
-              if (e.target === e.currentTarget) handleCloseModal()
-            }}
-          >
-            <div className="modal-dialog modal-dialog-scrollable modal-lg">
-              <div className="modal-content">
-                <div className="modal-header bg-primary text-white">
-                  <h5 className="modal-title fw-semibold">
-                    {editRoom ? "Edit Room" : "Add Room"}
-                  </h5>
-                  <button type="button" className="btn-close btn-close-white shadow-none" onClick={handleCloseModal} aria-label="Close"></button>
-                </div>
-                <div className="modal-body p-4">
+      <>
+        <div className="modal fade show" tabIndex="-1" style={{ display: 'block' }} onClick={(e) => {
+            if (e.target === e.currentTarget) handleCloseModal()
+          }}
+        >
+          <div className="modal-dialog modal-dialog-scrollable modal-lg">
+            <div className="modal-content">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title fw-semibold">
+                  {editRoom ? "Edit Room" : "Add Room"}
+                </h5>
+                <button type="button" className="btn-close btn-close-white shadow-none" onClick={handleCloseModal} aria-label="Close"></button>
+              </div>
+              
+              <div className="modal-body p-4">
+                <form onSubmit={handleSubmit} id="roomForm">
                   <div className="row g-3">
                     <div className="col-md-6">
-                      <label htmlFor="name" className="form-label fw-medium">
+                      <label htmlFor="room_name" className="form-label fw-medium">
                         Room Name <span className="text-danger">*</span>
                       </label>
-                      <input type="text" className="form-control shadow-none" name="room_name" value={formData.room_name} onChange={handleInputChange} placeholder="Enter room name" required/>
+                      <input type="text" className="form-control shadow-none" id="room_name"name="room_name" value={formData.room_name} onChange={handleInputChange} placeholder="Enter room name" autoComplete="off"required/>
                     </div>
 
                     <div className="col-md-6">
                       <label htmlFor="area" className="form-label fw-medium">
                         Area (sq. ft.) <span className="text-danger">*</span>
                       </label>
-                      <input type="number" className="form-control shadow-none" min={0} name="area" value={formData.area} onChange={handleInputChange} placeholder="Enter room area" required/>
+                      <input type="number" className="form-control shadow-none" id="area"min={0} name="area" value={formData.area} onChange={handleInputChange} placeholder="Enter room area" required/>
                     </div>
 
                     <div className="col-md-6">
                       <label htmlFor="price" className="form-label fw-medium">
                         Price <span className="text-danger">*</span>
                       </label>
-                      <input type="number" className="form-control shadow-none" min={0} name="price" value={formData.price} onChange={handleInputChange} placeholder="Enter room price" required/>
+                      <input type="number" className="form-control shadow-none" id="price"min={0} name="price" value={formData.price} onChange={handleInputChange} placeholder="Enter room price" required/>
                     </div>
 
                     <div className="col-md-6">
                       <label htmlFor="quantity" className="form-label fw-medium">
                         Quantity <span className="text-danger">*</span>
                       </label>
-                      <input type="number" className="form-control shadow-none" min={0} name="quantity" value={formData.quantity} onChange={handleInputChange} placeholder="Enter room count" required/>
+                      <input type="number" className="form-control shadow-none" id="quantity"min={0} name="quantity" value={formData.quantity} onChange={handleInputChange} placeholder="Enter room count" required/>
                     </div>
 
                     <div className="col-md-6">
                       <label htmlFor="adult" className="form-label fw-medium">
                         Adult (Max) <span className="text-danger">*</span>
                       </label>
-                      <input type="number" className="form-control shadow-none" min={0} name="adult" value={formData.adult} onChange={handleInputChange} placeholder="Enter max adult count" required/>
+                      <input type="number" className="form-control shadow-none" id="adult"min={0} name="adult" value={formData.adult} onChange={handleInputChange} placeholder="Enter max adult count" required/>
                     </div>
 
                     <div className="col-md-6">
                       <label htmlFor="children" className="form-label fw-medium">
                         Children (Max) <span className="text-danger">*</span>
                       </label>
-                      <input type="number" className="form-control shadow-none" min={0} name="children" value={formData.children} onChange={handleInputChange} placeholder="Enter max children count" required/>
+                      <input type="number" className="form-control shadow-none" id="children"min={0} name="children" value={formData.children} onChange={handleInputChange} placeholder="Enter max children count" required/>
                     </div>
 
                     <div className="col-md-12">
@@ -640,7 +642,7 @@ const Rooms = () => {
                       <label htmlFor="status" className="form-label fw-medium">
                         <strong>Status</strong><span className="text-danger">*</span>
                       </label>
-                      <select className="form-select shadow-none" name="status" value={formData.status} onChange={handleInputChange} required>
+                      <select className="form-select shadow-none" id="status"name="status" value={formData.status} onChange={handleInputChange} required>
                         <option value="">Select Room Status</option>
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
@@ -651,24 +653,26 @@ const Rooms = () => {
                       <label htmlFor="description" className="form-label fw-medium">
                         Description <span className="text-danger">*</span>
                       </label>
-                      <textarea type="text" className="form-control shadow-none" rows={5} id="description" name="description" value={formData.description} onChange={handleInputChange} placeholder="Enter room description" required></textarea>               
+                      <textarea className="form-control shadow-none" rows={5} id="description" name="description" value={formData.description} onChange={handleInputChange} placeholder="Enter room description" required/>               
                     </div>
                   </div>
-                </div>
-                <div className="modal-footer bg-light">
-                  <button type="button" className="btn btn-secondary shadow-none" onClick={handleCloseModal}>
-                    Cancel
-                  </button>
-                  <button type="button" className="btn btn-primary shadow-none" onClick={handleSubmit}>
-                    {editRoom ? "Update Room" : "Add Room"}
-                  </button>
-                </div>                      
+                </form>
               </div>
+              
+              <div className="modal-footer bg-light">
+                <button type="button" className="btn btn-secondary shadow-none" onClick={handleCloseModal}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary shadow-none" form="roomForm">
+                  {editRoom ? "Update Room" : "Add Room"}
+                </button>
+              </div>                      
             </div>
           </div>
-          <div className="modal-backdrop fade show"></div>
-        </>
-      )}
+        </div>
+        <div className="modal-backdrop fade show"></div>
+      </>
+)}
 
       {deleteRoom && (
         <>
