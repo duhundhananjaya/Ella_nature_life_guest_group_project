@@ -23,6 +23,52 @@ const ContactSection = () => {
         fetchSiteSettings();
     }, []);
 
+ 
+  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState(null);
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: ""
+       
+  })
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const response = await axios.post("http://localhost:3000/api/feedback/add",
+            formData,
+           
+        );
+      if (response.data.success) {
+        setSuccess("Message set successfully");
+        setTimeout(() => setSuccess(null), 3000);
+        setFormData({
+          name: "",
+          email: "",
+          message: ""
+        });
+        
+      } else {
+        setError(response.data.message || "Error processing message");
+        setTimeout(() => setError(null), 3000);
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setError(err.response?.data?.message || "Error processing message. Please try again.");
+      setTimeout(() => setError(null), 3000);
+    }
+  };
+
     if (loading) return (
     <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
       <div className="spinner-border" role="status" style={{ 
@@ -72,18 +118,32 @@ const ContactSection = () => {
                 </div>
             </div>
 
+            {error && (
+          <div className="alert alert-danger alert-dismissible fade show" role="alert">
+            <i className="fas fa-exclamation-circle me-2"></i>{error}
+            <button type="button" className="btn-close shadow-none" onClick={() => setError(null)}></button>
+          </div>
+        )}
+
+        {success && (
+          <div className="alert alert-success alert-dismissible fade show" role="alert">
+            <i className="fas fa-check-circle me-2"></i>{success}
+            <button type="button" className="btn-close shadow-none" onClick={() => setSuccess(null)}></button>
+          </div>
+        )}
+
             {/* Contact Form */}
             <div className="col-lg-7 offset-lg-1">
-                <form className="contact-form" onSubmit={(e) => e.preventDefault()}>
+                <form className="contact-form" onSubmit={handleSubmit}>
                 <div className="row">
                     <div className="col-lg-6">
-                    <input type="text" placeholder="Your Name" required />
+                    <input type="text" onChange={handleInputChange} placeholder="Your Name" name="name" required />
                     </div>
                     <div className="col-lg-6">
-                    <input type="email" placeholder="Your Email" required />
+                    <input type="email" onChange={handleInputChange} placeholder="Your Email" name="email" required />
                     </div>
                     <div className="col-lg-12">
-                    <textarea placeholder="Your Message" required></textarea>
+                    <textarea onChange={handleInputChange} placeholder="Your Message" name="message" required></textarea>
                     <button type="submit" className="site-btn">
                         Submit Now
                     </button>
