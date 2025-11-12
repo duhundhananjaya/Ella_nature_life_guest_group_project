@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const ClerkGallery = () => {
   const [images, setImages] = useState([]);
@@ -10,7 +9,7 @@ const ClerkGallery = () => {
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
 
-  // Fetch gallery
+  // Fetch all gallery images
   const fetchGallery = async () => {
     setLoading(true);
     try {
@@ -21,7 +20,7 @@ const ClerkGallery = () => {
       });
       setImages(response.data.images || []);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching gallery:", err);
       setError("Error loading gallery images");
       setTimeout(() => setError(null), 4000);
     } finally {
@@ -33,7 +32,7 @@ const ClerkGallery = () => {
     fetchGallery();
   }, []);
 
-  // File selection
+  // Handle image selection
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
     setFile(selected);
@@ -47,17 +46,23 @@ const ClerkGallery = () => {
       setError("Please select an image to upload");
       return;
     }
+
     const formData = new FormData();
     formData.append("image", file);
 
     setLoading(true);
     try {
-      await axios.post("http://localhost:3000/api/gallery", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${localStorage.getItem("pos-token")}`,
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/gallery",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("pos-token")}`,
+          },
+        }
+      );
+
       setSuccess("Image uploaded successfully!");
       setFile(null);
       setPreview(null);
@@ -75,6 +80,7 @@ const ClerkGallery = () => {
   // Delete image
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this image?")) return;
+
     try {
       await axios.delete(`http://localhost:3000/api/gallery/${id}`, {
         headers: {
@@ -91,48 +97,60 @@ const ClerkGallery = () => {
     }
   };
 
-  // Handle drag end (reorder)
-  const handleDragEnd = async (result) => {
-    if (!result.destination) return;
-
-    const reordered = Array.from(images);
-    const [removed] = reordered.splice(result.source.index, 1);
-    reordered.splice(result.destination.index, 0, removed);
-    setImages(reordered);
-
-    // Optional: send new order to backend
-    try {
-      await axios.put(
-        "http://localhost:3000/api/gallery/reorder",
-        { images: reordered.map((img) => img._id) },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("pos-token")}`,
-          },
-        }
-      );
-    } catch (err) {
-      console.error("Error updating order:", err);
-    }
-  };
-
   return (
     <main>
       <div className="container-fluid px-4">
         <h1 className="mt-4">Gallery Management</h1>
+        <ol className="breadcrumb mb-4">
+          <li className="breadcrumb-item">Dashboard</li>
+          <li className="breadcrumb-item active">Gallery</li>
+        </ol>
 
-        {/* Alerts */}
-        {error && <div className="alert alert-danger">{error}</div>}
-        {success && <div className="alert alert-success">{success}</div>}
+        {error && (
+          <div className="alert alert-danger alert-dismissible fade show" role="alert">
+            <i className="fas fa-exclamation-circle me-2"></i>{error}
+            <button type="button" className="btn-close shadow-none" onClick={() => setError(null)}></button>
+          </div>
+        )}
+
+        {success && (
+          <div className="alert alert-success alert-dismissible fade show" role="alert">
+            <i className="fas fa-check-circle me-2"></i>{success}
+            <button type="button" className="btn-close shadow-none" onClick={() => setSuccess(null)}></button>
+          </div>
+        )}
 
         {/* Upload Section */}
         <div className="card shadow-sm mb-4">
-          <div className="card-header">Upload New Image</div>
+          <div className="card-header bg-white fw-semibold">
+            <i className="fas fa-upload me-2"></i>Upload New Image
+          </div>
           <div className="card-body">
-            <form onSubmit={handleUpload} className="d-flex gap-3">
-              <input type="file" accept="image/*" onChange={handleFileChange} />
-              {preview && <img src={preview} alt="preview" width={100} height={100} />}
-              <button type="submit" disabled={loading}>
+            <form onSubmit={handleUpload} className="d-flex flex-column flex-md-row align-items-center gap-3">
+              <input
+                type="file"
+                accept="image/*"
+                className="form-control shadow-none"
+                style={{ maxWidth: "300px" }}
+                onChange={handleFileChange}
+              />
+              {preview && (
+                <img
+                  src={preview}
+                  alt="preview"
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                  }}
+                />
+              )}
+              <button
+                type="submit"
+                className="btn btn-primary shadow-none"
+                disabled={loading}
+              >
                 {loading ? "Uploading..." : "Upload"}
               </button>
             </form>
@@ -141,54 +159,39 @@ const ClerkGallery = () => {
 
         {/* Gallery List */}
         <div className="card shadow-sm">
-          <div className="card-header">Gallery Images</div>
+          <div className="card-header bg-white fw-semibold">
+            <i className="fas fa-images me-2"></i>Gallery Images
+          </div>
           <div className="card-body">
             {loading ? (
-              <p>Loading...</p>
+              <div className="text-center py-5">
+                <div className="spinner-border text-primary" role="status"></div>
+              </div>
             ) : images.length === 0 ? (
-              <p>No images found</p>
+              <p className="text-center text-muted py-4 mb-0">No images found</p>
             ) : (
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="gallery" direction="horizontal">
-                  {(provided) => (
-                    <div
-                      className="d-flex flex-wrap gap-3"
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                    >
-                      {images.map((img, index) => (
-                        <Draggable key={img._id} draggableId={img._id} index={index}>
-                          {(provided) => (
-                            <div
-                              className="card"
-                              style={{ width: "180px" }}
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <img
-                                src={`http://localhost:3000/${img.imagePath}`}
-                                alt="Gallery"
-                                className="card-img-top"
-                                style={{ height: "180px", objectFit: "cover" }}
-                              />
-                              <div className="card-footer text-center bg-white">
-                                <button
-                                  className="btn btn-sm btn-danger"
-                                  onClick={() => handleDelete(img._id)}
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
+              <div className="row">
+                {images.map((img) => (
+                  <div className="col-md-3 mb-4" key={img._id}>
+                    <div className="card shadow-sm">
+                      <img
+                        src={`http://localhost:3000/${img.imagePath}`}
+                        alt="Gallery"
+                        className="card-img-top"
+                        style={{ height: "180px", objectFit: "cover" }}
+                      />
+                      <div className="card-footer text-center bg-white">
+                        <button
+                          className="btn btn-sm btn-danger shadow-none"
+                          onClick={() => handleDelete(img._id)}
+                        >
+                          <i className="fas fa-trash"></i> Delete
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>
