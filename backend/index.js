@@ -12,8 +12,8 @@ import clientRoomsRoutes from './routes/clientRoom.js';
 import roomInstancesRoutes from './routes/roomInstance.js';
 import siteSettingsRoutes from './routes/siteSettings.js';
 import clientSiteSettingsRoutes from './routes/clientSiteSettings.js';
+import feedbackRoutes from './routes/feedback.js';
 import clientAuthRoutes from './routes/clientAuthRoutes.js';
-
 
 const app = express();
 app.use(cors());
@@ -33,6 +33,7 @@ app.use('/api/room-instances', roomInstancesRoutes);
 app.use('/api/client-rooms', clientRoomsRoutes);
 app.use('/api/site-settings', siteSettingsRoutes);
 app.use('/api/client-site-settings', clientSiteSettingsRoutes);
+app.use('/api/feedback', feedbackRoutes);
 app.use('/api/client/auth', clientAuthRoutes);
 
 app.listen(process.env.PORT, () =>{
