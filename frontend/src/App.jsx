@@ -18,6 +18,7 @@ import ClerkRooms from './components/clerk/ClearkRooms'
 import SiteSettings from './components/SiteSettings'
 import Unauthorize from './pages/Unauthorize'
 import Profile from './components/Profile'
+import ClerkGallery from './components/clerk/ClerkGallery'
 
 function App() {
 
@@ -44,6 +45,8 @@ function App() {
           <Route index element={<ClerkHome />} />
            <Route path="rooms" element={<ClerkRooms />} />
            <Route path="profile" element={<Profile />} />
+           <Route path="gallery" element={<ClerkGallery />} />
+
         </Route>
 
         <Route path="/receptionist-dashboard" element={<ProtectedRoutes requireRole={["receptionist"]}>

@@ -16,6 +16,7 @@ const Sidebar = () => {
     const clerkMenuItems = [
         { name: "Dashboard", path: "/clerk-dashboard", icon: "fas fa-tachometer-alt", end: true },
         { name: "Rooms", path: "/clerk-dashboard/rooms", icon: "fas fa-door-open", end: false },
+        { name: "Gallery", path: "/clerk-dashboard/gallery", icon: "fas fa-images", end: false },
     ];
 
     const receptionistMenuItems = [
