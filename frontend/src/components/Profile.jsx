@@ -117,7 +117,6 @@ const Profile = () => {
         setSuccess('Profile updated successfully');
         setTimeout(() => setSuccess(null), 3000);
         
-        // Update localStorage
         const updatedUser = { ...user, ...profileData };
         localStorage.setItem('pos-user', JSON.stringify(updatedUser));
         setUser(updatedUser);
@@ -132,7 +131,6 @@ const Profile = () => {
     }
   };
 
-  // Update password
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setPasswordError('');
@@ -143,7 +141,7 @@ const Profile = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:3000/api/users/update-password/${user._id}`,
+        `http://localhost:3000/api/users/update-password/profile/${user._id}`,
         {
           old_password: passwordData.old_password,
           new_password: passwordData.new_password
@@ -195,10 +193,10 @@ const Profile = () => {
   return (
     <main>
       <div className="container-fluid px-4">
-        <h1 className="mt-4">Profile</h1>
+        <h1 className="mt-4">Edit Profile</h1>
         <ol className="breadcrumb mb-4">
           <li className="breadcrumb-item">Dashboard</li>
-          <li className="breadcrumb-item active">Profile</li>
+          <li className="breadcrumb-item active">Edit Profile</li>
         </ol>
 
         {error && (
@@ -217,7 +215,7 @@ const Profile = () => {
 
         <div className="row">
           {/* Profile Information Card */}
-          <div className="col-lg-8 mb-4">
+          <div className="col-lg-6 mb-4">
             <div className="card shadow-sm">
               <div className="card-header bg-white py-3">
                 <div className="d-flex align-items-center">
@@ -317,66 +315,8 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* User Info Summary Card */}
-          <div className="col-lg-4 mb-4">
-            <div className="card shadow-sm">
-              <div className="card-header bg-white py-3">
-                <div className="d-flex align-items-center">
-                  <i className="fas fa-info-circle me-2 text-dark"></i>
-                  <span className="fw-semibold">Account Summary</span>
-                </div>
-              </div>
-              <div className="card-body p-4 text-center">
-                <div
-                  className="avatar-circle bg-primary text-white mx-auto mb-3"
-                  style={{
-                    width: '80px',
-                    height: '80px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '32px',
-                    fontWeight: '600'
-                  }}
-                >
-                  {user?.name.charAt(0).toUpperCase()}
-                </div>
-                <h5 className="fw-semibold mb-1">{user?.name}</h5>
-                <p className="text-muted mb-3">{user?.email}</p>
-                <div className="mb-3">
-                  {user?.role === 'admin' && (
-                    <span className="badge bg-success px-3 py-2">Admin</span>
-                  )}
-                  {user?.role === 'clerk' && (
-                    <span className="badge bg-primary px-3 py-2">Clerk</span>
-                  )}
-                  {user?.role === 'receptionist' && (
-                    <span className="badge bg-info px-3 py-2">Receptionist</span>
-                  )}
-                  {user?.role === 'attendant' && (
-                    <span className="badge bg-warning px-3 py-2">Attendant</span>
-                  )}
-                </div>
-                <hr />
-                <div className="text-start">
-                  <small className="text-muted d-block mb-2">
-                    <i className="fas fa-phone me-2"></i>
-                    {user?.phone_number || 'No phone number'}
-                  </small>
-                  <small className="text-muted d-block">
-                    <i className="fas fa-map-marker-alt me-2"></i>
-                    {user?.address}
-                  </small>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Password Update Card */}
-        <div className="row">
-          <div className="col-lg-8 mb-4">
+          {/* Password Update Card */}
+          <div className="col-lg-6 mb-4">
             <div className="card shadow-sm">
               <div className="card-header bg-white py-3">
                 <div className="d-flex align-items-center">
@@ -410,7 +350,7 @@ const Profile = () => {
                       />
                     </div>
 
-                    <div className="col-md-6">
+                    <div className="col-12">
                       <label htmlFor="new_password" className="form-label fw-medium">
                         New Password <span className="text-danger">*</span>
                       </label>
@@ -432,7 +372,7 @@ const Profile = () => {
                       )}
                     </div>
 
-                    <div className="col-md-6">
+                    <div className="col-12">
                       <label htmlFor="confirm_password" className="form-label fw-medium">
                         Confirm New Password <span className="text-danger">*</span>
                       </label>
@@ -481,6 +421,7 @@ const Profile = () => {
             </div>
           </div>
         </div>
+
       </div>
     </main>
   );
