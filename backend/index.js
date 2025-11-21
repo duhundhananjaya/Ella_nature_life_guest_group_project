@@ -10,12 +10,14 @@ import clientRoomsRoutes from './routes/clientRoom.js';
 import roomInstancesRoutes from './routes/roomInstance.js';
 import siteSettingsRoutes from './routes/siteSettings.js';
 import clientSiteSettingsRoutes from './routes/clientSiteSettings.js';
+import galleryRoutes from "./routes/gallery.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public/uploads/icons'));
-app.use(express.static('public/uploads/rooms'));
+app.use('/uploads/icons', express.static('public/uploads/icons'));
+app.use('/uploads/rooms', express.static('public/uploads/rooms'));
+app.use('/uploads/gallery', express.static('public/uploads/gallery'));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -26,6 +28,7 @@ app.use('/api/room-instances', roomInstancesRoutes);
 app.use('/api/client-rooms', clientRoomsRoutes);
 app.use('/api/site-settings', siteSettingsRoutes);
 app.use('/api/client-site-settings', clientSiteSettingsRoutes);
+app.use("/api/gallery", galleryRoutes);
 
 app.listen(process.env.PORT, () =>{
     connectDB();
