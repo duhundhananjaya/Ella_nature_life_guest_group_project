@@ -12,12 +12,16 @@ import clientRoomsRoutes from './routes/clientRoom.js';
 import roomInstancesRoutes from './routes/roomInstance.js';
 import siteSettingsRoutes from './routes/siteSettings.js';
 import clientSiteSettingsRoutes from './routes/clientSiteSettings.js';
+import galleryRoutes from "./routes/gallery.js";
 import feedbackRoutes from './routes/feedback.js';
 import clientAuthRoutes from './routes/clientAuthRoutes.js';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/uploads/icons', express.static('public/uploads/icons'));
+app.use('/uploads/rooms', express.static('public/uploads/rooms'));
+app.use('/uploads/gallery', express.static('public/uploads/gallery'));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({credentials: true}))
@@ -33,6 +37,7 @@ app.use('/api/room-instances', roomInstancesRoutes);
 app.use('/api/client-rooms', clientRoomsRoutes);
 app.use('/api/site-settings', siteSettingsRoutes);
 app.use('/api/client-site-settings', clientSiteSettingsRoutes);
+app.use("/api/gallery", galleryRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/client/auth', clientAuthRoutes);
 
