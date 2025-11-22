@@ -8,6 +8,13 @@ import Contact from './pages/Contact'
 import RoomDetails from './pages/RoomDetails'
 import Register from './pages/Register'
 import Login from './pages/Login'
+import VerifyEmail from './pages/VerifyEmail'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
+import ResendVerification from './pages/ResendVerification'
+import Profile from './pages/Profile'
+import ProtectedRoute from './components/ProtectedRoute'
+import Dashboard from './pages/Dashboard'
 
 function App() {
 
