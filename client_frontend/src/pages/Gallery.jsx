@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import GallerySection from '../components/GallerySection';
@@ -10,7 +10,7 @@ const Gallery = () => {
             <GallerySection />
         <Footer />
     </div>
-  );
-};
+  )
+}
 
 export default Gallery;
