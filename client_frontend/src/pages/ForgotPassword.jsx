@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import authService from '../services/authService';
+import backgroundImage from '../assets/loginpageback.jpg';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
   const [emailSent, setEmailSent] = useState(false);
 
   const validateEmail = (email) => {
@@ -17,147 +18,351 @@ const ForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
-    setError('');
 
     // Validation
     if (!email.trim()) {
-      setError('Please enter your email address');
+      toast.error('Please enter your email address', {
+        position: "top-right",
+        autoClose: 3000
+      });
       setLoading(false);
       return;
     }
 
     if (!validateEmail(email)) {
-      setError('Please enter a valid email address');
+      toast.error('Please enter a valid email address', {
+        position: "top-right",
+        autoClose: 3000
+      });
       setLoading(false);
       return;
     }
 
     try {
       const response = await authService.forgotPassword(email);
-      setMessage(response.data.message);
+      toast.success(response.data.message || 'Password reset link sent to your email!', {
+        position: "top-right",
+        autoClose: 4000
+      });
       setEmailSent(true);
-      setEmail('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send reset email. Please try again.');
+      toast.error(err.response?.data?.message || 'Failed to send reset email. Please try again.', {
+        position: "top-right",
+        autoClose: 4000
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  const handleTryAgain = () => {
+    setEmailSent(false);
+    setEmail('');
+  };
+
   return (
-    <div className="min-vh-100 d-flex align-items-center bg-light">
-      <div className="container">
+    <div 
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        position: 'relative',
+        paddingTop: '80px',
+        paddingBottom: '50px'
+      }}
+    >
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        style={{ zIndex: 9999 }}
+      />
+
+      {/* Overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(25, 25, 26, 0.85)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div className="container" style={{ position: 'relative', zIndex: 2 }}>
         <div className="row justify-content-center">
           <div className="col-lg-5 col-md-7">
-            <div className="card shadow-lg border-0 rounded-lg">
+            <div style={{
+              backgroundColor: '#fff',
+              borderRadius: '0',
+              overflow: 'hidden',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
+            }}>
               {/* Header */}
-              <div className="card-header bg-warning text-dark text-center py-4">
-                <h3 className="mb-0">
-                  <i className="bi bi-key me-2"></i>
-                  Forgot Password
-                </h3>
-                <p className="mb-0 mt-2 small">No worries, we'll send you reset instructions</p>
+              <div style={{
+                background: 'linear-gradient(135deg, #dfa974 0%, #c89860 100%)',
+                padding: '40px 30px',
+                textAlign: 'center',
+                borderBottom: '3px solid #19191a'
+              }}>
+                <h2 style={{
+                  color: '#fff',
+                  fontSize: '32px',
+                  fontWeight: '700',
+                  marginBottom: '10px',
+                  fontFamily: '"Lora", serif',
+                  letterSpacing: '1px'
+                }}>
+                  Forgot Password?
+                </h2>
+                <p style={{
+                  color: 'rgba(255,255,255,0.9)',
+                  fontSize: '16px',
+                  marginBottom: '0',
+                  fontFamily: '"Cabin", sans-serif'
+                }}>
+                  No worries, we'll send you reset instructions
+                </p>
               </div>
               
               {/* Body */}
-              <div className="card-body p-4 p-md-5">
+              <div style={{ padding: '40px 35px' }}>
                 {!emailSent ? (
                   <>
-                    <p className="text-muted text-center mb-4">
+                    <p style={{
+                      textAlign: 'center',
+                      color: '#707079',
+                      fontSize: '14px',
+                      marginBottom: '30px',
+                      fontFamily: '"Cabin", sans-serif'
+                    }}>
                       Enter your email address and we'll send you a link to reset your password.
                     </p>
 
-                    {error && (
-                      <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                        {error}
-                        <button type="button" className="btn-close" onClick={() => setError('')}></button>
-                      </div>
-                    )}
-
                     <form onSubmit={handleSubmit}>
-                      <div className="mb-4">
-                        <label className="form-label fw-bold">
-                          Email Address <span className="text-danger">*</span>
+                      <div style={{ marginBottom: '30px' }}>
+                        <label style={{
+                          display: 'block',
+                          color: '#19191a',
+                          fontSize: '14px',
+                          fontWeight: '600',
+                          marginBottom: '10px',
+                          fontFamily: '"Cabin", sans-serif',
+                          letterSpacing: '0.5px'
+                        }}>
+                          EMAIL ADDRESS <span style={{ color: '#dfa974' }}>*</span>
                         </label>
-                        <div className="input-group input-group-lg">
-                          <span className="input-group-text">
-                            <i className="bi bi-envelope"></i>
-                          </span>
-                          <input
-                            type="email"
-                            className="form-control"
-                            placeholder="Enter your email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            autoFocus
-                          />
-                        </div>
+                        <input
+                          type="email"
+                          style={{
+                            width: '100%',
+                            height: '50px',
+                            border: '2px solid #e5e5e5',
+                            padding: '0 20px',
+                            fontSize: '14px',
+                            color: '#19191a',
+                            backgroundColor: '#f9f9f9',
+                            outline: 'none',
+                            transition: 'all 0.3s',
+                            fontFamily: '"Cabin", sans-serif'
+                          }}
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          autoFocus
+                          onFocus={(e) => e.target.style.borderColor = '#dfa974'}
+                          onBlur={(e) => e.target.style.borderColor = '#e5e5e5'}
+                        />
                       </div>
 
-                      <div className="d-grid gap-2">
-                        <button
-                          type="submit"
-                          className="btn btn-warning btn-lg text-dark fw-bold"
-                          disabled={loading}
-                        >
-                          {loading ? (
-                            <>
-                              <span className="spinner-border spinner-border-sm me-2"></span>
-                              Sending Reset Link...
-                            </>
-                          ) : (
-                            <>
-                              <i className="bi bi-send me-2"></i>
-                              Send Reset Link
-                            </>
-                          )}
-                        </button>
-                      </div>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        style={{
+                          width: '100%',
+                          height: '50px',
+                          backgroundColor: loading ? '#c89860' : '#dfa974',
+                          color: '#fff',
+                          fontSize: '14px',
+                          fontWeight: '700',
+                          letterSpacing: '2px',
+                          textTransform: 'uppercase',
+                          border: 'none',
+                          cursor: loading ? 'not-allowed' : 'pointer',
+                          transition: 'all 0.3s',
+                          fontFamily: '"Cabin", sans-serif',
+                          opacity: loading ? 0.7 : 1
+                        }}
+                        onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#c89860')}
+                        onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#dfa974')}
+                      >
+                        {loading ? 'SENDING...' : 'SEND RESET LINK'}
+                      </button>
                     </form>
                   </>
                 ) : (
-                  <div className="text-center">
-                    <div className="mb-4">
-                      <div className="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center" style={{ width: '80px', height: '80px' }}>
-                        <i className="bi bi-envelope-check-fill text-success" style={{ fontSize: '2.5rem' }}></i>
-                      </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{
+                      width: '80px',
+                      height: '80px',
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(223, 169, 116, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 25px',
+                      border: '3px solid #dfa974'
+                    }}>
+                      <span style={{ fontSize: '40px' }}>✉️</span>
                     </div>
-                    <h5 className="mb-3">Check Your Email</h5>
-                    <div className="alert alert-success">
-                      <i className="bi bi-check-circle-fill me-2"></i>
-                      {message}
-                    </div>
-                    <p className="text-muted small mb-4">
-                      If you don't see the email, check your spam folder or{' '}
+                    
+                    <h4 style={{
+                      color: '#19191a',
+                      fontSize: '24px',
+                      fontWeight: '700',
+                      marginBottom: '15px',
+                      fontFamily: '"Lora", serif'
+                    }}>
+                      Check Your Email
+                    </h4>
+                    
+                    <p style={{
+                      color: '#707079',
+                      fontSize: '14px',
+                      marginBottom: '25px',
+                      fontFamily: '"Cabin", sans-serif',
+                      lineHeight: '1.6'
+                    }}>
+                      We've sent a password reset link to your email address. Please check your inbox and follow the instructions.
+                    </p>
+
+                    <p style={{
+                      color: '#707079',
+                      fontSize: '13px',
+                      marginBottom: '20px',
+                      fontFamily: '"Cabin", sans-serif'
+                    }}>
+                      Didn't receive the email?{' '}
                       <button 
-                        className="btn btn-link p-0 text-decoration-none"
-                        onClick={() => setEmailSent(false)}
+                        onClick={handleTryAgain}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#dfa974',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          textDecoration: 'underline',
+                          padding: '0',
+                          fontFamily: '"Cabin", sans-serif'
+                        }}
                       >
-                        try another email address
+                        Try again
                       </button>
                     </p>
+
+                    <Link to="/login">
+                      <button
+                        style={{
+                          width: '100%',
+                          height: '50px',
+                          backgroundColor: '#dfa974',
+                          color: '#fff',
+                          fontSize: '14px',
+                          fontWeight: '700',
+                          letterSpacing: '2px',
+                          textTransform: 'uppercase',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s',
+                          fontFamily: '"Cabin", sans-serif'
+                        }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#c89860'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = '#dfa974'}
+                      >
+                        BACK TO LOGIN
+                      </button>
+                    </Link>
                   </div>
                 )}
               </div>
 
               {/* Footer */}
-              <div className="card-footer bg-light text-center py-3">
-                <Link to="/login" className="text-decoration-none">
-                  <i className="bi bi-arrow-left me-2"></i>
-                  Back to Login
-                </Link>
+              <div style={{
+                backgroundColor: '#f9f9f9',
+                padding: '25px 35px',
+                textAlign: 'center',
+                borderTop: '1px solid #e5e5e5'
+              }}>
+                {!emailSent && (
+                  <p style={{
+                    marginBottom: '0',
+                    color: '#707079',
+                    fontSize: '14px',
+                    fontFamily: '"Cabin", sans-serif'
+                  }}>
+                    <Link 
+                      to="/login" 
+                      style={{
+                        color: '#dfa974',
+                        fontWeight: '700',
+                        textDecoration: 'none',
+                        transition: 'color 0.3s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.color = '#c89860'}
+                      onMouseLeave={(e) => e.target.style.color = '#dfa974'}
+                    >
+                      ← Back to Login
+                    </Link>
+                  </p>
+                )}
+                {emailSent && (
+                  <p style={{
+                    marginBottom: '0',
+                    color: '#707079',
+                    fontSize: '14px',
+                    fontFamily: '"Cabin", sans-serif'
+                  }}>
+                    Don't have an account?{' '}
+                    <Link 
+                      to="/register" 
+                      style={{
+                        color: '#dfa974',
+                        fontWeight: '700',
+                        textDecoration: 'none',
+                        transition: 'color 0.3s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.color = '#c89860'}
+                      onMouseLeave={(e) => e.target.style.color = '#dfa974'}
+                    >
+                      Create Account
+                    </Link>
+                  </p>
+                )}
               </div>
             </div>
 
-            {/* Additional Links */}
-            <div className="text-center mt-4">
-              <p className="text-muted mb-0">
-                Don't have an account?{' '}
-                <Link to="/register" className="text-primary fw-bold text-decoration-none">
-                  Sign up here
-                </Link>
+            {/* Additional Info */}
+            <div style={{ textAlign: 'center', marginTop: '25px' }}>
+              <p style={{
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: '13px',
+                fontFamily: '"Cabin", sans-serif'
+              }}>
+                🔒 Your information is secure with us
               </p>
             </div>
           </div>

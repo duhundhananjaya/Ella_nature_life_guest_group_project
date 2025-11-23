@@ -27,8 +27,9 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid
+    // Only redirect if it's a 401 AND we have a token (token expired/invalid)
+    // Don't redirect on login failures (no token yet)
+    if (error.response?.status === 401 && localStorage.getItem('token')) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
@@ -36,6 +37,7 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 export const authService = {
   // Register new user

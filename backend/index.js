@@ -16,6 +16,7 @@ import galleryRoutes from "./routes/gallery.js";
 import feedbackRoutes from './routes/feedback.js';
 import clientAuthRoutes from './routes/clientAuthRoutes.js';
 import bookingRoutes from './routes/booking.js';
+import viewBookingRoutes from './routes/viewBooking.js';
 
 const app = express();
 app.use(cors());
@@ -42,6 +43,7 @@ app.use("/api/gallery", galleryRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/client/auth', clientAuthRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/view-bookings', viewBookingRoutes);
 
 app.listen(process.env.PORT, () =>{
     connectDB();

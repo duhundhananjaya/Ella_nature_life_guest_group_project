@@ -20,6 +20,7 @@ import Unauthorize from './pages/Unauthorize'
 import Profile from './components/Profile'
 import ClerkGallery from './components/clerk/ClerkGallery'
 import ProfileView from './components/ProfileView'
+import ViewBookings from './components/ViewBookings'
 
 function App() {
 
@@ -34,6 +35,7 @@ function App() {
           <Route path="users" element={<Users />} />
           <Route path="features" element={<Features />} />
           <Route path="facilities" element={<Facilities />} />
+          <Route path="bookings" element={<ViewBookings />} />
           <Route path="rooms" element={<Rooms />} />
           <Route path="cleaning-details" element={<RoomCleanings />} />
           <Route path="site-settings" element={<SiteSettings />} />
