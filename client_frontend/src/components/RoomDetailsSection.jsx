@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
-import { useParams, Link } from 'react-router';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const RoomDetailsSection = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [room, setRoom] = useState(null);
+    const [bookingData, setBookingData] = useState({
+        checkIn: '',
+        checkOut: '',
+        adults: '',
+        children: '',
+        rooms: 1
+    });
+    const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+    const [availabilityResult, setAvailabilityResult] = useState(null);
 
     // Sample reviews data
     const sampleReviews = [
@@ -41,6 +52,14 @@ const RoomDetailsSection = () => {
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching room details", error);
+                toast.error('Failed to load room details. Please try again.', {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true
+                });
                 setLoading(false);
             }
         };
@@ -79,12 +98,32 @@ const RoomDetailsSection = () => {
             if ($.fn.datepicker) {
                 $(".date-input").datepicker({
                     minDate: 0,
-                    dateFormat: 'dd MM, yy'
+                    dateFormat: 'dd MM, yy',
+                    onSelect: function(dateText, inst) {
+                        const fieldId = $(this).attr('id');
+                        if (fieldId === 'date-in') {
+                            setBookingData(prev => ({ ...prev, checkIn: dateText }));
+                        } else if (fieldId === 'date-out') {
+                            setBookingData(prev => ({ ...prev, checkOut: dateText }));
+                        }
+                        // Reset availability when dates change
+                        setAvailabilityResult(null);
+                    }
                 });
             }
 
             if ($.fn.niceSelect) {
                 $("select").niceSelect();
+                
+                // Listen to nice-select change events
+                $("select").on('change', function() {
+                    const name = $(this).attr('name');
+                    const value = $(this).val();
+                    setBookingData(prev => ({
+                        ...prev,
+                        [name]: value
+                    }));
+                });
             }
 
             return () => {
@@ -98,6 +137,221 @@ const RoomDetailsSection = () => {
             };
         }
     }, [loading, room]);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setBookingData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+
+        // Reset availability result when user changes data
+        setAvailabilityResult(null);
+
+        // Update nice-select if it exists
+        if (window.$ && window.$.fn.niceSelect) {
+            window.$(`#${e.target.id}`).niceSelect('update');
+        }
+    };
+
+    const validateBookingData = () => {
+        if (!bookingData.checkIn) {
+            toast.warning('Please select a check-in date.', {
+                position: "top-right",
+                autoClose: 3000
+            });
+            return false;
+        }
+
+        if (!bookingData.checkOut) {
+            toast.warning('Please select a check-out date.', {
+                position: "top-right",
+                autoClose: 3000
+            });
+            return false;
+        }
+
+        if (!bookingData.adults) {
+            toast.warning('Please select number of adults.', {
+                position: "top-right",
+                autoClose: 3000
+            });
+            return false;
+        }
+
+        if (!bookingData.children) {
+            toast.warning('Please select number of children.', {
+                position: "top-right",
+                autoClose: 3000
+            });
+            return false;
+        }
+
+        // Validate dates
+        const checkIn = new Date(bookingData.checkIn);
+        const checkOut = new Date(bookingData.checkOut);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (checkIn < today) {
+            toast.error('Check-in date cannot be in the past.', {
+                position: "top-right",
+                autoClose: 3000
+            });
+            return false;
+        }
+
+        if (checkOut <= checkIn) {
+            toast.error('Check-out date must be after check-in date.', {
+                position: "top-right",
+                autoClose: 3000
+            });
+            return false;
+        }
+
+        return true;
+    };
+
+    const checkAuthentication = () => {
+        // Check if user is logged in (adjust based on your auth implementation)
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        const user = localStorage.getItem('user') || sessionStorage.getItem('user');
+        
+        return !!(token && user);
+    };
+
+    const handleCheckAvailability = async (e) => {
+        e.preventDefault();
+
+        // Validate booking data
+        if (!validateBookingData()) {
+            return;
+        }
+
+        setIsCheckingAvailability(true);
+
+        try {
+            // Check availability API call
+            const response = await axios.post('http://localhost:3000/api/bookings/check-availability', {
+                roomTypeId: id,
+                checkIn: bookingData.checkIn,
+                checkOut: bookingData.checkOut,
+                roomsNeeded: parseInt(bookingData.rooms)
+            });
+
+            if (response.data.available) {
+                // Store availability result and show success message
+                setAvailabilityResult(response.data);
+                toast.success(
+                    `Great! ${response.data.availableRooms} room(s) available. Total: ${response.data.totalPrice} LKR`, 
+                    {
+                        position: "top-right",
+                        autoClose: 4000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true
+                    }
+                );
+            } else {
+                setAvailabilityResult(null);
+                toast.error(
+                    response.data.message || 'Sorry, no rooms are available for the selected dates.', 
+                    {
+                        position: "top-right",
+                        autoClose: 4000
+                    }
+                );
+            }
+        } catch (error) {
+            console.error('Availability check error:', error);
+            toast.error(
+                error.response?.data?.message || 'Failed to check availability. Please try again.', 
+                {
+                    position: "top-right",
+                    autoClose: 3000
+                }
+            );
+        } finally {
+            setIsCheckingAvailability(false);
+        }
+    };
+
+    const proceedToBooking = async (availabilityData) => {
+        // Check if user is logged in
+        if (!checkAuthentication()) {
+            toast.warning('Please login to proceed with the booking.', {
+                position: "top-right",
+                autoClose: 3000
+            });
+            
+            // Save booking data to session storage to resume after login
+            setTimeout(() => {
+                sessionStorage.setItem('pendingBooking', JSON.stringify({
+                    roomId: id,
+                    bookingData: bookingData,
+                    availabilityData: availabilityData
+                }));
+                navigate('/login', { state: { from: `/room-details/${id}` } });
+            }, 1000);
+            return;
+        }
+
+        // Proceed with booking
+        try {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            
+            // Show loading toast
+            const loadingToast = toast.loading('Processing your booking...', {
+                position: "top-right"
+            });
+
+            const response = await axios.post('http://localhost:3000/api/bookings/create', {
+                roomTypeId: id,
+                checkIn: bookingData.checkIn,
+                checkOut: bookingData.checkOut,
+                adults: parseInt(bookingData.adults),
+                children: parseInt(bookingData.children),
+                roomsBooked: parseInt(bookingData.rooms),
+                totalPrice: availabilityData.totalPrice
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            // Dismiss loading toast
+            toast.dismiss(loadingToast);
+
+            // Show success message
+            toast.success(
+                `Booking confirmed! ID: ${response.data.booking.bookingId || response.data.booking._id}`, 
+                {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true
+                }
+            );
+
+            // Redirect to bookings page after delay
+            setTimeout(() => {
+                navigate('/my-bookings');
+            }, 2000);
+
+        } catch (error) {
+            console.error('Booking error:', error);
+            toast.error(
+                error.response?.data?.message || 'Failed to create booking. Please try again.', 
+                {
+                    position: "top-right",
+                    autoClose: 4000
+                }
+            );
+        }
+    };
 
     if (loading) {
         return (
@@ -127,6 +381,21 @@ const RoomDetailsSection = () => {
 
     return (
         <div style={{ paddingTop: "60px" }}>
+            {/* Toast Container */}
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                style={{ zIndex: 9999 }}
+            />
+            
             <div className="breadcrumb-section">
                 <div className="container">
                     <div className="row">
@@ -328,20 +597,35 @@ const RoomDetailsSection = () => {
                         <div className="col-lg-4">
                             <div className="room-booking" style={{ position: 'sticky', top: '20px' }}>
                                 <h3>Your Reservation</h3>
-                                <form action="#">
+                                <form onSubmit={handleCheckAvailability}>
                                     <div className="check-date">
                                         <label htmlFor="date-in">Check In:</label>
-                                        <input type="text" className="date-input" id="date-in" />
+                                        <input 
+                                            type="text" 
+                                            className="date-input" 
+                                            id="date-in"
+                                            readOnly
+                                        />
                                         <i className="icon_calendar"></i>
                                     </div>
                                     <div className="check-date">
                                         <label htmlFor="date-out">Check Out:</label>
-                                        <input type="text" className="date-input" id="date-out" />
+                                        <input 
+                                            type="text" 
+                                            className="date-input" 
+                                            id="date-out"
+                                            readOnly
+                                        />
                                         <i className="icon_calendar"></i>
                                     </div>
                                     <div className="select-option">
                                         <label htmlFor="guest">Adults:</label>
-                                        <select id="guest">
+                                        <select 
+                                            id="guest" 
+                                            name="adults"
+                                            value={bookingData.adults}
+                                            onChange={handleInputChange}
+                                        >
                                             <option value="">Select Adults</option>
                                             {[...Array(room.adult)].map((_, i) => (
                                                 <option key={i} value={i + 1}>{i + 1} {i === 0 ? 'Adult' : 'Adults'}</option>
@@ -350,7 +634,12 @@ const RoomDetailsSection = () => {
                                     </div>
                                     <div className="select-option">
                                         <label htmlFor="guest2">Children:</label>
-                                        <select id="guest2">
+                                        <select 
+                                            id="guest2" 
+                                            name="children"
+                                            value={bookingData.children}
+                                            onChange={handleInputChange}
+                                        >
                                             <option value="">Select Children</option>
                                             {[...Array(room.children + 1)].map((_, i) => (
                                                 <option key={i} value={i}>{i} {i === 1 ? 'Child' : 'Children'}</option>
@@ -359,13 +648,54 @@ const RoomDetailsSection = () => {
                                     </div>
                                     <div className="select-option">
                                         <label htmlFor="room-select">Rooms:</label>
-                                        <select id="room-select">
+                                        <select 
+                                            id="room-select" 
+                                            name="rooms"
+                                            value={bookingData.rooms}
+                                            onChange={handleInputChange}
+                                        >
                                             <option value="1">1 Room</option>
                                             <option value="2">2 Rooms</option>
                                             <option value="3">3 Rooms</option>
                                         </select>
                                     </div>
-                                    <button type="submit">Check Availability</button>
+                                    <button 
+                                        type="submit" 
+                                        disabled={isCheckingAvailability}
+                                        style={{
+                                            opacity: isCheckingAvailability ? 0.7 : 1,
+                                            cursor: isCheckingAvailability ? 'not-allowed' : 'pointer'
+                                        }}
+                                    >
+                                        {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
+                                    </button>
+
+                                    {/* Book Now Button - Only shows when rooms are available */}
+                                    {availabilityResult && availabilityResult.available && (
+                                        <button 
+                                            type="button"
+                                            onClick={() => proceedToBooking(availabilityResult)}
+                                            style={{
+                                                marginTop: '10px',
+                                                backgroundColor: '#28a745',
+                                                border: 'none',
+                                                color: 'white',
+                                                padding: '13px 28px',
+                                                fontSize: '13px',
+                                                fontWeight: '700',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '2px',
+                                                borderRadius: '2px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.3s',
+                                                width: '100%'
+                                            }}
+                                            onMouseOver={(e) => e.target.style.backgroundColor = '#218838'}
+                                            onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
+                                        >
+                                            Book Now
+                                        </button>
+                                    )}
                                 </form>
                             </div>
                         </div>
