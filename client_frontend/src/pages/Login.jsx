@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
-import backgroundImage from '../assets/loginpageback.jpg'; 
+import backgroundImage from '../assets/loginpageback.jpg';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,7 +14,6 @@ const Login = () => {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
@@ -21,14 +22,12 @@ const Login = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error for this field
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
       }));
     }
-    setServerError('');
   };
 
   const validateForm = () => {
@@ -48,9 +47,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setServerError('');
 
     if (!validateForm()) {
+      toast.error('Please fill in all required fields', {
+        position: "top-right",
+        autoClose: 3000
+      });
       return;
     }
 
@@ -60,19 +62,24 @@ const Login = () => {
       const response = await authService.login(formData);
       
       if (response.data.success) {
-        // Store token and user data
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.data));
         
-        // Show success message
-        alert('Login successful!');
-        
-        // Redirect to home page and force reload to update navbar
-        window.location.href = '/';
+        toast.success('Login successful! Redirecting...', {
+          position: "top-right",
+          autoClose: 2000
+        });
+
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
       }
     } catch (error) {
       const message = error.response?.data?.message || 'Login failed. Please try again.';
-      setServerError(message);
+      toast.error(message, {
+        position: "top-right",
+        autoClose: 4000
+      });
     } finally {
       setLoading(false);
     }
@@ -80,16 +87,35 @@ const Login = () => {
 
   return (
     <div 
-      className="min-vh-100 d-flex align-items-center bg-light"
       style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        position: 'relative'
+        position: 'relative',
+        paddingTop: '80px',
+        paddingBottom: '50px'
       }}
     >
-      {/* Blur overlay */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        style={{ zIndex: 9999 }}
+      />
+
+      {/* Overlay */}
       <div
         style={{
           position: 'absolute',
@@ -97,8 +123,7 @@ const Login = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backdropFilter: 'blur(5px)',
-          backgroundColor: 'rgba(255, 255, 255, 0.3)',
+          backgroundColor: 'rgba(25, 25, 26, 0.85)',
           zIndex: 1
         }}
       ></div>
@@ -106,117 +131,223 @@ const Login = () => {
       <div className="container" style={{ position: 'relative', zIndex: 2 }}>
         <div className="row justify-content-center">
           <div className="col-lg-5 col-md-7">
-            <div className="card shadow-lg border-0 rounded-lg">
+            <div style={{
+              backgroundColor: '#fff',
+              borderRadius: '0',
+              overflow: 'hidden',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
+            }}>
               {/* Header */}
-              <div className="card-header bg-primary text-white text-center py-4">
-                <h3 className="mb-0">
-                  <i className="bi bi-box-arrow-in-right me-2"></i>
+              <div style={{
+                background: 'linear-gradient(135deg, #dfa974 0%, #c89860 100%)',
+                padding: '40px 30px',
+                textAlign: 'center',
+                borderBottom: '3px solid #19191a'
+              }}>
+                <h2 style={{
+                  color: '#fff',
+                  fontSize: '32px',
+                  fontWeight: '700',
+                  marginBottom: '10px',
+                  fontFamily: '"Lora", serif',
+                  letterSpacing: '1px'
+                }}>
                   Welcome Back
-                </h3>
-                <p className="mb-0 mt-2 text-white-50">Login to your account</p>
+                </h2>
+                <p style={{
+                  color: 'rgba(255,255,255,0.9)',
+                  fontSize: '16px',
+                  marginBottom: '0',
+                  fontFamily: '"Cabin", sans-serif'
+                }}>
+                  Login to your account
+                </p>
               </div>
               
               {/* Body */}
-              <div className="card-body p-4 p-md-5">
-                {serverError && (
-                  <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                    {serverError}
-                    <button type="button" className="btn-close" onClick={() => setServerError('')}></button>
-                  </div>
-                )}
-
+              <div style={{ padding: '40px 35px' }}>
                 <form onSubmit={handleSubmit}>
                   {/* Username or Email */}
-                  <div className="mb-3">
-                    <label className="form-label fw-bold">
-                      Username or Email <span className="text-danger">*</span>
+                  <div style={{ marginBottom: '25px' }}>
+                    <label style={{
+                      display: 'block',
+                      color: '#19191a',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      marginBottom: '10px',
+                      fontFamily: '"Cabin", sans-serif',
+                      letterSpacing: '0.5px'
+                    }}>
+                      USERNAME OR EMAIL <span style={{ color: '#dfa974' }}>*</span>
                     </label>
-                    <div className="input-group">
-                      <span className="input-group-text">
-                        <i className="bi bi-person-circle"></i>
-                      </span>
-                      <input
-                        type="text"
-                        name="usernameOrEmail"
-                        className={`form-control form-control-lg ${errors.usernameOrEmail ? 'is-invalid' : ''}`}
-                        placeholder="Enter username or email"
-                        value={formData.usernameOrEmail}
-                        onChange={handleChange}
-                        autoFocus
-                      />
-                      {errors.usernameOrEmail && (
-                        <div className="invalid-feedback">{errors.usernameOrEmail}</div>
-                      )}
-                    </div>
+                    <input
+                      type="text"
+                      name="usernameOrEmail"
+                      style={{
+                        width: '100%',
+                        height: '50px',
+                        border: errors.usernameOrEmail ? '2px solid #dc3545' : '2px solid #e5e5e5',
+                        padding: '0 20px',
+                        fontSize: '14px',
+                        color: '#19191a',
+                        backgroundColor: '#f9f9f9',
+                        outline: 'none',
+                        transition: 'all 0.3s',
+                        fontFamily: '"Cabin", sans-serif'
+                      }}
+                      placeholder="Enter username or email"
+                      value={formData.usernameOrEmail}
+                      onChange={handleChange}
+                      autoFocus
+                      onFocus={(e) => e.target.style.borderColor = '#dfa974'}
+                      onBlur={(e) => e.target.style.borderColor = errors.usernameOrEmail ? '#dc3545' : '#e5e5e5'}
+                    />
+                    {errors.usernameOrEmail && (
+                      <div style={{
+                        color: '#dc3545',
+                        fontSize: '13px',
+                        marginTop: '5px'
+                      }}>
+                        {errors.usernameOrEmail}
+                      </div>
+                    )}
                   </div>
 
                   {/* Password */}
-                  <div className="mb-3">
-                    <label className="form-label fw-bold">
-                      Password <span className="text-danger">*</span>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{
+                      display: 'block',
+                      color: '#19191a',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      marginBottom: '10px',
+                      fontFamily: '"Cabin", sans-serif',
+                      letterSpacing: '0.5px'
+                    }}>
+                      PASSWORD <span style={{ color: '#dfa974' }}>*</span>
                     </label>
-                    <div className="input-group">
-                      <span className="input-group-text">
-                        <i className="bi bi-lock"></i>
-                      </span>
+                    <div style={{ position: 'relative' }}>
                       <input
                         type={showPassword ? 'text' : 'password'}
                         name="password"
-                        className={`form-control form-control-lg ${errors.password ? 'is-invalid' : ''}`}
+                        style={{
+                          width: '100%',
+                          height: '50px',
+                          border: errors.password ? '2px solid #dc3545' : '2px solid #e5e5e5',
+                          padding: '0 50px 0 20px',
+                          fontSize: '14px',
+                          color: '#19191a',
+                          backgroundColor: '#f9f9f9',
+                          outline: 'none',
+                          transition: 'all 0.3s',
+                          fontFamily: '"Cabin", sans-serif'
+                        }}
                         placeholder="Enter your password"
                         value={formData.password}
                         onChange={handleChange}
+                        onFocus={(e) => e.target.style.borderColor = '#dfa974'}
+                        onBlur={(e) => e.target.style.borderColor = errors.password ? '#dc3545' : '#e5e5e5'}
                       />
                       <button
-                        className="btn btn-outline-secondary"
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
+                        style={{
+                          position: 'absolute',
+                          right: '15px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          background: 'none',
+                          border: 'none',
+                          color: '#707079',
+                          cursor: 'pointer',
+                          fontSize: '18px',
+                          padding: '5px'
+                        }}
                       >
-                        <i className={`bi bi-eye${showPassword ? '-slash' : ''}`}></i>
+                        {showPassword ? '👁️' : '👁️‍🗨️'}
                       </button>
-                      {errors.password && (
-                        <div className="invalid-feedback">{errors.password}</div>
-                      )}
                     </div>
+                    {errors.password && (
+                      <div style={{
+                        color: '#dc3545',
+                        fontSize: '13px',
+                        marginTop: '5px'
+                      }}>
+                        {errors.password}
+                      </div>
+                    )}
                   </div>
 
                   {/* Forgot Password Link */}
-                  <div className="mb-4 text-end">
-                    <Link to="/forgot-password" className="text-decoration-none small">
-                      <i className="bi bi-question-circle me-1"></i>
+                  <div style={{ marginBottom: '30px', textAlign: 'right' }}>
+                    <Link 
+                      to="/forgot-password" 
+                      style={{
+                        color: '#dfa974',
+                        fontSize: '14px',
+                        textDecoration: 'none',
+                        fontFamily: '"Cabin", sans-serif',
+                        transition: 'color 0.3s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.color = '#c89860'}
+                      onMouseLeave={(e) => e.target.style.color = '#dfa974'}
+                    >
                       Forgot Password?
                     </Link>
                   </div>
 
                   {/* Submit Button */}
-                  <div className="d-grid gap-2">
-                    <button
-                      type="submit"
-                      className="btn btn-primary btn-lg"
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2"></span>
-                          Logging in...
-                        </>
-                      ) : (
-                        <>
-                          <i className="bi bi-box-arrow-in-right me-2"></i>
-                          Login
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    style={{
+                      width: '100%',
+                      height: '50px',
+                      backgroundColor: loading ? '#c89860' : '#dfa974',
+                      color: '#fff',
+                      fontSize: '14px',
+                      fontWeight: '700',
+                      letterSpacing: '2px',
+                      textTransform: 'uppercase',
+                      border: 'none',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.3s',
+                      fontFamily: '"Cabin", sans-serif',
+                      opacity: loading ? 0.7 : 1
+                    }}
+                    onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#c89860')}
+                    onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#dfa974')}
+                  >
+                    {loading ? 'LOGGING IN...' : 'LOGIN NOW'}
+                  </button>
                 </form>
               </div>
 
               {/* Footer */}
-              <div className="card-footer bg-light text-center py-3">
-                <p className="mb-0 text-muted">
+              <div style={{
+                backgroundColor: '#f9f9f9',
+                padding: '25px 35px',
+                textAlign: 'center',
+                borderTop: '1px solid #e5e5e5'
+              }}>
+                <p style={{
+                  marginBottom: '0',
+                  color: '#707079',
+                  fontSize: '14px',
+                  fontFamily: '"Cabin", sans-serif'
+                }}>
                   Don't have an account?{' '}
-                  <Link to="/register" className="text-primary fw-bold text-decoration-none">
+                  <Link 
+                    to="/register" 
+                    style={{
+                      color: '#dfa974',
+                      fontWeight: '700',
+                      textDecoration: 'none',
+                      transition: 'color 0.3s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.color = '#c89860'}
+                    onMouseLeave={(e) => e.target.style.color = '#dfa974'}
+                  >
                     Create Account
                   </Link>
                 </p>
@@ -224,10 +355,13 @@ const Login = () => {
             </div>
 
             {/* Additional Info */}
-            <div className="text-center mt-4">
-              <p className="text-muted small">
-                <i className="bi bi-shield-check me-1"></i>
-                Your information is secure with us
+            <div style={{ textAlign: 'center', marginTop: '25px' }}>
+              <p style={{
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: '13px',
+                fontFamily: '"Cabin", sans-serif'
+              }}>
+                🔒 Your information is secure with us
               </p>
             </div>
           </div>

@@ -2,6 +2,8 @@ import React from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ContactSection = () => {
     const [loading, setLoading] = useState(false);
@@ -22,10 +24,6 @@ const ContactSection = () => {
     useEffect(() => {
         fetchSiteSettings();
     }, []);
-
- 
-  const [success, setSuccess] = useState(null);
-  const [error, setError] = useState(null);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -42,32 +40,31 @@ const ContactSection = () => {
     }))
   }
 
-    const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-        const response = await axios.post("http://localhost:3000/api/feedback/add",
-            formData,
-           
-        );
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+      const response = await axios.post("http://localhost:3000/api/feedback/add", formData);
+      
       if (response.data.success) {
-        setSuccess("Message set successfully");
-        setTimeout(() => setSuccess(null), 3000);
-        setFormData({
-          name: "",
-          email: "",
-          message: ""
-        });
-        
-      } else {
-        setError(response.data.message || "Error processing message");
-        setTimeout(() => setError(null), 3000);
+          toast.success('Message sent successfully!', {
+              position: "top-right",
+              autoClose: 3000,
+          });
+          
+          setFormData({
+              name: "",
+              email: "",
+              message: ""
+          });
       }
-    } catch (err) {
+  } catch (err) {
       console.error("Error:", err);
-      setError(err.response?.data?.message || "Error processing message. Please try again.");
-      setTimeout(() => setError(null), 3000);
-    }
-  };
+      toast.error('Failed to send message. Please try again.', {
+          position: "top-right",
+          autoClose: 3000,
+      });
+  }
+};
 
     if (loading) return (
     <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
@@ -84,6 +81,19 @@ const ContactSection = () => {
 
     return (
         <div style={{ paddingTop: "60px" }}>
+        <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            style={{ zIndex: 9999 }}
+        />
         <section className="contact-section spad">
         <div className="container">
             <div className="row">
@@ -117,20 +127,6 @@ const ContactSection = () => {
                 </table>
                 </div>
             </div>
-
-            {error && (
-          <div className="alert alert-danger alert-dismissible fade show" role="alert">
-            <i className="fas fa-exclamation-circle me-2"></i>{error}
-            <button type="button" className="btn-close shadow-none" onClick={() => setError(null)}></button>
-          </div>
-        )}
-
-        {success && (
-          <div className="alert alert-success alert-dismissible fade show" role="alert">
-            <i className="fas fa-check-circle me-2"></i>{success}
-            <button type="button" className="btn-close shadow-none" onClick={() => setSuccess(null)}></button>
-          </div>
-        )}
 
             {/* Contact Form */}
             <div className="col-lg-7 offset-lg-1">

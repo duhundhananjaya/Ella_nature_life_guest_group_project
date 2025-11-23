@@ -10,6 +10,9 @@ const Sidebar = () => {
         { name: "Users", path: "/admin-dashboard/users", icon: "fas fa-users", end: false },
         { name: "Features", path: "/admin-dashboard/features", icon: "fas fa-gem", end: false },
         { name: "Facilities", path: "/admin-dashboard/facilities", icon: "fas fa-tools", end: false },
+        { name: "Bookings", path: "/admin-dashboard/bookings", icon: "fas fa-ticket-alt", end: false },
+        { name: "Clients", path: "/admin-dashboard/clients", icon: "fas fa-user-tie", end: false },
+        { name: "Feedbacks", path: "/admin-dashboard/feedbacks", icon: "fas fa-comments", end: false },
         { name: "Site Settings", path: "/admin-dashboard/site-settings", icon: "fas fa-cog", end: false },
     ];
 
@@ -85,18 +88,7 @@ const Sidebar = () => {
                                 </nav>
                             </div>
 
-                            <div className="sb-sidenav-menu-heading">Interface</div>
-                            <a className="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                                <div className="sb-nav-link-icon"><i className="fas fa-columns"></i></div>
-                                Layouts
-                                <div className="sb-sidenav-collapse-arrow"><i className="fas fa-angle-down"></i></div>
-                            </a>
-                            <div className="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                                <nav className="sb-sidenav-menu-nested nav">
-                                    <a className="nav-link" href="layout-static.html">Static Navigation</a>
-                                    <a className="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>
-                                </nav>
-                            </div>
+                            <div className="sb-sidenav-menu-heading">More...</div>
                         </>
                     )}
                 </div>
