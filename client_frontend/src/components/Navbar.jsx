@@ -121,7 +121,7 @@ const Navbar = () => {
                 to="/register" 
                 className="bk-btn"
                 style={{
-                  backgroundColor: '#0aa149ff',
+                  backgroundColor: '#dfa974',
                   color: 'white',
                   padding: '10px 20px',
                   borderRadius: '6px',
@@ -135,7 +135,7 @@ const Navbar = () => {
                 to="/login" 
                 className="bk-btn"
                 style={{
-                  backgroundColor: '#0aa149ff',
+                  backgroundColor: '#dfa974',
                   color: 'white',
                   padding: '10px 20px',
                   borderRadius: '6px',
@@ -153,7 +153,7 @@ const Navbar = () => {
                   width: '40px',
                   height: '40px',
                   borderRadius: '50%',
-                  backgroundColor: '#0aa149ff',
+                  backgroundColor: '#dfa974',
                   color: 'white',
                   display: 'flex',
                   alignItems: 'center',
@@ -185,7 +185,7 @@ const Navbar = () => {
                   My Profile
                 </Link>
                 <Link 
-                  to="/bookings"
+                  to="/my-bookings"
                   style={{
                     padding: '8px 12px',
                     backgroundColor: 'white',
@@ -304,12 +304,12 @@ const Navbar = () => {
                           to="/register" 
                           className="px-3 py-2 rounded-md font-medium border mr-3" 
                           style={{
-                            backgroundColor: '#0aa149ff',
+                            backgroundColor: '#dfa974',
                             color: 'white',                        
                             transition: 'background-color 0.3s ease'
                           }}
-                          onMouseEnter={(e) => (e.target.style.backgroundColor = '#12861aff')} 
-                          onMouseLeave={(e) => (e.target.style.backgroundColor = '#0aa149ff')}>
+                          onMouseEnter={(e) => (e.target.style.backgroundColor = '#c7813cff')} 
+                          onMouseLeave={(e) => (e.target.style.backgroundColor = '#dc9956ff')}>
                           Register
                         </Link>
 
@@ -317,12 +317,12 @@ const Navbar = () => {
                           to="/login" 
                           className="px-3 py-2 rounded-md font-medium border"
                           style={{
-                            backgroundColor: '#0aa149ff',
+                            backgroundColor: '#dfa974',
                             color: 'white',
                             border: '2px solid black',
                           }}
-                          onMouseEnter={(e) => (e.target.style.backgroundColor = '#12861aff')} 
-                          onMouseLeave={(e) => (e.target.style.backgroundColor = '#0fb155ff')}>
+                          onMouseEnter={(e) => (e.target.style.backgroundColor = '#c7813cff')} 
+                          onMouseLeave={(e) => (e.target.style.backgroundColor = '#dc9956ff')}>
                           Login
                         </Link>
                       </>
@@ -335,7 +335,7 @@ const Navbar = () => {
                             alignItems: 'center',
                             gap: '8px',
                             padding: '8px 15px',
-                            backgroundColor: '#0aa149ff',
+                            backgroundColor: '#dfa974',
                             color: 'white',
                             border: 'none',
                             borderRadius: '6px',
@@ -344,14 +344,14 @@ const Navbar = () => {
                             fontWeight: '500',
                             transition: 'background-color 0.3s ease'
                           }}
-                          onMouseEnter={(e) => (e.target.style.backgroundColor = '#12861aff')}
-                          onMouseLeave={(e) => (e.target.style.backgroundColor = '#0aa149ff')}>
+                          onMouseEnter={(e) => (e.target.style.backgroundColor = '#c7813cff')}
+                          onMouseLeave={(e) => (e.target.style.backgroundColor = '#dc9956ff')}>
                           <div style={{
                             width: '32px',
                             height: '32px',
                             borderRadius: '50%',
                             backgroundColor: 'white',
-                            color: '#0aa149ff',
+                            color: '#dfa974',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -361,7 +361,7 @@ const Navbar = () => {
                             {user?.fullName?.charAt(0).toUpperCase() || 'U'}
                           </div>
                           <span>{user?.fullName || 'User'}</span>
-                          <i className={`fa fa-chevron-${showDropdown ? 'up' : 'down'}`} style={{ fontSize: '12px' }}></i>
+                          <i className={`fa fa-chevron-${showDropdown ? 'up' : 'down'}`} style={{ fontSize: '12px', color: '#ffffffff' }}></i>
                         </button>
 
                         {/* Dropdown Menu */}
@@ -416,7 +416,7 @@ const Navbar = () => {
                             </Link>
 
                             <Link
-                              to="/bookings"
+                              to="/my-bookings"
                               onClick={() => setShowDropdown(false)}
                               style={{
                                 display: 'flex',

@@ -221,7 +221,7 @@ const ProfileSection = () => {
         style={{ zIndex: 9999 }}
       />
 
-      <div className="container">
+      <div className="container mt-4">
         {/* Page Title */}
         <div style={{ 
           textAlign: 'center', 
