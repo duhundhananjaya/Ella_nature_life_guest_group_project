@@ -15,6 +15,7 @@ import ResendVerification from './pages/ResendVerification'
 import Profile from './pages/Profile'
 import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
+import MyBooking from './pages/MyBookings'
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/room-details/:id" element={<RoomDetails />} />
+        <Route path="/my-bookings" element={<MyBooking />} />
 
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
