@@ -18,6 +18,7 @@ import clientAuthRoutes from './routes/clientAuthRoutes.js';
 import bookingRoutes from './routes/booking.js';
 import viewBookingRoutes from './routes/viewBooking.js';
 import viewClientsRoutes from './routes/viewClients.js';
+import telegramSettingsRoutes from './routes/telegramSettings.js';
 
 const app = express();
 app.use(cors());
@@ -39,6 +40,7 @@ app.use('/api/rooms', roomsRoutes);
 app.use('/api/room-instances', roomInstancesRoutes);
 app.use('/api/client-rooms', clientRoomsRoutes);
 app.use('/api/site-settings', siteSettingsRoutes);
+app.use('/api/telegram-settings', telegramSettingsRoutes);
 app.use('/api/client-site-settings', clientSiteSettingsRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use('/api/feedback', feedbackRoutes);
