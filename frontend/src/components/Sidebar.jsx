@@ -12,6 +12,7 @@ const Sidebar = () => {
         { name: "Facilities", path: "/admin-dashboard/facilities", icon: "fas fa-tools", end: false },
         { name: "Bookings", path: "/admin-dashboard/bookings", icon: "fas fa-ticket-alt", end: false },
         { name: "Clients", path: "/admin-dashboard/clients", icon: "fas fa-user-tie", end: false },
+        { name: "Reviews", path: "/admin-dashboard/reviews", icon: "fas fa-star", end: false },
         { name: "Feedbacks", path: "/admin-dashboard/feedbacks", icon: "fas fa-comments", end: false },
         { name: "Site Settings", path: "/admin-dashboard/site-settings", icon: "fas fa-cog", end: false },
         { name: "Telegram Alerts", path: "/admin-dashboard/telegram-alerts", icon: "fab fa-telegram-plane", end: false },
