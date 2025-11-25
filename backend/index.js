@@ -19,6 +19,7 @@ import bookingRoutes from './routes/booking.js';
 import viewBookingRoutes from './routes/viewBooking.js';
 import viewClientsRoutes from './routes/viewClients.js';
 import telegramSettingsRoutes from './routes/telegramSettings.js';
+import reviewRoutes from './routes/review.js';
 
 const app = express();
 app.use(cors());
@@ -48,6 +49,7 @@ app.use('/api/client/auth', clientAuthRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/view-bookings', viewBookingRoutes);
 app.use('/api/view-clients', viewClientsRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 app.listen(process.env.PORT, () =>{
     connectDB();
