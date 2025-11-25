@@ -58,6 +58,15 @@ const RoomCleanings = () => {
     );
   };
 
+  // Get maintenance badge color
+  const getMaintenanceBadgeClass = (status) => {
+    switch(status) {
+      case 'good': return 'bg-success';
+      case 'dirty': return 'bg-danger';
+      case 'under-maintenance': return 'bg-warning';
+      default: return 'bg-secondary';
+    }
+  };
   // Get status badge color
   const getStatusBadgeClass = (status) => {
     switch(status) {
@@ -172,6 +181,7 @@ const RoomCleanings = () => {
                     <th className="px-4 py-3" style={{ width: '60px' }}>No</th>
                     <th className="py-3">Room Number</th>
                     <th className="py-3">Room Type</th>
+                    <th className="py-3">Maintenance Status</th>
                     <th className="py-3">Cleaning Status</th>
                     <th className="py-3">Occupancy</th>
                     <th className="py-3">Last Cleaned</th>
@@ -185,6 +195,11 @@ const RoomCleanings = () => {
                         <td className="px-4 text-muted">{index + 1}</td>
                         <td className="fw-semibold">{room.room_number}</td>
                         <td className="text-muted">{room.room_type?.room_name || 'N/A'}</td>
+                        <td>
+                          <span className={`badge ${getMaintenanceBadgeClass(room.maintenance_status)} px-2 py-1`}>
+                            {room.maintenance_status}
+                          </span>
+                        </td>
                         <td>
                           <span className={`badge ${getStatusBadgeClass(room.cleaning_status)} px-2 py-1`}>
                             {room.cleaning_status}
