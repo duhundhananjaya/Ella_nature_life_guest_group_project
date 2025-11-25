@@ -21,6 +21,12 @@ import Profile from './components/Profile'
 import ClerkGallery from './components/clerk/ClerkGallery'
 import ProfileView from './components/ProfileView'
 
+import ViewBookings from './components/ViewBookings'
+import Clients from './components/Clients'
+import TelegramSettings from './components/TelegramSettings'
+import Feedback from './components/feedbacks'
+
+
 function App() {
 
   return (
@@ -39,6 +45,10 @@ function App() {
           <Route path="site-settings" element={<SiteSettings />} />
           <Route path="profile" element={<ProfileView />} />
           <Route path="profile-settings" element={<Profile />} />
+
+          <Route path="clients" element={<Clients />} />
+          <Route path="feedbacks" element={<Feedback/>}/>
+
         </Route>
 
         <Route path="/clerk-dashboard" element={<ProtectedRoutes requireRole={["clerk"]}>
