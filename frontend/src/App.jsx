@@ -23,6 +23,7 @@ import ProfileView from './components/ProfileView'
 import ViewBookings from './components/ViewBookings'
 import Clients from './components/Clients'
 import TelegramSettings from './components/TelegramSettings'
+import Review from './components/Review'
 
 function App() {
 
@@ -45,6 +46,7 @@ function App() {
           <Route path="profile" element={<ProfileView />} />
           <Route path="profile-settings" element={<Profile />} />
           <Route path="clients" element={<Clients />} />
+          <Route path="reviews" element={<Review />} />
         </Route>
 
         <Route path="/clerk-dashboard" element={<ProtectedRoutes requireRole={["clerk"]}>

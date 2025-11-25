@@ -20,6 +20,7 @@ import viewBookingRoutes from './routes/viewBooking.js';
 import viewClientsRoutes from './routes/viewClients.js';
 import telegramSettingsRoutes from './routes/telegramSettings.js';
 import reviewRoutes from './routes/review.js';
+import viewReviewRoutes from './routes/viewReview.js';
 
 const app = express();
 app.use(cors());
@@ -50,6 +51,7 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/view-bookings', viewBookingRoutes);
 app.use('/api/view-clients', viewClientsRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/view-reviews', viewReviewRoutes);
 
 app.listen(process.env.PORT, () =>{
     connectDB();
