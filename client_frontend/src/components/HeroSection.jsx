@@ -6,6 +6,8 @@ const HeroSection = () => {
   const [rooms, setRooms] = useState([]);
   const [facilities, setFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
 
   useEffect(() => {
     if (window.$ && window.$.fn) {
@@ -78,6 +80,11 @@ const HeroSection = () => {
         // Fetch facilities
         const facilitiesResponse = await axios.get("http://localhost:3000/api/client-rooms/facilities");
         setFacilities(facilitiesResponse.data.facilities.slice(0, 6)); // Get oldest 6 facilities
+
+        setReviewsLoading(true);
+        const reviewsResponse = await axios.get("http://localhost:3000/api/reviews/all-reviews");
+        setReviews(reviewsResponse.data.data.reviews.slice(0, 4)); // Get first 4 reviews
+        setReviewsLoading(false);
         
         setLoading(false);
       } catch (error) {
@@ -88,6 +95,32 @@ const HeroSection = () => {
 
     fetchData();
   }, []);
+
+  // Re-initialize testimonial slider when reviews are loaded
+  useEffect(() => {
+    if (!reviewsLoading && reviews.length > 0 && window.$ && window.$.fn.owlCarousel) {
+      const $ = window.$;
+      
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        // Destroy existing carousel if it exists
+        $(".testimonial-slider").trigger('destroy.owl.carousel');
+        $(".testimonial-slider").removeClass('owl-loaded owl-drag');
+        $(".testimonial-slider").find('.owl-stage-outer').children().unwrap();
+        
+        // Re-initialize with reviews
+        $(".testimonial-slider").owlCarousel({
+          items: 1,
+          dots: false,
+          autoplay: true,
+          loop: true,
+          smartSpeed: 1200,
+          nav: true,
+          navText: ["<i class='arrow_left'></i>", "<i class='arrow_right'></i>"]
+        });
+      }, 100);
+    }
+  }, [reviews, reviewsLoading]);
 
   return (
     <div style={{ paddingTop: "60px" }}>       
@@ -431,42 +464,42 @@ const HeroSection = () => {
           </div>
           <div className="row">
             <div className="col-lg-8 offset-lg-2">
-              <div className="testimonial-slider owl-carousel">
-                <div className="ts-item">
-                  <p>After a construction project took longer than expected, my husband, my daughter and I
-                    needed a place to stay for a few nights. As a Chicago resident, we know a lot about our
-                    city, neighborhood and the types of housing options available and absolutely love our
-                    vacation at Sona Hotel.</p>
-                  <div className="ti-author">
-                    <div className="rating">
-                      <i className="icon_star"></i>
-                      <i className="icon_star"></i>
-                      <i className="icon_star"></i>
-                      <i className="icon_star"></i>
-                      <i className="icon_star-half_alt"></i>
-                    </div>
-                    <h5> - Alexander Vasquez</h5>
+              {reviewsLoading ? (
+                <div className="text-center py-5">
+                  <div className="spinner-border" role="status" style={{ 
+                    width: '3rem', 
+                    height: '3rem', 
+                    borderColor: '#dfa974',
+                    borderRightColor: 'transparent',
+                    borderWidth: '4px'
+                  }}>
                   </div>
-                  <img src="img/testimonial-logo.png" alt="" />
                 </div>
-                <div className="ts-item">
-                  <p>After a construction project took longer than expected, my husband, my daughter and I
-                    needed a place to stay for a few nights. As a Chicago resident, we know a lot about our
-                    city, neighborhood and the types of housing options available and absolutely love our
-                    vacation at Sona Hotel.</p>
-                  <div className="ti-author">
-                    <div className="rating">
-                      <i className="icon_star"></i>
-                      <i className="icon_star"></i>
-                      <i className="icon_star"></i>
-                      <i className="icon_star"></i>
-                      <i className="icon_star-half_alt"></i>
+              ) : reviews.length > 0 ? (
+                <div className="testimonial-slider owl-carousel">
+                  {reviews.map((review, index) => (
+                    <div className="ts-item" key={index}>
+                      <p>{review.comment}</p>
+                      <div className="ti-author">
+                        <div className="rating">
+                          {[...Array(review.rating)].map((_, i) => (
+                            <i key={`filled-${i}`} className="icon_star"></i>
+                          ))}
+                          {[...Array(5 - review.rating)].map((_, i) => (
+                            <i key={`empty-${i}`} className="icon_star" style={{ color: '#ddd' }}></i>
+                          ))}
+                        </div>
+                        <h5> - {review.client?.fullName || "Anonymous Guest"}</h5>
+                      </div>
+                      <img src="img/testimonial-logo.png" alt="" />
                     </div>
-                    <h5> - Alexander Vasquez</h5>
-                  </div>
-                  <img src="img/testimonial-logo.png" alt="" />
+                  ))}
                 </div>
-              </div>
+              ) : (
+                <div className="text-center py-5">
+                  <p style={{ color: '#707079' }}>No reviews available yet.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

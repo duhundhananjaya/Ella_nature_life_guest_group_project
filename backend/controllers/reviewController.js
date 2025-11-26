@@ -199,3 +199,28 @@ export const getMyReviews = async (req, res) => {
     });
   }
 };
+
+export const getAllReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find()
+      .populate('client', 'fullName email')
+      .populate('roomType', 'room_name')
+      .sort({ created_at: -1 });
+
+    res.json({
+      success: true,
+      data: {
+        reviews,
+        totalReviews: reviews.length
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching all reviews:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch reviews',
+      error: error.message
+    });
+  }
+};
