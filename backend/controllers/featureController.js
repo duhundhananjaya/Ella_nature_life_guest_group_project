@@ -1,4 +1,5 @@
 import Feature from '../models/Feature.js';
+import Room from '../models/Room.js';
 
 const addFeature =async (req, res) =>{
     try {
@@ -39,6 +40,15 @@ const deleteFeature = async (req, res) =>{
         const existingFeature = await Feature.findById(id);
         if(!existingFeature){
             return res.status(404).json({success: false, message: 'Feature already exists'});
+        }
+
+        const isAssigned = await Room.findOne({ features: id });
+
+        if (isAssigned) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot delete. This feature is assigned to one or more rooms.'
+            });
         }
 
         await Feature.findByIdAndDelete(id);
