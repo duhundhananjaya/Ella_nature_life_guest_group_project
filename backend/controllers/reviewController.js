@@ -149,7 +149,7 @@ export const getRoomReviews = async (req, res) => {
     const { roomTypeId } = req.params;
 
     const reviews = await Review.find({ roomType: roomTypeId })
-      .populate('client', 'name email')
+      .populate('client', 'fullName email')
       .sort({ created_at: -1 });
 
     const averageRating = reviews.length > 0
@@ -192,6 +192,31 @@ export const getMyReviews = async (req, res) => {
 
   } catch (error) {
     console.error('Error fetching reviews:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch reviews',
+      error: error.message
+    });
+  }
+};
+
+export const getAllReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find()
+      .populate('client', 'fullName email')
+      .populate('roomType', 'room_name')
+      .sort({ created_at: -1 });
+
+    res.json({
+      success: true,
+      data: {
+        reviews,
+        totalReviews: reviews.length
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching all reviews:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch reviews',
