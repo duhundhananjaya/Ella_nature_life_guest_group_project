@@ -16,6 +16,8 @@ import Profile from './pages/Profile'
 import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import MyBooking from './pages/MyBookings'
+import BookingSuccess from './pages/BookingSuccess'
+import BookingCancel from './pages/BookingCancel'
 
 
 function App() {
@@ -30,6 +32,8 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/room-details/:id" element={<RoomDetails />} />
         <Route path="/my-bookings" element={<MyBooking />} />
+        <Route path="/booking/success" element={<BookingSuccess />} />
+        <Route path="/booking/cancel" element={<BookingCancel />} />
 
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
