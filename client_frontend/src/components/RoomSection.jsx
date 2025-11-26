@@ -6,11 +6,11 @@ const RoomSection = () => {
   const [loading, setLoading] = useState(false);
   const [rooms, setRooms] = useState([]);
 
+  // Fetch rooms
   const fetchRooms = async () => {
     setLoading(true);
     try {
       const response = await axios.get("http://localhost:3000/api/client-rooms");
-      // Filter only active rooms
       const activeRooms = response.data.rooms.filter(room => room.status === 'active');
       setRooms(activeRooms);
       setLoading(false);
@@ -23,6 +23,25 @@ const RoomSection = () => {
   useEffect(() => {
     fetchRooms();
   }, []);
+
+  // Render star rating
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating || 0);
+    const hasHalfStar = (rating % 1) >= 0.5;
+    
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<i key={`full-${i}`} className="icon_star" style={{ color: '#dfa974' }}></i>);
+    }
+    if (hasHalfStar) {
+      stars.push(<i key="half" className="icon_star-half_alt" style={{ color: '#dfa974' }}></i>);
+    }
+    const emptyStars = 5 - stars.length;
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<i key={`empty-${i}`} className="icon_star" style={{ color: '#ddd' }}></i>);
+    }
+    return stars;
+  };
 
   if (loading) return (
     <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
@@ -76,8 +95,8 @@ const RoomSection = () => {
                     display: 'flex',
                     flexDirection: 'column'
                   }}>
-                    {/* Room Image - Thumbnail */}
-                    <div style={{ height: '250px', overflow: 'hidden' }}>
+                    {/* Room Image */}
+                    <div style={{ height: '250px', overflow: 'hidden', position: 'relative' }}>
                       <img
                         src={
                           room.images?.find((img) => img.is_thumbnail)?.image_path
@@ -90,14 +109,47 @@ const RoomSection = () => {
                           e.target.src = 'http://localhost:3000/default.jpg';
                         }}
                       />
+                      
+                      {/* Rating Badge */}
+                      {room.averageRating > 0 && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '15px',
+                          right: '15px',
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          padding: '8px 12px',
+                          borderRadius: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                        }}>
+                          <i className="icon_star" style={{ color: '#dfa974', fontSize: '14px' }}></i>
+                          <span style={{ fontSize: '13px', fontWeight: '600', color: '#19191a' }}>
+                            {room.averageRating.toFixed(1)}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Room Details */}
                     <div className="ri-text" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '25px' }}>
-                      <h4>{room.room_name}</h4>
-                      <h3>
+                      <h4 style={{ marginBottom: '10px' }}>{room.room_name}</h4>
+                      
+                      {/* Star Rating */}
+                      <div className="rating" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center' }}>
+                        {renderStars(room.averageRating || 0)}
+                        {room.totalReviews > 0 && (
+                          <span style={{ marginLeft: '8px', fontSize: '12px', color: '#707079' }}>
+                            ({room.totalReviews} {room.totalReviews === 1 ? 'review' : 'reviews'})
+                          </span>
+                        )}
+                      </div>
+
+                      <h3 style={{ marginBottom: '15px' }}>
                         {room.price} LKR<span> / Per Night</span>
                       </h3>
+                      
                       <table>
                         <tbody>
                           <tr>

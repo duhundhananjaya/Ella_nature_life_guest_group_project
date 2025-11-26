@@ -9,6 +9,24 @@ const HeroSection = () => {
   const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
 
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating || 0);
+    const hasHalfStar = (rating % 1) >= 0.5;
+    
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<i key={`full-${i}`} className="icon_star" style={{ color: '#dfa974' }}></i>);
+    }
+    if (hasHalfStar) {
+      stars.push(<i key="half" className="icon_star-half_alt" style={{ color: '#dfa974' }}></i>);
+    }
+    const emptyStars = 5 - stars.length;
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<i key={`empty-${i}`} className="icon_star" style={{ color: '#ddd' }}></i>);
+    }
+    return stars;
+  };
+
   useEffect(() => {
     if (window.$ && window.$.fn) {
       const $ = window.$;
@@ -41,17 +59,6 @@ const HeroSection = () => {
           nav: true,
           navText: ["<i class='arrow_left'></i>", "<i class='arrow_right'></i>"]
         });
-      }
-
-      if ($.fn.datepicker) {
-        $(".date-input").datepicker({
-          minDate: 0,
-          dateFormat: 'dd MM, yy'
-        });
-      }
-
-      if ($.fn.niceSelect) {
-        $("select").niceSelect();
       }
 
       return () => {
@@ -133,48 +140,10 @@ const HeroSection = () => {
                 <p>Ella Nature Life Guest and Restaurant offers a peaceful stay with modern rooms,
                    a garden, and a diverse restaurant. Guests enjoy free WiFi, airport transfers, 
                    and bike rentals to explore Ella Spice Garden and Little Adam's Peak.</p>
-                <Link to="/rooms" className="primary-btn">Discover Now</Link>
+                <Link to="/rooms" className="primary-btn">Book Now</Link>
               </div>
             </div>
-            <div className="col-xl-4 col-lg-5 offset-xl-2 offset-lg-1">
-              <div className="booking-form" >
-                <h3>Book Your Room</h3>
-                <form action="#">
-                  <div className="check-date">
-                    <label htmlFor="date-in">Check In:</label>
-                    <input type="text" className="date-input" id="date-in" />
-                    <i className="icon_calendar"></i>
-                  </div>
-                  <div className="check-date">
-                    <label htmlFor="date-out">Check Out:</label>
-                    <input type="text" className="date-input" id="date-out" />
-                    <i className="icon_calendar"></i>
-                  </div>
-                  <div className="select-option">
-                    <label htmlFor="guest">Adults:</label>
-                    <select id="guest">
-                      <option value="">2 Adults</option>
-                      <option value="">3 Adults</option>
-                    </select>
-                  </div>
-                  <div className="select-option">
-                    <label htmlFor="guest2">Children:</label>
-                    <select id="guest2">
-                      <option value="">2 Children</option>
-                      <option value="">3 Children</option>
-                    </select>
-                  </div>
-                  <div className="select-option">
-                    <label htmlFor="room">Room:</label>
-                    <select id="room">
-                      <option value="">1 Room</option>
-                      <option value="">2 Room</option>
-                    </select>
-                  </div>
-                  <button type="submit">Check Availability</button>
-                </form>
-              </div>
-            </div>
+
           </div>
         </div>
         <div className="hero-slider owl-carousel">
@@ -377,6 +346,14 @@ const HeroSection = () => {
                     {/* Room Details */}
                     <div className="ri-text" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '25px' }}>
                       <h4>{room.room_name}</h4>
+                      <div className="rating" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center' }}>
+                        {renderStars(room.averageRating || 0)}
+                        {room.totalReviews > 0 && (
+                          <span style={{ marginLeft: '8px', fontSize: '12px', color: '#707079' }}>
+                            ({room.totalReviews} {room.totalReviews === 1 ? 'review' : 'reviews'})
+                          </span>
+                        )}
+                      </div>
                       <h3>
                         {room.price} LKR<span> / Per Night</span>
                       </h3>
@@ -476,7 +453,7 @@ const HeroSection = () => {
                   </div>
                 </div>
               ) : reviews.length > 0 ? (
-                <div className="testimonial-slider owl-carousel">
+                <div className="testimonial-slider owl-carousel" key={reviews.length}>
                   {reviews.map((review, index) => (
                     <div className="ts-item" key={index}>
                       <p>{review.comment}</p>
