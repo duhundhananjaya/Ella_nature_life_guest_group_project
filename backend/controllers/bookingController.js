@@ -1,6 +1,11 @@
 import Booking from '../models/Booking.js';
 import Room from '../models/Room.js';
 import RoomInstance from '../models/RoomInstance.js';
+import stripe from 'stripe';
+import 'dotenv/config';
+
+// Initialize Stripe
+const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 
 // Check Availability
 const checkAvailability = async (req, res) => {
@@ -279,6 +284,42 @@ const createBooking = async (req, res) => {
       { occupancy_status: 'reserved' }
     );
 
+    // Create Stripe checkout session
+    let stripeSession = null;
+    try {
+      stripeSession = await stripeInstance.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: `${roomType.room_name} - Booking #${booking.bookingId}`,
+                description: `Check-in: ${checkInDate.toLocaleDateString()} - Check-out: ${checkOutDate.toLocaleDateString()}`,
+              },
+              unit_amount: Math.round(booking.totalPrice * 100), // Convert to cents
+            },
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        client_reference_id: booking._id.toString(),
+        success_url: `${process.env.CLIENT_URL}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.CLIENT_URL}/booking/cancel`,
+        metadata: {
+          bookingId: booking._id.toString(),
+          bookingNumber: booking.bookingId
+        }
+      });
+
+      // Update booking with session ID
+      booking.stripeSessionId = stripeSession.id;
+      await booking.save();
+    } catch (stripeError) {
+      console.error('Error creating Stripe session:', stripeError);
+      // Continue without payment for now, but log the error
+    }
+
     // Populate booking details for response
     await booking.populate('roomType', 'room_name price area images');
     await booking.populate('roomInstances', 'room_number');
@@ -303,7 +344,11 @@ const createBooking = async (req, res) => {
         status: booking.status,
         paymentStatus: booking.paymentStatus,
         created_at: booking.created_at
-      }
+      },
+      payment: stripeSession ? {
+        sessionId: stripeSession.id,
+        url: stripeSession.url
+      } : null
     });
 
   } catch (error) {
@@ -451,4 +496,52 @@ const cancelBooking = async (req, res) => {
   }
 };
 
-export { checkAvailability, createBooking, getMyBookings, getBookingById, cancelBooking };
+const updatePaymentStatus = async (req, res) => {
+  try {
+    const { sessionId, paymentStatus } = req.body;
+    const clientId = req.client._id;
+
+    // Find booking by session ID
+    const booking = await Booking.findOne({
+      stripeSessionId: sessionId,
+      client: clientId
+    });
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found'
+      });
+    }
+
+    if (booking.paymentStatus === 'paid') {
+      return res.status(200).json({
+        success: true,
+        message: 'Payment status already updated'
+      });
+    }
+
+    // Update payment status
+    booking.paymentStatus = paymentStatus;
+    if (paymentStatus === 'paid') {
+      booking.paymentDate = new Date();
+    }
+    await booking.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Payment status updated successfully',
+      booking
+    });
+
+  } catch (error) {
+    console.error('Error updating payment status:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error updating payment status',
+      error: error.message
+    });
+  }
+};
+
+export { checkAvailability, createBooking, getMyBookings, getBookingById, cancelBooking, updatePaymentStatus };

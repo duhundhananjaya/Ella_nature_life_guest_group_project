@@ -15,6 +15,18 @@ const MyBookingsSection = () => {
     fetchBookings();
   }, []);
 
+  // Refresh bookings when component becomes visible (in case payment status was updated)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchBookings();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
   useEffect(() => {
     filterBookings();
   }, [activeFilter, bookings]);
@@ -98,7 +110,7 @@ const MyBookingsSection = () => {
   const handleViewDetails = async (bookingId) => {
     try {
       const token = localStorage.getItem('token');
-      
+
       const response = await fetch(`${API_URL}/${bookingId}`, {
         method: 'GET',
         headers: {
@@ -112,19 +124,53 @@ const MyBookingsSection = () => {
       }
 
       const data = await response.json();
-      
+
       // You can navigate to a details page or show a modal with the booking details
       console.log('Booking details:', data.data);
       toast.info(`Viewing details for booking ${data.data.bookingId}`, {
         position: "top-right",
         autoClose: 2000
       });
-      
+
       // Optional: Navigate to details page
       // window.location.href = `/booking-details/${bookingId}`;
     } catch (err) {
       console.error('Error fetching booking details:', err);
       toast.error(err.message || 'Failed to load booking details', {
+        position: "top-right",
+        autoClose: 3000
+      });
+    }
+  };
+
+  const handlePayNow = async (bookingId) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(`http://localhost:3000/api/payment/create-checkout-session`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ bookingId })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create payment session');
+      }
+
+      const data = await response.json();
+
+      if (data.url) {
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error('Payment URL not received');
+      }
+    } catch (err) {
+      console.error('Error creating payment session:', err);
+      toast.error(err.message || 'Failed to initiate payment', {
         position: "top-right",
         autoClose: 3000
       });
@@ -483,30 +529,7 @@ const MyBookingsSection = () => {
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                      <button
-                        onClick={() => handleViewDetails(booking._id)}
-                        style={{
-                          height: '45px',
-                          padding: '0 25px',
-                          backgroundColor: '#dfa974',
-                          color: '#fff',
-                          fontSize: '13px',
-                          fontWeight: '600',
-                          letterSpacing: '1px',
-                          textTransform: 'uppercase',
-                          border: 'none',
-                          cursor: 'pointer',
-                          transition: 'all 0.3s',
-                          fontFamily: '"Cabin", sans-serif',
-                          borderRadius: '4px'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#c89860'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = '#dfa974'}
-                      >
-                        📋 View Details
-                      </button>
-                    </div>
+                    
                   </div>
                 </div>
               </div>

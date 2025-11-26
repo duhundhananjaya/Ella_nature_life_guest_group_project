@@ -17,6 +17,8 @@ import feedbackRoutes from './routes/feedback.js';
 import clientAuthRoutes from './routes/clientAuthRoutes.js';
 import bookingRoutes from './routes/booking.js';
 import viewBookingRoutes from './routes/viewBooking.js';
+import paymentWebhookRouter from './routes/paymentWebhook.js';
+import paymentApiRouter from './routes/payment.js';
 
 const app = express();
 app.use(cors());
@@ -44,12 +46,13 @@ app.use('/api/feedback', feedbackRoutes);
 app.use('/api/client/auth', clientAuthRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/view-bookings', viewBookingRoutes);
+app.use('/api/webhook/stripe', paymentWebhookRouter);
+app.use('/api/payment', paymentApiRouter);
 
 app.listen(process.env.PORT, () =>{
     connectDB();
     console.log('Server is running on http://localhost:3000');
 })
-
 
 // NEW: Health check endpoint
 app.get('/api/health', (req, res) => {
