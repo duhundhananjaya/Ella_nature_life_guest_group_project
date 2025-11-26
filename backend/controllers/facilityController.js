@@ -1,4 +1,5 @@
 import Facility from '../models/Facility.js';
+import Room from '../models/Room.js';
 import multer from 'multer';
 import path from "path";
 import fs from 'fs';
@@ -99,6 +100,12 @@ const deleteFacility = async (req, res) =>{
         const existingFacility = await Facility.findById(id);
         if(!existingFacility){
             return res.status(404).json({success: false, message: 'Facility not found'});
+        }
+
+        const isAssigned = await Room.findOne({ facilities: id });
+
+        if (isAssigned) {
+          return res.status(400).json({ success: false, message: "Cannot delete. This facility is assigned to one or more rooms.",});
         }
 
         await Facility.findByIdAndDelete(id); 

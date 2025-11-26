@@ -21,24 +21,28 @@ export const getGallery = async (req, res) => {
 
 export const uploadImage = async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ status: "error", message: 'No image file provided' });
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ status: "error", message: 'No image files provided' });
         }
 
-        const imageName = req.file.filename;
+        const uploadedImages = [];
 
-        const image = await Gallery.create({
-            image: imageName, 
-        });
+        for (const file of req.files) {
+            const imageName = file.filename;
+            const image = await Gallery.create({
+                image: imageName,
+            });
+            uploadedImages.push(image);
+        }
 
-        res.status(201).json({ 
-            status: "ok", 
-            message: 'Image uploaded successfully!', 
-            image 
+        res.status(201).json({
+            status: "ok",
+            message: `${uploadedImages.length} image(s) uploaded successfully!`,
+            images: uploadedImages
         });
     } catch (err) {
-        console.error("Error uploading image:", err);
-        res.status(500).json({ status: "error", message: 'Error uploading image' });
+        console.error("Error uploading images:", err);
+        res.status(500).json({ status: "error", message: 'Error uploading images' });
     }
 };
 

@@ -19,6 +19,11 @@ import bookingRoutes from './routes/booking.js';
 import viewBookingRoutes from './routes/viewBooking.js';
 import paymentWebhookRouter from './routes/paymentWebhook.js';
 import paymentApiRouter from './routes/payment.js';
+import viewClientsRoutes from './routes/viewClients.js';
+import telegramSettingsRoutes from './routes/telegramSettings.js';
+import reviewRoutes from './routes/review.js';
+import viewReviewRoutes from './routes/viewReview.js';
+import viewFeedbackRoutes from './routes/viewFeedback.js';
 
 const app = express();
 app.use(cors());
@@ -40,6 +45,7 @@ app.use('/api/rooms', roomsRoutes);
 app.use('/api/room-instances', roomInstancesRoutes);
 app.use('/api/client-rooms', clientRoomsRoutes);
 app.use('/api/site-settings', siteSettingsRoutes);
+app.use('/api/telegram-settings', telegramSettingsRoutes);
 app.use('/api/client-site-settings', clientSiteSettingsRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use('/api/feedback', feedbackRoutes);
@@ -48,6 +54,10 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/view-bookings', viewBookingRoutes);
 app.use('/api/webhook/stripe', paymentWebhookRouter);
 app.use('/api/payment', paymentApiRouter);
+app.use('/api/view-clients', viewClientsRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/view-reviews', viewReviewRoutes);
+app.use('/api/view-feedbacks', viewFeedbackRoutes);
 
 app.listen(process.env.PORT, () =>{
     connectDB();

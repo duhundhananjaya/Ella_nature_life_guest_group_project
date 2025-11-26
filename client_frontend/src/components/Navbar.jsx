@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router';
 import authService from '../services/authService';
+import axios from 'axios';
 
 const Navbar = () => {
   const location = useLocation();
@@ -8,7 +9,27 @@ const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [roomsLoading, setRoomsLoading] = useState(true);
   
+  // Fetch room types
+  useEffect(() => {
+    const fetchRoomTypes = async () => {
+      try {
+        setRoomsLoading(true);
+        const response = await axios.get("http://localhost:3000/api/client-rooms");
+        const activeRooms = response.data.rooms.filter(room => room.status === 'active');
+        setRoomTypes(activeRooms);
+        setRoomsLoading(false);
+      } catch (error) {
+        console.error("Error fetching rooms", error);
+        setRoomsLoading(false);
+      }
+    };
+    
+    fetchRoomTypes();
+  }, []);
+
   // Check authentication status
   useEffect(() => {
     const checkAuth = () => {
@@ -19,7 +40,6 @@ const Navbar = () => {
     };
     
     checkAuth();
-    // Re-check on location change
   }, [location]);
 
   const handleLogout = () => {
@@ -54,23 +74,34 @@ const Navbar = () => {
     canvasClose?.addEventListener('click', closeCanvas);
     offcanvasMenuOverlay?.addEventListener('click', closeCanvas);
 
-    // Initialize slicknav after a small delay to ensure DOM is ready
-    setTimeout(() => {
-      if (window.$ && window.$.fn.slicknav) {
-        // Destroy existing instance if any
-        if (window.$(".mobile-menu").hasClass('slicknav_active')) {
-          window.$(".mobile-menu").slicknav('destroy');
+    // Cleanup
+    return () => {
+      canvasOpen?.removeEventListener('click', openCanvas);
+      canvasClose?.removeEventListener('click', closeCanvas);
+      offcanvasMenuOverlay?.removeEventListener('click', closeCanvas);
+    };
+  }, []);
+
+  // Initialize slicknav after rooms are loaded
+  useEffect(() => {
+    if (!roomsLoading) {
+      setTimeout(() => {
+        if (window.$ && window.$.fn.slicknav) {
+          // Destroy existing instance if any
+          if (window.$(".mobile-menu").hasClass('slicknav_active')) {
+            window.$(".mobile-menu").slicknav('destroy');
+          }
+          
+          window.$(".mobile-menu").slicknav({
+            prependTo: '#mobile-menu-wrap',
+            allowParentLinks: true
+          });
+          
+          // Update active state in cloned slicknav menu
+          updateSlicknavActiveState();
         }
-        
-        window.$(".mobile-menu").slicknav({
-          prependTo: '#mobile-menu-wrap',
-          allowParentLinks: true
-        });
-        
-        // Update active state in cloned slicknav menu
-        updateSlicknavActiveState();
-      }
-    }, 100);
+      }, 100);
+    }
     
     // Function to update active state in slicknav cloned menu
     const updateSlicknavActiveState = () => {
@@ -95,11 +126,8 @@ const Navbar = () => {
           mobileMenu.slicknav('destroy');
         }
       }
-      canvasOpen?.removeEventListener('click', openCanvas);
-      canvasClose?.removeEventListener('click', closeCanvas);
-      offcanvasMenuOverlay?.removeEventListener('click', closeCanvas);
     };
-  }, [location.pathname]);
+  }, [location.pathname, roomsLoading, roomTypes]);
 
   return (
     <>
@@ -218,7 +246,7 @@ const Navbar = () => {
         </div>
 
         {/* This will be cloned by slicknav */}
-        <nav className="mainmenu mobile-menu">
+        <nav className="mainmenu mobile-menu" key={`mobile-${roomTypes.length}`}>
           <ul>
             <li className={isActive('/')}>
               <Link to="/">Home</Link>
@@ -232,13 +260,22 @@ const Navbar = () => {
             <li className={isActive('/gallery')}>
               <Link to="/gallery">Gallery</Link>
             </li>
-            <li className={isActive('')}>
-              <Link to="#">Pages</Link>
+            <li>
+              <Link to="#">Room Types</Link>
               <ul className="dropdown">
-                <li><Link to="">Room Details</Link></li>
-                <li><Link to="/deluxe-room">Deluxe Room</Link></li>
-                <li><Link to="/family-room">Family Room</Link></li>
-                <li><Link to="/premium-room">Premium Room</Link></li>
+                {roomsLoading ? (
+                  <li><Link to="#">Loading...</Link></li>
+                ) : roomTypes.length === 0 ? (
+                  <li><Link to="/rooms">View All Rooms</Link></li>
+                ) : (
+                  roomTypes.map((room) => (
+                    <li key={room._id}>
+                      <Link to={`/room-details/${room._id}`}>
+                        {room.room_name}
+                      </Link>
+                    </li>
+                  ))
+                )}
               </ul>
             </li>
             <li className={isActive('/contact')}>
@@ -267,7 +304,7 @@ const Navbar = () => {
               </div>
               <div className="col-lg-10">
                 <div className="nav-menu">
-                  <nav className="mainmenu">
+                  <nav className="mainmenu" key={`desktop-${roomTypes.length}`}>
                     <ul>
                       <li className={isActive('/')}>
                         <Link to="/">Home</Link>
@@ -281,13 +318,22 @@ const Navbar = () => {
                       <li className={isActive('/gallery')}>
                         <Link to="/gallery">Gallery</Link>
                       </li>
-                      <li className={isActive('')}>
-                        <Link to="#">Pages</Link>
+                      <li>
+                        <Link to="#">Room Types</Link>
                         <ul className="dropdown">
-                          <li><Link to="/room-details">Room Details</Link></li>
-                          <li><Link to="/deluxe-room">Deluxe Room</Link></li>
-                          <li><Link to="/family-room">Family Room</Link></li>
-                          <li><Link to="/premium-room">Premium Room</Link></li>
+                          {roomsLoading ? (
+                            <li><Link to="#">Loading...</Link></li>
+                          ) : roomTypes.length === 0 ? (
+                            <li><Link to="/rooms">View All Rooms</Link></li>
+                          ) : (
+                            roomTypes.map((room) => (
+                              <li key={room._id}>
+                                <Link to={`/room-details/${room._id}`}>
+                                  {room.room_name}
+                                </Link>
+                              </li>
+                            ))
+                          )}
                         </ul>
                       </li>
                       <li className={isActive('/contact')}>

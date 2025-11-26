@@ -6,6 +6,26 @@ const HeroSection = () => {
   const [rooms, setRooms] = useState([]);
   const [facilities, setFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating || 0);
+    const hasHalfStar = (rating % 1) >= 0.5;
+    
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<i key={`full-${i}`} className="icon_star" style={{ color: '#dfa974' }}></i>);
+    }
+    if (hasHalfStar) {
+      stars.push(<i key="half" className="icon_star-half_alt" style={{ color: '#dfa974' }}></i>);
+    }
+    const emptyStars = 5 - stars.length;
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<i key={`empty-${i}`} className="icon_star" style={{ color: '#ddd' }}></i>);
+    }
+    return stars;
+  };
 
   useEffect(() => {
     if (window.$ && window.$.fn) {
@@ -41,17 +61,6 @@ const HeroSection = () => {
         });
       }
 
-      if ($.fn.datepicker) {
-        $(".date-input").datepicker({
-          minDate: 0,
-          dateFormat: 'dd MM, yy'
-        });
-      }
-
-      if ($.fn.niceSelect) {
-        $("select").niceSelect();
-      }
-
       return () => {
         if ($.fn.owlCarousel) {
           $(".hero-slider").trigger('destroy.owl.carousel');
@@ -78,6 +87,11 @@ const HeroSection = () => {
         // Fetch facilities
         const facilitiesResponse = await axios.get("http://localhost:3000/api/client-rooms/facilities");
         setFacilities(facilitiesResponse.data.facilities.slice(0, 6)); // Get oldest 6 facilities
+
+        setReviewsLoading(true);
+        const reviewsResponse = await axios.get("http://localhost:3000/api/reviews/all-reviews");
+        setReviews(reviewsResponse.data.data.reviews.slice(0, 4)); // Get first 4 reviews
+        setReviewsLoading(false);
         
         setLoading(false);
       } catch (error) {
@@ -88,6 +102,32 @@ const HeroSection = () => {
 
     fetchData();
   }, []);
+
+  // Re-initialize testimonial slider when reviews are loaded
+  useEffect(() => {
+    if (!reviewsLoading && reviews.length > 0 && window.$ && window.$.fn.owlCarousel) {
+      const $ = window.$;
+      
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        // Destroy existing carousel if it exists
+        $(".testimonial-slider").trigger('destroy.owl.carousel');
+        $(".testimonial-slider").removeClass('owl-loaded owl-drag');
+        $(".testimonial-slider").find('.owl-stage-outer').children().unwrap();
+        
+        // Re-initialize with reviews
+        $(".testimonial-slider").owlCarousel({
+          items: 1,
+          dots: false,
+          autoplay: true,
+          loop: true,
+          smartSpeed: 1200,
+          nav: true,
+          navText: ["<i class='arrow_left'></i>", "<i class='arrow_right'></i>"]
+        });
+      }, 100);
+    }
+  }, [reviews, reviewsLoading]);
 
   return (
     <div style={{ paddingTop: "60px" }}>       
@@ -100,48 +140,10 @@ const HeroSection = () => {
                 <p>Ella Nature Life Guest and Restaurant offers a peaceful stay with modern rooms,
                    a garden, and a diverse restaurant. Guests enjoy free WiFi, airport transfers, 
                    and bike rentals to explore Ella Spice Garden and Little Adam's Peak.</p>
-                <Link to="/rooms" className="primary-btn">Discover Now</Link>
+                <Link to="/rooms" className="primary-btn">Book Now</Link>
               </div>
             </div>
-            <div className="col-xl-4 col-lg-5 offset-xl-2 offset-lg-1">
-              <div className="booking-form" >
-                <h3>Book Your Room</h3>
-                <form action="#">
-                  <div className="check-date">
-                    <label htmlFor="date-in">Check In:</label>
-                    <input type="text" className="date-input" id="date-in" />
-                    <i className="icon_calendar"></i>
-                  </div>
-                  <div className="check-date">
-                    <label htmlFor="date-out">Check Out:</label>
-                    <input type="text" className="date-input" id="date-out" />
-                    <i className="icon_calendar"></i>
-                  </div>
-                  <div className="select-option">
-                    <label htmlFor="guest">Adults:</label>
-                    <select id="guest">
-                      <option value="">2 Adults</option>
-                      <option value="">3 Adults</option>
-                    </select>
-                  </div>
-                  <div className="select-option">
-                    <label htmlFor="guest2">Children:</label>
-                    <select id="guest2">
-                      <option value="">2 Children</option>
-                      <option value="">3 Children</option>
-                    </select>
-                  </div>
-                  <div className="select-option">
-                    <label htmlFor="room">Room:</label>
-                    <select id="room">
-                      <option value="">1 Room</option>
-                      <option value="">2 Room</option>
-                    </select>
-                  </div>
-                  <button type="submit">Check Availability</button>
-                </form>
-              </div>
-            </div>
+
           </div>
         </div>
         <div className="hero-slider owl-carousel">
@@ -344,6 +346,14 @@ const HeroSection = () => {
                     {/* Room Details */}
                     <div className="ri-text" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '25px' }}>
                       <h4>{room.room_name}</h4>
+                      <div className="rating" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center' }}>
+                        {renderStars(room.averageRating || 0)}
+                        {room.totalReviews > 0 && (
+                          <span style={{ marginLeft: '8px', fontSize: '12px', color: '#707079' }}>
+                            ({room.totalReviews} {room.totalReviews === 1 ? 'review' : 'reviews'})
+                          </span>
+                        )}
+                      </div>
                       <h3>
                         {room.price} LKR<span> / Per Night</span>
                       </h3>
@@ -431,42 +441,42 @@ const HeroSection = () => {
           </div>
           <div className="row">
             <div className="col-lg-8 offset-lg-2">
-              <div className="testimonial-slider owl-carousel">
-                <div className="ts-item">
-                  <p>After a construction project took longer than expected, my husband, my daughter and I
-                    needed a place to stay for a few nights. As a Chicago resident, we know a lot about our
-                    city, neighborhood and the types of housing options available and absolutely love our
-                    vacation at Sona Hotel.</p>
-                  <div className="ti-author">
-                    <div className="rating">
-                      <i className="icon_star"></i>
-                      <i className="icon_star"></i>
-                      <i className="icon_star"></i>
-                      <i className="icon_star"></i>
-                      <i className="icon_star-half_alt"></i>
-                    </div>
-                    <h5> - Alexander Vasquez</h5>
+              {reviewsLoading ? (
+                <div className="text-center py-5">
+                  <div className="spinner-border" role="status" style={{ 
+                    width: '3rem', 
+                    height: '3rem', 
+                    borderColor: '#dfa974',
+                    borderRightColor: 'transparent',
+                    borderWidth: '4px'
+                  }}>
                   </div>
-                  <img src="img/testimonial-logo.png" alt="" />
                 </div>
-                <div className="ts-item">
-                  <p>After a construction project took longer than expected, my husband, my daughter and I
-                    needed a place to stay for a few nights. As a Chicago resident, we know a lot about our
-                    city, neighborhood and the types of housing options available and absolutely love our
-                    vacation at Sona Hotel.</p>
-                  <div className="ti-author">
-                    <div className="rating">
-                      <i className="icon_star"></i>
-                      <i className="icon_star"></i>
-                      <i className="icon_star"></i>
-                      <i className="icon_star"></i>
-                      <i className="icon_star-half_alt"></i>
+              ) : reviews.length > 0 ? (
+                <div className="testimonial-slider owl-carousel" key={reviews.length}>
+                  {reviews.map((review, index) => (
+                    <div className="ts-item" key={index}>
+                      <p>{review.comment}</p>
+                      <div className="ti-author">
+                        <div className="rating">
+                          {[...Array(review.rating)].map((_, i) => (
+                            <i key={`filled-${i}`} className="icon_star"></i>
+                          ))}
+                          {[...Array(5 - review.rating)].map((_, i) => (
+                            <i key={`empty-${i}`} className="icon_star" style={{ color: '#ddd' }}></i>
+                          ))}
+                        </div>
+                        <h5> - {review.client?.fullName || "Anonymous Guest"}</h5>
+                      </div>
+                      <img src="img/testimonial-logo.png" alt="" />
                     </div>
-                    <h5> - Alexander Vasquez</h5>
-                  </div>
-                  <img src="img/testimonial-logo.png" alt="" />
+                  ))}
                 </div>
-              </div>
+              ) : (
+                <div className="text-center py-5">
+                  <p style={{ color: '#707079' }}>No reviews available yet.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

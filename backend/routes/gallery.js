@@ -46,9 +46,9 @@ const uploading = multer({ storage: storageimg });
 // Maps to the getGallery controller function
 router.get("/", getGallery);
 
-// 2. POST: Uploads a new image
+// 2. POST: Uploads new images (multiple)
 // Maps to the uploadImage controller function
-router.post("/", uploading.single("image"), uploadImage);
+router.post("/", uploading.array("images", 10), uploadImage);
 
 // 3. DELETE: Deletes an image by ID (New Route)
 // The ID parameter matches the req.params.id expected by deleteImage in the controller

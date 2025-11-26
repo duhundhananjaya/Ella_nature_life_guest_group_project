@@ -7,6 +7,9 @@ import 'dotenv/config';
 // Initialize Stripe
 const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 
+import  sendTelegramMessage from '../utils/sendTelegramMessage.js';
+
+
 // Check Availability
 const checkAvailability = async (req, res) => {
   try {
@@ -277,6 +280,16 @@ const createBooking = async (req, res) => {
     });
 
     await booking.save();
+
+    await sendTelegramMessage(
+  `📢 <b>New Booking Created!</b>\n
+🏨 Room Type: ${roomType.room_name}\n
+🛏 Rooms Booked: ${roomsBooked}\n
+👤 Client: ${req.client.fullName}\n
+📅 Check-in: ${checkIn}\n
+📅 Check-out: ${checkOut}\n
+💵 Total: Rs. ${totalPrice}`
+);
 
     // Update room instances status to reserved
     await RoomInstance.updateMany(

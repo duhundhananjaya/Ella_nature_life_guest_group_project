@@ -8,6 +8,8 @@ const RoomDetailsSection = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
+    const [reviews, setReviews] = useState([]);
+    const [reviewsLoading, setReviewsLoading] = useState(false);
     const [room, setRoom] = useState(null);
     const [bookingData, setBookingData] = useState({
         checkIn: '',
@@ -19,30 +21,19 @@ const RoomDetailsSection = () => {
     const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
     const [availabilityResult, setAvailabilityResult] = useState(null);
 
-    // Sample reviews data
-    const sampleReviews = [
-        {
-            user_name: "Sarah Johnson",
-            user_image: "/img/room/avatar/avatar-1.jpg",
-            rating: 5,
-            comment: "Amazing stay! The room was spacious, clean, and beautifully decorated. The staff was incredibly friendly and helpful. Would definitely recommend this place to anyone visiting the area.",
-            created_at: "2024-10-15"
-        },
-        {
-            user_name: "Michael Chen",
-            user_image: "/img/room/avatar/avatar-2.jpg",
-            rating: 4,
-            comment: "Great experience overall. The room had everything we needed and the location was perfect. Only minor issue was the wifi speed, but everything else was top-notch!",
-            created_at: "2024-10-20"
-        },
-        {
-            user_name: "Emily Williams",
-            user_image: "/img/room/avatar/avatar-1.jpg",
-            rating: 5,
-            comment: "Absolutely loved our stay! The attention to detail in the room design was impressive. Very comfortable beds and the amenities exceeded our expectations.",
-            created_at: "2024-11-01"
+    const fetchRoomReviews = async () => {
+        setReviewsLoading(true);
+        try {
+            const response = await axios.get(`http://localhost:3000/api/reviews/room/${id}`);
+            if (response.data.success) {
+            setReviews(response.data.data.reviews);
+            }
+        } catch (error) {
+            console.error("Error fetching reviews", error);
+        } finally {
+            setReviewsLoading(false);
         }
-    ];
+    };
 
     useEffect(() => {
         const fetchRoomDetails = async () => {
@@ -63,9 +54,30 @@ const RoomDetailsSection = () => {
                 setLoading(false);
             }
         };
-
         fetchRoomDetails();
+        fetchRoomReviews();
     }, [id]);
+
+    const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
+    for (let i = 0; i < fullStars; i++) {
+        stars.push(<i key={`full-${i}`} className="icon_star"></i>);
+    }
+    
+    if (hasHalfStar) {
+        stars.push(<i key="half" className="icon_star-half_alt"></i>);
+    }
+    
+    const emptyStars = 5 - stars.length;
+    for (let i = 0; i < emptyStars; i++) {
+        stars.push(<i key={`empty-${i}`} className="icon_star-o"></i>);
+    }
+    
+    return stars;
+    };
 
     useEffect(() => {
         if (!loading && room && window.$ && window.$.fn) {
@@ -398,8 +410,6 @@ const RoomDetailsSection = () => {
         );
     }
 
-    const displayReviews = (room.reviews && room.reviews.length > 0) ? room.reviews : sampleReviews;
-
     return (
         <div style={{ paddingTop: "60px" }}>
             {/* Toast Container */}
@@ -472,11 +482,12 @@ const RoomDetailsSection = () => {
                                         <h3>{room.room_name}</h3>
                                         <div className="rdt-right">
                                             <div className="rating">
-                                                <i className="icon_star"></i>
-                                                <i className="icon_star"></i>
-                                                <i className="icon_star"></i>
-                                                <i className="icon_star"></i>
-                                                <i className="icon_star-half_alt"></i>
+                                                {renderStars(room.averageRating || 0)}
+                                                {room.totalReviews > 0 && (
+                                                    <span style={{ marginLeft: '8px', fontSize: '13px', color: '#707079' }}>
+                                                        ({room.totalReviews} {room.totalReviews === 1 ? 'review' : 'reviews'})
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -551,68 +562,83 @@ const RoomDetailsSection = () => {
                             </div>
 
                             {/* Reviews Section with Slider */}
+                            {reviews.length > 0 ? (
                             <div className="rd-reviews" style={{ marginTop: '40px' }}>
                                 <h4 style={{ marginBottom: '30px' }}>Guest Reviews</h4>
                                 <div style={{ position: 'relative' }}>
-                                    <div className="reviews-slider owl-carousel">
-                                        {displayReviews.map((review, index) => (
-                                            <div className="review-item" key={index} style={{ 
-                                                display: 'flex', 
-                                                gap: '20px',
-                                                padding: '20px',
-                                                backgroundColor: '#f9f9f9',
-                                                borderRadius: '8px',
-                                                minHeight: '180px'
-                                            }}>
-                                                <div className="ri-pic" style={{ flexShrink: 0 }}>
-                                                    <img 
-                                                        src={review.user_image || "/img/room/avatar/avatar-1.jpg"} 
-                                                        alt={review.user_name}
-                                                        style={{ 
-                                                            width: '80px', 
-                                                            height: '80px', 
-                                                            borderRadius: '50%',
-                                                            objectFit: 'cover'
-                                                        }}
-                                                        onError={(e) => {
-                                                            e.target.src = '/img/room/avatar/avatar-1.jpg';
-                                                        }}
-                                                    />
-                                                </div>
-                                                <div className="ri-text" style={{ flex: 1 }}>
-                                                    <div style={{ marginBottom: '8px' }}>
-                                                        <h5 style={{ margin: 0, marginBottom: '5px', color: '#19191a' }}>{review.user_name}</h5>
-                                                        <span style={{ color: '#707079', fontSize: '13px' }}>
-                                                            {new Date(review.created_at).toLocaleDateString('en-US', { 
-                                                                day: '2-digit', 
-                                                                month: 'short', 
-                                                                year: 'numeric' 
-                                                            })}
-                                                        </span>
-                                                    </div>
-                                                    <div className="rating" style={{ marginBottom: '12px' }}>
-                                                        {[...Array(5)].map((_, i) => (
-                                                            <i 
-                                                                key={i} 
-                                                                className={i < review.rating ? "icon_star" : "icon_star-half_alt"}
-                                                                style={{ color: '#dfa974', fontSize: '14px', marginRight: '2px' }}
-                                                            ></i>
-                                                        ))}
-                                                    </div>
-                                                    <p style={{ 
-                                                        color: '#707079', 
-                                                        lineHeight: '1.6', 
-                                                        margin: 0,
-                                                        fontSize: '14px'
-                                                    }}>
-                                                        {review.comment}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ))}
+                                <div className="reviews-slider owl-carousel">
+                                    {reviews.map((review, index) => (
+                                    <div className="review-item" key={index} style={{ 
+                                        display: 'flex', 
+                                        gap: '20px',
+                                        padding: '20px',
+                                        backgroundColor: '#f9f9f9',
+                                        borderRadius: '8px',
+                                        minHeight: '180px'
+                                    }}>
+                                        <div className="ri-pic" style={{ flexShrink: 0 }}>
+                                        <img 
+                                            src={review.client?.profileImage || "/img/room/avatar/avatar-1.jpg"} 
+                                            alt={review.client?.fullName || "Guest"}
+                                            style={{ 
+                                            width: '80px', 
+                                            height: '80px', 
+                                            borderRadius: '50%',
+                                            objectFit: 'cover'
+                                            }}
+                                            onError={(e) => {
+                                            e.target.src = '/img/room/avatar/avatar-1.jpg';
+                                            }}
+                                        />
+                                        </div>
+                                        <div className="ri-text" style={{ flex: 1 }}>
+                                        <div style={{ marginBottom: '8px' }}>
+                                            <h5 style={{ margin: 0, marginBottom: '5px', color: '#19191a' }}>
+                                            {review.client?.fullName || "Anonymous Guest"}
+                                            </h5>
+                                            <span style={{ color: '#707079', fontSize: '13px' }}>
+                                            {new Date(review.created_at).toLocaleDateString('en-US', { 
+                                                day: '2-digit', 
+                                                month: 'short', 
+                                                year: 'numeric' 
+                                            })}
+                                            </span>
+                                        </div>
+                                        <div className="rating" style={{ marginBottom: '12px' }}>
+                                            {[...Array(review.rating)].map((_, i) => (
+                                            <i 
+                                                key={`filled-${i}`} 
+                                                className="icon_star"
+                                                style={{ color: '#dfa974', fontSize: '14px', marginRight: '2px' }}
+                                            ></i>
+                                            ))}
+                                            {[...Array(5 - review.rating)].map((_, i) => (
+                                            <i 
+                                                key={`empty-${i}`} 
+                                                className="icon_star"
+                                                style={{ color: '#ddd', fontSize: '14px', marginRight: '2px' }}
+                                            ></i>
+                                            ))}
+                                        </div>
+                                        <p style={{ 
+                                            color: '#707079', 
+                                            lineHeight: '1.6', 
+                                            margin: 0,
+                                            fontSize: '14px'
+                                        }}>
+                                            {review.comment}
+                                        </p>
+                                        </div>
                                     </div>
+                                    ))}
+                                </div>
                                 </div>
                             </div>
+                            ) : (
+                            <div style={{ marginTop: '40px', textAlign: 'center', padding: '20px' }}>
+                                <p style={{ color: '#707079' }}>No reviews yet. Be the first to review!</p>
+                            </div>
+                            )}
                         </div>
 
                         <div className="col-lg-4">
@@ -783,6 +809,84 @@ const RoomDetailsSection = () => {
                     background: #dfa974;
                 }
             `}</style>
+            <style jsx>{`
+    .ui-datepicker-prev span,
+    .ui-datepicker-next span {
+        display: block !important;
+        text-indent: 0 !important;
+        background: transparent !important;
+    }
+
+    .ui-datepicker-prev span::before {
+        content: '◀' !important;
+        color: #dfa974 !important;
+        font-size: 14px !important;
+    }
+
+    .ui-datepicker-next span::before {
+        content: '▶' !important;
+        color: #dfa974 !important;
+        font-size: 14px !important;
+    }
+
+    .room-details-slider .owl-nav button.owl-prev,
+    .room-details-slider .owl-nav button.owl-next,
+    .reviews-slider .owl-nav button.owl-prev,
+    .reviews-slider .owl-nav button.owl-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 50px;
+        height: 50px;
+        background: rgba(223, 169, 116, 0.9) !important;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+
+    .room-details-slider .owl-nav button.owl-prev:hover,
+    .room-details-slider .owl-nav button.owl-next:hover,
+    .reviews-slider .owl-nav button.owl-prev:hover,
+    .reviews-slider .owl-nav button.owl-next:hover {
+        background: rgba(223, 169, 116, 1) !important;
+    }
+
+    .room-details-slider .owl-nav button.owl-prev,
+    .reviews-slider .owl-nav button.owl-prev {
+        left: 20px;
+    }
+
+    .room-details-slider .owl-nav button.owl-next,
+    .reviews-slider .owl-nav button.owl-next {
+        right: 20px;
+    }
+
+    .room-details-slider .owl-nav button i,
+    .reviews-slider .owl-nav button i {
+        color: white;
+        font-size: 20px;
+    }
+
+    .owl-dots {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .owl-dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        background: #ddd;
+        border-radius: 50%;
+        margin: 0 5px;
+    }
+
+    .owl-dot.active {
+        background: #dfa974;
+    }
+`}</style>
         </div>
     );
 };
