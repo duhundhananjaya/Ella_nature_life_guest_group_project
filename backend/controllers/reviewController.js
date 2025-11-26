@@ -149,7 +149,7 @@ export const getRoomReviews = async (req, res) => {
     const { roomTypeId } = req.params;
 
     const reviews = await Review.find({ roomType: roomTypeId })
-      .populate('client', 'name email')
+      .populate('client', 'fullName email')
       .sort({ created_at: -1 });
 
     const averageRating = reviews.length > 0
