@@ -58,6 +58,27 @@ const RoomDetailsSection = () => {
         fetchRoomReviews();
     }, [id]);
 
+    const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
+    for (let i = 0; i < fullStars; i++) {
+        stars.push(<i key={`full-${i}`} className="icon_star"></i>);
+    }
+    
+    if (hasHalfStar) {
+        stars.push(<i key="half" className="icon_star-half_alt"></i>);
+    }
+    
+    const emptyStars = 5 - stars.length;
+    for (let i = 0; i < emptyStars; i++) {
+        stars.push(<i key={`empty-${i}`} className="icon_star-o"></i>);
+    }
+    
+    return stars;
+    };
+
     useEffect(() => {
         if (!loading && room && window.$ && window.$.fn) {
             const $ = window.$;
@@ -440,11 +461,12 @@ const RoomDetailsSection = () => {
                                         <h3>{room.room_name}</h3>
                                         <div className="rdt-right">
                                             <div className="rating">
-                                                <i className="icon_star"></i>
-                                                <i className="icon_star"></i>
-                                                <i className="icon_star"></i>
-                                                <i className="icon_star"></i>
-                                                <i className="icon_star-half_alt"></i>
+                                                {renderStars(room.averageRating || 0)}
+                                                {room.totalReviews > 0 && (
+                                                    <span style={{ marginLeft: '8px', fontSize: '13px', color: '#707079' }}>
+                                                        ({room.totalReviews} {room.totalReviews === 1 ? 'review' : 'reviews'})
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -766,6 +788,84 @@ const RoomDetailsSection = () => {
                     background: #dfa974;
                 }
             `}</style>
+            <style jsx>{`
+    .ui-datepicker-prev span,
+    .ui-datepicker-next span {
+        display: block !important;
+        text-indent: 0 !important;
+        background: transparent !important;
+    }
+
+    .ui-datepicker-prev span::before {
+        content: '◀' !important;
+        color: #dfa974 !important;
+        font-size: 14px !important;
+    }
+
+    .ui-datepicker-next span::before {
+        content: '▶' !important;
+        color: #dfa974 !important;
+        font-size: 14px !important;
+    }
+
+    .room-details-slider .owl-nav button.owl-prev,
+    .room-details-slider .owl-nav button.owl-next,
+    .reviews-slider .owl-nav button.owl-prev,
+    .reviews-slider .owl-nav button.owl-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 50px;
+        height: 50px;
+        background: rgba(223, 169, 116, 0.9) !important;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+
+    .room-details-slider .owl-nav button.owl-prev:hover,
+    .room-details-slider .owl-nav button.owl-next:hover,
+    .reviews-slider .owl-nav button.owl-prev:hover,
+    .reviews-slider .owl-nav button.owl-next:hover {
+        background: rgba(223, 169, 116, 1) !important;
+    }
+
+    .room-details-slider .owl-nav button.owl-prev,
+    .reviews-slider .owl-nav button.owl-prev {
+        left: 20px;
+    }
+
+    .room-details-slider .owl-nav button.owl-next,
+    .reviews-slider .owl-nav button.owl-next {
+        right: 20px;
+    }
+
+    .room-details-slider .owl-nav button i,
+    .reviews-slider .owl-nav button i {
+        color: white;
+        font-size: 20px;
+    }
+
+    .owl-dots {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .owl-dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        background: #ddd;
+        border-radius: 50%;
+        margin: 0 5px;
+    }
+
+    .owl-dot.active {
+        background: #dfa974;
+    }
+`}</style>
         </div>
     );
 };

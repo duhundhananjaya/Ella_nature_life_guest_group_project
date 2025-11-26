@@ -18,6 +18,8 @@ const roomSchema = new mongoose.Schema({
       uploaded_at: { type: Date, default: Date.now }
     }
   ], 
+  averageRating: { type: Number, default: 0, min: 0, max: 5 },
+  totalReviews: { type: Number, default: 0 },
   created_at: { type: Date, default: Date.now },
 });
 
