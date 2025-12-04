@@ -25,6 +25,7 @@ import Clients from './components/Clients'
 import TelegramSettings from './components/TelegramSettings'
 import Review from './components/Review'
 import Feedback from './components/Feedback'
+import ClerkLiveChatManager from './components/clerk/ClerkLiveChatManager'
 
 function App() {
 
@@ -49,6 +50,7 @@ function App() {
           <Route path="clients" element={<Clients />} />
           <Route path="reviews" element={<Review />} />
           <Route path="feedbacks" element={<Feedback />} />
+          <Route path="live-chat" element={<ClerkLiveChatManager />} />
         </Route>
 
         <Route path="/clerk-dashboard" element={<ProtectedRoutes requireRole={["clerk"]}>
@@ -59,6 +61,7 @@ function App() {
            <Route path="profile" element={<ProfileView />} />
            <Route path="profile-settings" element={<Profile />} />
            <Route path="gallery" element={<ClerkGallery />} />
+           <Route path="live-chat" element={<ClerkLiveChatManager />} />
 
         </Route>
 
