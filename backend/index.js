@@ -28,9 +28,6 @@ import viewFeedbackRoutes from './routes/viewFeedback.js';
 import chatRoutes from './routes/chat.js';
 import initializeSocket from './socketServer.js';
 import receptionistBookingRoutes from './routes/receptionistBooking.js';
-import viewFeedbackRoutes from './routes/viewFeedback.js';
-import chatRoutes from './routes/chat.js';
-import initializeSocket from './socketServer.js';
 
 const app = express();
 const server = createServer(app);

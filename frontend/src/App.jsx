@@ -28,8 +28,6 @@ import Feedback from './components/Feedback'
 import ClerkLiveChatManager from './components/clerk/ClerkLiveChatManager'
 import ReceptionistBooking from './components/receptionist/ReceptionistBooking'
 import ReceptionistViewBookings from './components/receptionist/ReceptionistViewBooking'
-import Feedback from './components/Feedback'
-import ClerkLiveChatManager from './components/clerk/ClerkLiveChatManager'
 
 function App() {
 
