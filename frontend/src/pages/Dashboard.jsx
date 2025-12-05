@@ -7,7 +7,7 @@ import { Outlet } from 'react-router';
 
 const Dashboard = () => {
   return (
-    <div class="sb-nav-fixed">
+    <div className="sb-nav-fixed">
         <Navbar />
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">

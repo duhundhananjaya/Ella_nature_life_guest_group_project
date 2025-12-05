@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
+import { createServer } from 'http';
 import connectDB from './db/connection.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
@@ -24,8 +25,15 @@ import telegramSettingsRoutes from './routes/telegramSettings.js';
 import reviewRoutes from './routes/review.js';
 import viewReviewRoutes from './routes/viewReview.js';
 import viewFeedbackRoutes from './routes/viewFeedback.js';
+import chatRoutes from './routes/chat.js';
+import initializeSocket from './socketServer.js';
 
 const app = express();
+const server = createServer(app);
+
+// Initialize Socket.IO
+initializeSocket(server);
+
 app.use(cors());
 app.use(express.json());
 app.use('/uploads/icons', express.static('public/uploads/icons'));
@@ -58,8 +66,9 @@ app.use('/api/view-clients', viewClientsRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/view-reviews', viewReviewRoutes);
 app.use('/api/view-feedbacks', viewFeedbackRoutes);
+app.use('/api/chat', chatRoutes);
 
-app.listen(process.env.PORT, () =>{
+server.listen(process.env.PORT, () =>{
     connectDB();
     console.log('Server is running on http://localhost:3000');
 })

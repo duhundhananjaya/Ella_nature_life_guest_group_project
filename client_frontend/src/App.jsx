@@ -18,7 +18,7 @@ import Dashboard from './pages/Dashboard'
 import MyBooking from './pages/MyBookings'
 import BookingSuccess from './pages/BookingSuccess'
 import BookingCancel from './pages/BookingCancel'
-
+import LiveChat from './components/LiveChat'
 
 function App() {
 
@@ -66,7 +66,11 @@ function App() {
         <Route path="*" element={<NotFound />} />
 
       </Routes>
+      <LiveChat/>
   </Router>
+
+  
+  
   )
 }
 
