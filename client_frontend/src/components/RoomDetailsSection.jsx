@@ -335,23 +335,44 @@ const RoomDetailsSection = () => {
             // Dismiss loading toast
             toast.dismiss(loadingToast);
 
-            // Show success message
-            toast.success(
-                `Booking confirmed! ID: ${response.data.booking.bookingId || response.data.booking._id}`, 
-                {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true
-                }
-            );
+            // Check if payment is required
+            if (response.data.payment && response.data.payment.url) {
+                // Show success message for booking creation
+                toast.success(
+                    `Booking created! Redirecting to payment...`,
+                    {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true
+                    }
+                );
 
-            // Redirect to bookings page after delay
-            setTimeout(() => {
-                navigate('/my-bookings');
-            }, 2000);
+                // Redirect to Stripe checkout
+                setTimeout(() => {
+                    window.location.href = response.data.payment.url;
+                }, 1500);
+            } else {
+                // No payment required or payment setup failed
+                toast.success(
+                    `Booking confirmed! ID: ${response.data.booking.bookingId || response.data.booking._id}`,
+                    {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true
+                    }
+                );
+
+                // Redirect to bookings page after delay
+                setTimeout(() => {
+                    navigate('/my-bookings');
+                }, 2000);
+            }
 
         } catch (error) {
             console.error('Booking error:', error);

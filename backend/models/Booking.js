@@ -64,8 +64,6 @@ const bookingSchema = new mongoose.Schema({
     enum: ['pending', 'paid', 'partial', 'refunded'],
     default: 'pending'
   },
-<<<<<<< Updated upstream
-=======
   // New fields for receptionist bookings
   paymentMethod: {
     type: String,
@@ -90,7 +88,6 @@ const bookingSchema = new mongoose.Schema({
   paymentDate: {
     type: Date
   },
->>>>>>> Stashed changes
   specialRequests: {
     type: String
   },

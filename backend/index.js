@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
+import { createServer } from 'http';
 import connectDB from './db/connection.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
@@ -17,19 +18,26 @@ import feedbackRoutes from './routes/feedback.js';
 import clientAuthRoutes from './routes/clientAuthRoutes.js';
 import bookingRoutes from './routes/booking.js';
 import viewBookingRoutes from './routes/viewBooking.js';
+import paymentWebhookRouter from './routes/paymentWebhook.js';
+import paymentApiRouter from './routes/payment.js';
 import viewClientsRoutes from './routes/viewClients.js';
 import telegramSettingsRoutes from './routes/telegramSettings.js';
 import reviewRoutes from './routes/review.js';
 import viewReviewRoutes from './routes/viewReview.js';
-<<<<<<< Updated upstream
-=======
 import viewFeedbackRoutes from './routes/viewFeedback.js';
 import chatRoutes from './routes/chat.js';
 import initializeSocket from './socketServer.js';
 import receptionistBookingRoutes from './routes/receptionistBooking.js';
->>>>>>> Stashed changes
+import viewFeedbackRoutes from './routes/viewFeedback.js';
+import chatRoutes from './routes/chat.js';
+import initializeSocket from './socketServer.js';
 
 const app = express();
+const server = createServer(app);
+
+// Initialize Socket.IO
+initializeSocket(server);
+
 app.use(cors());
 app.use(express.json());
 app.use('/uploads/icons', express.static('public/uploads/icons'));
@@ -56,21 +64,21 @@ app.use('/api/feedback', feedbackRoutes);
 app.use('/api/client/auth', clientAuthRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/view-bookings', viewBookingRoutes);
+app.use('/api/webhook/stripe', paymentWebhookRouter);
+app.use('/api/payment', paymentApiRouter);
 app.use('/api/view-clients', viewClientsRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/view-reviews', viewReviewRoutes);
-<<<<<<< Updated upstream
-=======
 app.use('/api/view-feedbacks', viewFeedbackRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/receptionist-bookings', receptionistBookingRoutes);
->>>>>>> Stashed changes
+app.use('/api/view-feedbacks', viewFeedbackRoutes);
+app.use('/api/chat', chatRoutes);
 
-app.listen(process.env.PORT, () =>{
+server.listen(process.env.PORT, () =>{
     connectDB();
     console.log('Server is running on http://localhost:3000');
 })
-
 
 // NEW: Health check endpoint
 app.get('/api/health', (req, res) => {
