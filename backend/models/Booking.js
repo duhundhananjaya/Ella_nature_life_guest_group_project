@@ -61,9 +61,36 @@ const bookingSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-    enum: ['pending', 'paid', 'refunded'],
+    enum: ['pending', 'paid', 'partial', 'refunded'],
     default: 'pending'
   },
+<<<<<<< Updated upstream
+=======
+  // New fields for receptionist bookings
+  paymentMethod: {
+    type: String,
+    enum: ['cash', 'card', 'bank_transfer', 'check', 'online'],
+    default: 'online'
+  },
+  advancePayment: {
+    type: Number,
+    default: 0
+  },
+  isManualBooking: {
+    type: Boolean,
+    default: false
+  },
+  // Stripe fields (for online bookings)
+  stripeSessionId: {
+    type: String
+  },
+  paymentIntentId: {
+    type: String
+  },
+  paymentDate: {
+    type: Date
+  },
+>>>>>>> Stashed changes
   specialRequests: {
     type: String
   },
@@ -80,8 +107,15 @@ const bookingSchema = new mongoose.Schema({
 // Generate booking ID before saving
 bookingSchema.pre('save', async function(next) {
   if (!this.bookingId) {
-    const count = await this.constructor.countDocuments();
-    this.bookingId = `BK${Date.now()}${String(count + 1).padStart(4, '0')}`;
+    // For manual bookings, use RB prefix
+    if (this.isManualBooking) {
+      const count = await this.constructor.countDocuments({ isManualBooking: true });
+      this.bookingId = `RB${Date.now()}${String(count + 1).padStart(4, '0')}`;
+    } else {
+      // For online bookings, use BK prefix
+      const count = await this.constructor.countDocuments({ isManualBooking: false });
+      this.bookingId = `BK${Date.now()}${String(count + 1).padStart(4, '0')}`;
+    }
   }
   this.updated_at = Date.now();
   next();

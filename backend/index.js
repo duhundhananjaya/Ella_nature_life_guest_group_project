@@ -21,6 +21,13 @@ import viewClientsRoutes from './routes/viewClients.js';
 import telegramSettingsRoutes from './routes/telegramSettings.js';
 import reviewRoutes from './routes/review.js';
 import viewReviewRoutes from './routes/viewReview.js';
+<<<<<<< Updated upstream
+=======
+import viewFeedbackRoutes from './routes/viewFeedback.js';
+import chatRoutes from './routes/chat.js';
+import initializeSocket from './socketServer.js';
+import receptionistBookingRoutes from './routes/receptionistBooking.js';
+>>>>>>> Stashed changes
 
 const app = express();
 app.use(cors());
@@ -52,6 +59,12 @@ app.use('/api/view-bookings', viewBookingRoutes);
 app.use('/api/view-clients', viewClientsRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/view-reviews', viewReviewRoutes);
+<<<<<<< Updated upstream
+=======
+app.use('/api/view-feedbacks', viewFeedbackRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/receptionist-bookings', receptionistBookingRoutes);
+>>>>>>> Stashed changes
 
 app.listen(process.env.PORT, () =>{
     connectDB();

@@ -24,6 +24,13 @@ import ViewBookings from './components/ViewBookings'
 import Clients from './components/Clients'
 import TelegramSettings from './components/TelegramSettings'
 import Review from './components/Review'
+<<<<<<< Updated upstream
+=======
+import Feedback from './components/Feedback'
+import ClerkLiveChatManager from './components/clerk/ClerkLiveChatManager'
+import ReceptionistBooking from './components/receptionist/ReceptionistBooking'
+import ReceptionistViewBookings from './components/receptionist/ReceptionistViewBooking'
+>>>>>>> Stashed changes
 
 function App() {
 
@@ -64,6 +71,8 @@ function App() {
             <Dashboard />
           </ProtectedRoutes>}>
           <Route index element={<ReceptionistHome />} />
+          <Route path="manual-bookings" element={<ReceptionistBooking />} />
+          <Route path="bookings" element={<ReceptionistViewBookings />} />
           <Route path="profile" element={<ProfileView />} />
           <Route path="profile-settings" element={<Profile />} />
         </Route>
