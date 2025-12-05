@@ -27,6 +27,10 @@ import viewReviewRoutes from './routes/viewReview.js';
 import viewFeedbackRoutes from './routes/viewFeedback.js';
 import chatRoutes from './routes/chat.js';
 import initializeSocket from './socketServer.js';
+import receptionistBookingRoutes from './routes/receptionistBooking.js';
+import viewFeedbackRoutes from './routes/viewFeedback.js';
+import chatRoutes from './routes/chat.js';
+import initializeSocket from './socketServer.js';
 
 const app = express();
 const server = createServer(app);
@@ -65,6 +69,9 @@ app.use('/api/payment', paymentApiRouter);
 app.use('/api/view-clients', viewClientsRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/view-reviews', viewReviewRoutes);
+app.use('/api/view-feedbacks', viewFeedbackRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/receptionist-bookings', receptionistBookingRoutes);
 app.use('/api/view-feedbacks', viewFeedbackRoutes);
 app.use('/api/chat', chatRoutes);
 

@@ -29,7 +29,8 @@ const Sidebar = () => {
 
     const receptionistMenuItems = [
         { name: "Dashboard", path: "/receptionist-dashboard", icon: "fas fa-tachometer-alt", end: true },
-        { name: "Rooms", path: "/receptionist-dashboard/rooms", icon: "fas fa-door-open", end: false },
+        { name: "Manual Bookings", path: "/receptionist-dashboard/manual-bookings", icon: "fas fa-hand-pointer", end: false },
+        { name: "View Bookings", path: "/receptionist-dashboard/bookings", icon: "fas fa-ticket-alt", end: false },
     ];
 
     const attendantMenuItems = [
