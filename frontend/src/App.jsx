@@ -28,6 +28,7 @@ import Feedback from './components/Feedback'
 import ClerkLiveChatManager from './components/clerk/ClerkLiveChatManager'
 import ReceptionistBooking from './components/receptionist/ReceptionistBooking'
 import ReceptionistViewBookings from './components/receptionist/ReceptionistViewBooking'
+import Reports from './components/Reports'
 
 function App() {
 
@@ -53,6 +54,7 @@ function App() {
           <Route path="reviews" element={<Review />} />
           <Route path="feedbacks" element={<Feedback />} />
           <Route path="live-chat" element={<ClerkLiveChatManager />} />
+          <Route path="reports" element={<Reports />} />
         </Route>
 
         <Route path="/clerk-dashboard" element={<ProtectedRoutes requireRole={["clerk"]}>
