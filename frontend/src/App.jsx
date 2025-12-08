@@ -29,6 +29,7 @@ import ClerkLiveChatManager from './components/clerk/ClerkLiveChatManager'
 import ReceptionistBooking from './components/receptionist/ReceptionistBooking'
 import ReceptionistViewBookings from './components/receptionist/ReceptionistViewBooking'
 import Reports from './components/Reports'
+import Salary from './components/Salary'
 
 function App() {
 
@@ -41,6 +42,7 @@ function App() {
           </ProtectedRoutes>} >
           <Route index element={<AdminHome />} />
           <Route path="users" element={<Users />} />
+          <Route path="salary" element={<Salary />} />
           <Route path="features" element={<Features />} />
           <Route path="facilities" element={<Facilities />} />
           <Route path="bookings" element={<ViewBookings />} />
