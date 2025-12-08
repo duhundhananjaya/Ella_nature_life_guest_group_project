@@ -25,6 +25,7 @@ const Sidebar = () => {
         { name: "Dashboard", path: "/clerk-dashboard", icon: "fas fa-tachometer-alt", end: true },
         { name: "My Salary", path: "/clerk-dashboard/salary", icon: "fas fa-money-bill-wave", end: false },
         { name: "Rooms", path: "/clerk-dashboard/rooms", icon: "fas fa-door-open", end: false },
+        { name: "View Bookings", path: "/clerk-dashboard/bookings", icon: "fas fa-ticket-alt", end: false },
         { name: "Gallery", path: "/clerk-dashboard/gallery", icon: "fas fa-images", end: false },
         { name: "Live Chat", path: "/clerk-dashboard/live-chat", icon: "fas fa-comments", end: false },
     ];

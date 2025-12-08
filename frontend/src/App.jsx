@@ -31,6 +31,7 @@ import ReceptionistViewBookings from './components/receptionist/ReceptionistView
 import Reports from './components/Reports'
 import Salary from './components/Salary'
 import ViewSalary from './components/ViewSalary'
+import ClerkViewBookings from './components/clerk/ClerkViewBookings'
 
 function App() {
 
@@ -66,6 +67,7 @@ function App() {
           <Route index element={<ClerkHome />} />
            <Route path="rooms" element={<ClerkRooms />} />
            <Route path="salary" element={<ViewSalary />} />
+           <Route path="bookings" element={<ClerkViewBookings />} />
            <Route path="profile" element={<ProfileView />} />
            <Route path="profile-settings" element={<Profile />} />
            <Route path="gallery" element={<ClerkGallery />} />
