@@ -61,6 +61,22 @@ const getSalary = async (req, res) =>{
     }
 }
 
+const getSalaryByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const salaries = await Salary.find({ user: userId })
+      .populate("user", "name email role")
+      .sort({ created_at: -1 });
+
+    return res.status(200).json({ success: true, salary: salaries });
+
+  } catch (error) {
+    console.error("Error fetching salary by user ID:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 const deleteSalary = async (req, res) =>{
     try {
         const { id } = req.params;
@@ -73,4 +89,4 @@ const deleteSalary = async (req, res) =>{
     }
 }
 
-export {addSalary, getSalary, updateSalary, deleteSalary};
+export {addSalary, getSalary, updateSalary, deleteSalary, getSalaryByUserId};
