@@ -32,14 +32,14 @@ const Sidebar = () => {
 
     const receptionistMenuItems = [
         { name: "Dashboard", path: "/receptionist-dashboard", icon: "fas fa-tachometer-alt", end: true },
-        { name: "My Salary", path: "/clerk-dashboard/salary", icon: "fas fa-money-bill-wave", end: false },
+        { name: "My Salary", path: "/receptionist-dashboard/salary", icon: "fas fa-money-bill-wave", end: false },
         { name: "Manual Bookings", path: "/receptionist-dashboard/manual-bookings", icon: "fas fa-hand-pointer", end: false },
         { name: "View Bookings", path: "/receptionist-dashboard/bookings", icon: "fas fa-ticket-alt", end: false },
     ];
 
     const attendantMenuItems = [
         { name: "Dashboard", path: "/attendant-dashboard", icon: "fas fa-tachometer-alt", end: true },
-        { name: "My Salary", path: "/clerk-dashboard/salary", icon: "fas fa-money-bill-wave", end: false },
+        { name: "My Salary", path: "/attendant-dashboard/salary", icon: "fas fa-money-bill-wave", end: false },
         { name: "Rooms", path: "/attendant-dashboard/rooms", icon: "fas fa-door-open", end: false },
     ];
 
