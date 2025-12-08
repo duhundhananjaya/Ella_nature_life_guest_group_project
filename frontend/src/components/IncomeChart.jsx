@@ -23,13 +23,13 @@ ChartJS.register(
   Legend
 );
 
-const IncomeChart = () => {
+const IncomeChart = ({ monthlyData = [] }) => {
   const data = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     datasets: [
       {
         label: 'Earnings',
-        data: [4000, 3000, 5000, 2780, 1890, 2390, 3490, 4200, 3800, 4500, 5200, 6000],
+        data: monthlyData,
         fill: true,
         backgroundColor: 'rgba(13, 110, 253, 0.2)', 
         borderColor: 'rgba(13, 110, 253, 1)',
@@ -88,7 +88,7 @@ const IncomeChart = () => {
   return (
     <div className="card shadow mb-4">
       <div className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 className="m-0 font-weight-bold text-primary">Income Overview</h6>
+        <h6 className="m-0 font-weight-bold text-primary">Revenue Overview</h6>
         <div className="dropdown no-arrow">
           <a className="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
             <i className="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -96,7 +96,6 @@ const IncomeChart = () => {
           <ul className="dropdown-menu dropdown-menu-end shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
             <li><h6 className="dropdown-header">Options:</h6></li>
             <li><a className="dropdown-item" href="#">Download Report</a></li>
-            <li><a className="dropdown-item" href="#">View Details</a></li>
             <li><hr className="dropdown-divider"/></li>
             <li><a className="dropdown-item" href="#">Export Data</a></li>
           </ul>
