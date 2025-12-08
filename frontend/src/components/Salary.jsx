@@ -37,7 +37,6 @@ const Salary = () => {
         },
       });
       setUsers(response.data.users);
-      setFilteredUsers(response.data.users);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching users", error);
@@ -57,8 +56,10 @@ const Salary = () => {
           Authorization: `Bearer ${localStorage.getItem("pos-token")}`,
         },
       });
-      setSalary(response.data.salary);
-      setFilteredSalary(response.data.salary);
+      // Filter out salary records where user is null/undefined
+      const validSalaries = response.data.salary.filter(s => s.user != null);
+      setSalary(validSalaries);
+      setFilteredSalary(validSalaries);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching salary", error);
@@ -75,12 +76,14 @@ const Salary = () => {
 
     try {
       const endpoint = editingSalary 
-        ? `http://localhost:3000/api/salary/update/${editingSalary._id}` : "http://localhost:3000/api/salary/add";
+        ? `http://localhost:3000/api/salary/update/${editingSalary._id}` 
+        : "http://localhost:3000/api/salary/add";
       const method = editingSalary ? 'put' : 'post';
       
-      const dataToSend = editingSalary 
-        ? { name: formData.staff_member, salary: formData.salary }
-        : { name: formData.staff_member, salary: formData.salary };
+      const dataToSend = {
+        staff_member: formData.staff_member,
+        salary: formData.salary
+      };
 
       const response = await axios[method](endpoint, dataToSend, {
         headers: {
@@ -105,7 +108,7 @@ const Salary = () => {
       console.error("Error:", err);
       setError(err.response?.data?.message || "Error processing salary. Please try again.");
       setTimeout(() => setError(null), 3000);
-    }finally {
+    } finally {
       handleCloseModal();
     }
   };
@@ -113,7 +116,7 @@ const Salary = () => {
   const handleEdit = (salary) => {
     setEditingSalary(salary)
     setFormData({
-      staff_member: salary.staff_member,
+      staff_member: salary.user?._id || "",
       salary: salary.salary,
     })
     setShowModal(true)
@@ -150,12 +153,19 @@ const Salary = () => {
     }
   };
 
-  const handleSearch = async (e) => {
+  const handleSearch = (e) => {
+    const searchTerm = e.target.value.toLowerCase();
     setFilteredSalary(
-      salary.filter((salary) =>
-        salary.staff_member.toLowerCase().includes(e.target.value.toLowerCase()) ||
-        salary.salary.toLowerCase().includes(e.target.value.toLowerCase())
-      )
+      salary.filter((sal) => {
+        // Safety check - only filter if user is populated
+        if (!sal.user) return false;
+        
+        return (
+          sal.user.name?.toLowerCase().includes(searchTerm) ||
+          sal.user.email?.toLowerCase().includes(searchTerm) ||
+          sal.salary.toString().includes(searchTerm)
+        );
+      })
     );
   }
 
@@ -178,13 +188,13 @@ const Salary = () => {
 
   useEffect(() => {
     if (success || error) {
-        const timer = setTimeout(() => {
+      const timer = setTimeout(() => {
         setSuccess(null);
         setError(null);
-        }, 5000);
-        return () => clearTimeout(timer);
+      }, 5000);
+      return () => clearTimeout(timer);
     }
-    }, [success, error]);
+  }, [success, error]);
 
   if (loading) return (
     <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
@@ -259,23 +269,24 @@ const Salary = () => {
                         <td>
                           <div className="d-flex align-items-center">
                             <div className="avatar-circle bg-primary text-white me-2" style={{ width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600' }}>
-                              {salary.name.charAt(0).toUpperCase()}
+                              {salary.user?.name?.charAt(0).toUpperCase() || 'N'}
                             </div>
-                            <span className="fw-medium">{salary.name}</span>
+                            <span className="fw-medium">{salary.user?.name || 'Unknown'}</span>
                           </div>
                         </td>
-                        <td className="text-muted">{salary.email}</td>
+                        <td className="text-muted">{salary.user?.email || 'N/A'}</td>
                         <td>
-                          {salary.user.role === "admin" && (<span className="badge bg-success px-2 py-1">Admin</span>)}
-                          {salary.user.role === "clerk" && (<span className="badge bg-primary px-2 py-1">Clerk</span>)}
-                          {salary.user.role === "receptionist" && (<span className="badge bg-info  px-2 py-1">Receptionist</span>)}
-                          {salary.user.role === "attendant" && (<span className="badge bg-warning px-2 py-1">Attendant</span>)}
+                          {salary.user?.role === "admin" && (<span className="badge bg-success px-2 py-1">Admin</span>)}
+                          {salary.user?.role === "clerk" && (<span className="badge bg-primary px-2 py-1">Clerk</span>)}
+                          {salary.user?.role === "receptionist" && (<span className="badge bg-info  px-2 py-1">Receptionist</span>)}
+                          {salary.user?.role === "attendant" && (<span className="badge bg-warning px-2 py-1">Attendant</span>)}
+                          {!salary.user?.role && (<span className="badge bg-secondary px-2 py-1">N/A</span>)}
                         </td>
-                        <span className="fw-medium">{salary.salary}</span>
-                        <span className="fw-medium">{salary.created_on}</span>
+                        <td className="fw-medium">{salary.salary?.toLocaleString() || '0'}</td>
+                        <td className="fw-medium">{salary.created_at ? new Date(salary.created_at).toLocaleDateString() : 'N/A'}</td>
 
                         <td className="text-center">
-                          {salary.user.email === JSON.parse(localStorage.getItem("pos-user"))?.email ? (
+                          {salary.user?.email === JSON.parse(localStorage.getItem("pos-user"))?.email ? (
                             <button
                               className="btn btn-sm btn-success mb-2 me-2 shadow-none"
                               onClick={() => navigate("/profile")}
@@ -335,41 +346,54 @@ const Salary = () => {
                 </div>
                 
                 <div className="modal-body p-4">
-                <form onSubmit={handleSubmit} id="userForm">
-                  <div className="row g-3">
-                    <div className="col-md-12">
-                      <label htmlFor="name" className="form-label fw-medium">
-                        Staff Member <span className="text-danger">*</span>
-                      </label>
-                      <select  className="form-select shadow-none"  name="staff_member"  value={formData.staff_member}  onChange={handleInputChange}  required>
-                        <option value="">Select Member</option>
-                        {users && users.map((user) =>(
-                        <option key={user._id} value={user._id}>
-                            {user.name} - {user.role}
-                        </option>
-                        ))}
-                      </select>
+                  <form onSubmit={handleSubmit} id="userForm">
+                    <div className="row g-3">
+                      <div className="col-md-12">
+                        <label htmlFor="staff_member" className="form-label fw-medium">
+                          Staff Member <span className="text-danger">*</span>
+                        </label>
+                        <select 
+                          className="form-select shadow-none" 
+                          name="staff_member" 
+                          value={formData.staff_member} 
+                          onChange={handleInputChange} 
+                          required
+                        >
+                          <option value="">Select Member</option>
+                          {users && users.map((user) => (
+                            <option key={user._id} value={user._id}>
+                              {user.name} - {user.role}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="col-md-12">
+                        <label htmlFor="salary" className="form-label fw-medium">
+                          Salary (LKR) <span className="text-danger">*</span>
+                        </label>
+                        <input 
+                          type="number" 
+                          className="form-control shadow-none" 
+                          name="salary" 
+                          value={formData.salary} 
+                          onChange={handleInputChange} 
+                          placeholder="Enter salary" 
+                          required
+                        />
+                      </div>
                     </div>
+                  </form>
+                </div>
 
-                    <div className="col-md-12">
-                      <label htmlFor="salary" className="form-label fw-medium">
-                        Salary (LKR) <span className="text-danger">*</span>
-                      </label>
-                      <input  type="text"  className="form-control shadow-none"  name="salary"  value={formData.salary}  onChange={handleInputChange}  placeholder="Enter salary" required/>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-              <div className="modal-footer bg-light">
-                <button type="button" className="btn btn-secondary shadow-none" onClick={handleCloseModal}>
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-primary shadow-none" form="userForm">
-                  {editingSalary ? 'Update Salary' : 'Add Salary'}
-                </button>
-              </div>
-
+                <div className="modal-footer bg-light">
+                  <button type="button" className="btn btn-secondary shadow-none" onClick={handleCloseModal}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-primary shadow-none" form="userForm">
+                    {editingSalary ? 'Update Salary' : 'Add Salary'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -389,7 +413,7 @@ const Salary = () => {
                   <button type="button" className="btn-close btn-close-white shadow-none" onClick={closeDeleteModal}></button>
                 </div>
                 <div className="modal-body">
-                  Are you sure you want to delete this salary?
+                  Are you sure you want to delete this salary record for <strong>{deleteSalary.user?.name || 'this user'}</strong>?
                 </div>
                 <div className="modal-footer">
                   <button className="btn btn-secondary shadow-none" onClick={closeDeleteModal}>
