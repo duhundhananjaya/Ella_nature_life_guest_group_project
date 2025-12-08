@@ -30,6 +30,9 @@ import initializeSocket from './socketServer.js';
 import receptionistBookingRoutes from './routes/receptionistBooking.js';
 import reportRoutes from './routes/report.js';
 import adminDashboardRoutes from './routes/adminDashboard.js';
+import clerkDashboardRoutes from './routes/clerkDashboard.js';
+import receptionistDashboardRoutes from './routes/receptionistDashboard.js';
+import attendantDashboardRoutes from './routes/attendantDashboard.js';
 import salaryRoutes from './routes/salary.js';
 
 const app = express();
@@ -77,6 +80,9 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/salary', salaryRoutes);
 app.use('/api/admin-dashboard', adminDashboardRoutes);
+app.use('/api/clerk-dashboard', clerkDashboardRoutes);
+app.use('/api/receptionist-dashboard', receptionistDashboardRoutes);
+app.use('/api/attendant-dashboard', attendantDashboardRoutes);
 
 server.listen(process.env.PORT, () =>{
     connectDB();
