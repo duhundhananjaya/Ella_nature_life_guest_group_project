@@ -230,7 +230,7 @@ const Salary = () => {
           <div className="card-header bg-white py-3">
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
               <div>
-                <i className="fas fa-dollar-sign me-2"></i>
+                <i className="fas fa-money-bill-wave me-2"></i>
                 <span className="fw-semibold">Salary</span>
               </div>
 
@@ -318,7 +318,7 @@ const Salary = () => {
                   ) : (
                     <tr>
                       <td colSpan="7" className="text-center py-5 text-muted">
-                        <i className="fas fa-dollar-sign fa-3x mb-3 opacity-25"></i>
+                        <i className="fas fa-money-bill-wave fa-3x mb-3 opacity-25"></i>
                         <p className="mb-0">No salary found</p>
                       </td>
                     </tr>

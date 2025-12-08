@@ -30,6 +30,8 @@ import ReceptionistBooking from './components/receptionist/ReceptionistBooking'
 import ReceptionistViewBookings from './components/receptionist/ReceptionistViewBooking'
 import Reports from './components/Reports'
 import Salary from './components/Salary'
+import ViewSalary from './components/ViewSalary'
+import ClerkViewBookings from './components/clerk/ClerkViewBookings'
 
 function App() {
 
@@ -64,6 +66,8 @@ function App() {
           </ProtectedRoutes>}>
           <Route index element={<ClerkHome />} />
            <Route path="rooms" element={<ClerkRooms />} />
+           <Route path="salary" element={<ViewSalary />} />
+           <Route path="bookings" element={<ClerkViewBookings />} />
            <Route path="profile" element={<ProfileView />} />
            <Route path="profile-settings" element={<Profile />} />
            <Route path="gallery" element={<ClerkGallery />} />
@@ -75,6 +79,7 @@ function App() {
             <Dashboard />
           </ProtectedRoutes>}>
           <Route index element={<ReceptionistHome />} />
+          <Route path="salary" element={<ViewSalary />} />
           <Route path="manual-bookings" element={<ReceptionistBooking />} />
           <Route path="bookings" element={<ReceptionistViewBookings />} />
           <Route path="profile" element={<ProfileView />} />
@@ -85,6 +90,7 @@ function App() {
             <Dashboard />
           </ProtectedRoutes>}>
           <Route index element={<AttendantHome />} />
+          <Route path="salary" element={<ViewSalary />} />
           <Route path="rooms" element={<AttendantRoom />} />
           <Route path="profile" element={<ProfileView />} />
           <Route path="profile-settings" element={<Profile />} />

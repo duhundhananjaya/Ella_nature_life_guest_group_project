@@ -23,19 +23,23 @@ const Sidebar = () => {
 
     const clerkMenuItems = [
         { name: "Dashboard", path: "/clerk-dashboard", icon: "fas fa-tachometer-alt", end: true },
+        { name: "My Salary", path: "/clerk-dashboard/salary", icon: "fas fa-money-bill-wave", end: false },
         { name: "Rooms", path: "/clerk-dashboard/rooms", icon: "fas fa-door-open", end: false },
+        { name: "View Bookings", path: "/clerk-dashboard/bookings", icon: "fas fa-ticket-alt", end: false },
         { name: "Gallery", path: "/clerk-dashboard/gallery", icon: "fas fa-images", end: false },
         { name: "Live Chat", path: "/clerk-dashboard/live-chat", icon: "fas fa-comments", end: false },
     ];
 
     const receptionistMenuItems = [
         { name: "Dashboard", path: "/receptionist-dashboard", icon: "fas fa-tachometer-alt", end: true },
+        { name: "My Salary", path: "/clerk-dashboard/salary", icon: "fas fa-money-bill-wave", end: false },
         { name: "Manual Bookings", path: "/receptionist-dashboard/manual-bookings", icon: "fas fa-hand-pointer", end: false },
         { name: "View Bookings", path: "/receptionist-dashboard/bookings", icon: "fas fa-ticket-alt", end: false },
     ];
 
     const attendantMenuItems = [
         { name: "Dashboard", path: "/attendant-dashboard", icon: "fas fa-tachometer-alt", end: true },
+        { name: "My Salary", path: "/clerk-dashboard/salary", icon: "fas fa-money-bill-wave", end: false },
         { name: "Rooms", path: "/attendant-dashboard/rooms", icon: "fas fa-door-open", end: false },
     ];
 
