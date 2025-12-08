@@ -8,6 +8,7 @@ const Sidebar = () => {
     const adminMenuItems = [
         { name: "Dashboard", path: "/admin-dashboard", icon: "fas fa-tachometer-alt", end: true },
         { name: "Users", path: "/admin-dashboard/users", icon: "fas fa-users", end: false },
+        { name: "Staff Salary", path: "/admin-dashboard/salary", icon: "fas fa-money-bill-wave", end: false },
         { name: "Features", path: "/admin-dashboard/features", icon: "fas fa-gem", end: false },
         { name: "Facilities", path: "/admin-dashboard/facilities", icon: "fas fa-tools", end: false },
         { name: "Bookings", path: "/admin-dashboard/bookings", icon: "fas fa-ticket-alt", end: false },

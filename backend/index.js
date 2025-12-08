@@ -28,6 +28,8 @@ import viewFeedbackRoutes from './routes/viewFeedback.js';
 import chatRoutes from './routes/chat.js';
 import initializeSocket from './socketServer.js';
 import receptionistBookingRoutes from './routes/receptionistBooking.js';
+import reportRoutes from './routes/report.js';
+import adminDashboardRoutes from './routes/adminDashboard.js';
 
 const app = express();
 const server = createServer(app);
@@ -71,6 +73,8 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/receptionist-bookings', receptionistBookingRoutes);
 app.use('/api/view-feedbacks', viewFeedbackRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/admin-dashboard', adminDashboardRoutes);
 
 server.listen(process.env.PORT, () =>{
     connectDB();
