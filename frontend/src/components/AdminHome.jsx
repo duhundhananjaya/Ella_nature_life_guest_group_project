@@ -1,7 +1,48 @@
 import React from 'react'
 import IncomeChart from './IncomeChart';
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import { Link } from 'react-router';
 
 const AdminHome = () => {
+    const [adminDashboardData, setAdminDashboardData] = useState({
+        totalBookings: 0,
+        totalAvailableRooms: 0,
+        totalOccupiedRooms: 0,
+        totalRevenue: 0
+    })
+    const [loading, setLoading] = useState(false);
+
+    const fetchAdminDashboardData = async () =>{
+        try {
+            setLoading(true);
+            const response = await axios.get("http://localhost:3000/api/admin-dashboard", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("pos-token")}`,
+                },
+            });
+            console.log(response.data.adminDashboardData);
+            setAdminDashboardData(response.data.adminDashboardData);
+            
+        } catch (error) {
+            alert(error.message);
+        }finally{
+            setLoading(false);
+        }
+    }
+
+    useEffect(() =>{
+        fetchAdminDashboardData();
+    }, []);
+
+    if (loading) return (
+    <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  )
+
   return (
     <main>
         <div class="container-fluid px-4">
@@ -15,11 +56,11 @@ const AdminHome = () => {
                         
                         <div className="card-body">
                             <h5 className="mb-2">Total Revenue</h5>
-                            <h3 className="fw-bold">0 LKR</h3>
+                            <h3 className="fw-bold">{adminDashboardData.totalRevenue} LKR</h3>
                         </div>
 
                         <div className="card-footer d-flex align-items-center justify-content-between">
-                            <a className="small text-white stretched-link" href="#">View Details</a>
+                            <Link className="small text-white stretched-link" to="/admin-dashboard/bookings">View Details</Link>
                             <div className="small text-white"><i className="fas fa-angle-right"></i></div>
                         </div>
                     </div>
@@ -29,11 +70,11 @@ const AdminHome = () => {
                     <div className="card text-white mb-4" style={{ backgroundColor: '#2563eb' }}>
                         <div class="card-body">
                             <h5 className="mb-2">Total Bookings</h5>
-                            <h3 className="fw-bold">0</h3>
+                            <h3 className="fw-bold">{adminDashboardData.totalBookings}</h3>
                         </div>
 
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a class="small text-white stretched-link" href="#">View Details</a>
+                            <Link className="small text-white stretched-link" to="/admin-dashboard/bookings">View Details</Link>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
@@ -43,10 +84,10 @@ const AdminHome = () => {
                     <div className="card text-white mb-4" style={{ backgroundColor: '#db2777' }}>
                         <div class="card-body">
                             <h5 className="mb-2">Available Rooms</h5>
-                            <h3 className="fw-bold">0</h3>
+                            <h3 className="fw-bold">{adminDashboardData.totalAvailableRooms}</h3>
                         </div>
                             <div class="card-footer d-flex align-items-center justify-content-between">
-                                <a class="small text-white stretched-link" href="#">View Details</a>
+                                <Link className="small text-white stretched-link" to="/admin-dashboard/cleaning-details">View Details</Link>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
@@ -56,10 +97,10 @@ const AdminHome = () => {
                     <div className="card text-white mb-4" style={{ backgroundColor: '#eab308' }}>
                         <div class="card-body">
                             <h5 className="mb-2">Occupied Rooms</h5>
-                            <h3 className="fw-bold">0</h3>
+                            <h3 className="fw-bold">{adminDashboardData.totalOccupiedRooms}</h3>
                         </div>
                             <div class="card-footer d-flex align-items-center justify-content-between">
-                                <a class="small text-white stretched-link" href="#">View Details</a>
+                                <Link className="small text-white stretched-link" to="/admin-dashboard/cleaning-details">View Details</Link>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
