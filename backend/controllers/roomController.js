@@ -1,5 +1,6 @@
 import Room from "../models/Room.js";
 import RoomInstance from "../models/RoomInstance.js";
+import Booking from '../models/Booking.js';
 import multer from 'multer';
 import fs from "fs";
 import path from "path";
@@ -246,6 +247,32 @@ const deleteRoom = async (req, res) => {
       return res.status(400).json({ 
         success: false, 
         message: `Cannot delete room type. ${occupiedCount} room(s) are currently occupied or reserved.` 
+      });
+    }
+
+    // Check for active bookings that prevent deletion
+    const activeBookings = await Booking.countDocuments({
+      roomType: id,
+      $or: [
+        // Pending payment (regardless of booking status)
+        { paymentStatus: 'pending' },
+        // Active bookings (not cancelled, not checked-out)
+        { 
+          status: { $in: ['confirmed', 'checked-in', 'pending'] },
+          paymentStatus: { $ne: 'paid' }
+        },
+        // Checked-in but not paid
+        {
+          status: 'checked-in',
+          paymentStatus: { $ne: 'paid' }
+        }
+      ]
+    });
+
+    if (activeBookings > 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Cannot delete room type. There are ${activeBookings} active booking(s) with pending payments or uncompleted status.` 
       });
     }
 
