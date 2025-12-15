@@ -306,7 +306,7 @@ const Users = () => {
                           {user.email === JSON.parse(localStorage.getItem("pos-user"))?.email ? (
                             <button
                               className="btn btn-sm btn-success mb-2 me-2 shadow-none"
-                              onClick={() => navigate("/profile")}
+                              onClick={() => navigate("/admin-dashboard/profile")}
                               title="Go to Profile"
                             >
                               Go profile
