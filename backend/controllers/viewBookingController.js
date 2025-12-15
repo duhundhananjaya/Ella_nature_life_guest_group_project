@@ -154,8 +154,11 @@ const deleteBooking = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Booking not found'});
         }
 
-        if (booking.status !== 'pending') {
-            return res.status(400).json({ success: false, message: `Cannot delete booking with status "${booking.status}". Only pending bookings can be deleted.`});
+        if (booking.status !== 'pending' && booking.status !== 'cancelled') {
+            return res.status(400).json({ 
+                success: false, 
+                message: `Cannot delete booking with status "${booking.status}". Only pending or cancelled bookings can be deleted.`
+            });
         }
 
         // Free up the rooms before deleting the booking
