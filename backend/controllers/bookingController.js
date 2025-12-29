@@ -153,11 +153,12 @@ const createBooking = async (req, res) => {
       children, 
       roomsBooked,
       totalPrice,
-      specialRequests 
+      specialRequests,
+      requirePayment = true  // New parameter - defaults to true for backward compatibility
     } = req.body;
 
     // Get client ID from authenticated user
-    const clientId = req.client._id; // This comes from your clientAuthMiddleware
+    const clientId = req.client._id;
 
     // Validate input
     if (!roomTypeId || !checkIn || !checkOut || !adults || !roomsBooked || !totalPrice) {
@@ -276,20 +277,22 @@ const createBooking = async (req, res) => {
       numberOfNights: nights,
       specialRequests: specialRequests || '',
       status: 'confirmed',
-      paymentStatus: 'pending'
+      paymentStatus: 'pending'  // Always start as pending
     });
 
     await booking.save();
 
+    // Send Telegram notification
     await sendTelegramMessage(
-  `📢 <b>New Booking Created!</b>\n
+      `📢 <b>New Booking Created!</b>\n
 🏨 Room Type: ${roomType.room_name}\n
 🛏 Rooms Booked: ${roomsBooked}\n
 👤 Client: ${req.client.fullName}\n
 📅 Check-in: ${checkIn}\n
 📅 Check-out: ${checkOut}\n
-💵 Total: Rs. ${totalPrice}`
-);
+💵 Total: Rs. ${totalPrice}\n
+💳 Payment: ${requirePayment ? 'Online Payment Required' : 'Pay Later'}`
+    );
 
     // Update room instances status to reserved
     await RoomInstance.updateMany(
@@ -297,40 +300,42 @@ const createBooking = async (req, res) => {
       { occupancy_status: 'reserved' }
     );
 
-    // Create Stripe checkout session
+    // Create Stripe checkout session ONLY if payment is required
     let stripeSession = null;
-    try {
-      stripeSession = await stripeInstance.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: `${roomType.room_name} - Booking #${booking.bookingId}`,
-                description: `Check-in: ${checkInDate.toLocaleDateString()} - Check-out: ${checkOutDate.toLocaleDateString()}`,
+    if (requirePayment) {
+      try {
+        stripeSession = await stripeInstance.checkout.sessions.create({
+          payment_method_types: ['card'],
+          line_items: [
+            {
+              price_data: {
+                currency: 'usd',
+                product_data: {
+                  name: `${roomType.room_name} - Booking #${booking.bookingId}`,
+                  description: `Check-in: ${checkInDate.toLocaleDateString()} - Check-out: ${checkOutDate.toLocaleDateString()}`,
+                },
+                unit_amount: Math.round(booking.totalPrice * 100), // Convert to cents
               },
-              unit_amount: Math.round(booking.totalPrice * 100), // Convert to cents
+              quantity: 1,
             },
-            quantity: 1,
-          },
-        ],
-        mode: 'payment',
-        client_reference_id: booking._id.toString(),
-        success_url: `${process.env.CLIENT_URL}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.CLIENT_URL}/booking/cancel`,
-        metadata: {
-          bookingId: booking._id.toString(),
-          bookingNumber: booking.bookingId
-        }
-      });
+          ],
+          mode: 'payment',
+          client_reference_id: booking._id.toString(),
+          success_url: `${process.env.CLIENT_URL}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${process.env.CLIENT_URL}/booking/cancel`,
+          metadata: {
+            bookingId: booking._id.toString(),
+            bookingNumber: booking.bookingId
+          }
+        });
 
-      // Update booking with session ID
-      booking.stripeSessionId = stripeSession.id;
-      await booking.save();
-    } catch (stripeError) {
-      console.error('Error creating Stripe session:', stripeError);
-      // Continue without payment for now, but log the error
+        // Update booking with session ID
+        booking.stripeSessionId = stripeSession.id;
+        await booking.save();
+      } catch (stripeError) {
+        console.error('Error creating Stripe session:', stripeError);
+        // Continue without payment session, but log the error
+      }
     }
 
     // Populate booking details for response
@@ -340,7 +345,9 @@ const createBooking = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: 'Booking created successfully',
+      message: requirePayment 
+        ? 'Booking created successfully. Please complete payment.' 
+        : 'Booking created successfully. Payment pending.',
       booking: {
         _id: booking._id,
         bookingId: booking.bookingId,
@@ -447,7 +454,7 @@ const cancelBooking = async (req, res) => {
     const booking = await Booking.findOne({
       _id: id,
       client: clientId
-    });
+    }).populate('roomType', 'room_name');
 
     if (!booking) {
       return res.status(404).json({ 
@@ -470,15 +477,22 @@ const cancelBooking = async (req, res) => {
       });
     }
 
-    // Check cancellation policy (e.g., 24 hours before check-in)
-    const now = new Date();
-    const checkIn = new Date(booking.checkIn);
-    const hoursDiff = (checkIn - now) / (1000 * 60 * 60);
-
-    if (hoursDiff < 24) {
+    // Allow cancellation only if payment status is pending
+    if (booking.paymentStatus !== 'pending') {
       return res.status(400).json({ 
         success: false,
-        message: 'Cannot cancel booking less than 24 hours before check-in' 
+        message: 'Cannot cancel booking with paid status. Please contact support for refund.' 
+      });
+    }
+
+    // Check if check-in date has passed
+    const now = new Date();
+    const checkIn = new Date(booking.checkIn);
+
+    if (checkIn <= now) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Cannot cancel booking after check-in date has passed' 
       });
     }
 
@@ -491,6 +505,16 @@ const cancelBooking = async (req, res) => {
     await RoomInstance.updateMany(
       { _id: { $in: booking.roomInstances } },
       { occupancy_status: 'available' }
+    );
+
+    // Send Telegram notification
+    await sendTelegramMessage(
+      `🚫 <b>Booking Cancelled</b>\n
+🏨 Room Type: ${booking.roomType.room_name}\n
+📋 Booking ID: ${booking.bookingId}\n
+👤 Client: ${req.client.fullName}\n
+💵 Amount: Rs. ${booking.totalPrice}\n
+💳 Payment Status: ${booking.paymentStatus}`
     );
 
     return res.status(200).json({
