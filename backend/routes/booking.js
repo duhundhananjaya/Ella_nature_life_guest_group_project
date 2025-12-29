@@ -19,6 +19,6 @@ router.post('/create', protectClient, createBooking);
 router.post('/update-payment-status', protectClient, updatePaymentStatus);
 router.get('/my-bookings', protectClient, getMyBookings);
 router.get('/:id', protectClient, getBookingById);
-router.patch('/:id/cancel', protectClient, cancelBooking);
+router.put('/cancel/:id', protectClient, cancelBooking);
 
 export default router;

@@ -8,6 +8,7 @@ const MyBookingsSection = () => {
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('all');
   const [reviewedBookings, setReviewedBookings] = useState({});
+  const [cancellingBookingId, setCancellingBookingId] = useState(null);
   
   // Review modal state
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -24,7 +25,6 @@ const MyBookingsSection = () => {
     fetchBookings();
   }, []);
 
-  // Refresh bookings when component becomes visible (in case payment status was updated)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
@@ -63,7 +63,6 @@ const MyBookingsSection = () => {
       setBookings(bookingsArray);
       setFilteredBookings(bookingsArray);
       
-      // Check which bookings have been reviewed
       bookingsArray.forEach(booking => {
         if (booking.status === 'checked-out') {
           checkIfReviewed(booking._id);
@@ -113,6 +112,48 @@ const MyBookingsSection = () => {
       setFilteredBookings(safeBookings);
     } else {
       setFilteredBookings(safeBookings.filter(b => b.status === activeFilter));
+    }
+  };
+
+  const handleCancelBooking = async (bookingId) => {
+    if (!confirm('Are you sure you want to cancel this booking?')) {
+      return;
+    }
+
+    setCancellingBookingId(bookingId);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(`${API_URL}/cancel/${bookingId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to cancel booking');
+      }
+
+      toast.success('Booking cancelled successfully!', {
+        position: "top-right",
+        autoClose: 3000
+      });
+
+      // Refresh bookings list
+      await fetchBookings();
+    } catch (err) {
+      console.error('Error cancelling booking:', err);
+      toast.error(err.message || 'Failed to cancel booking', {
+        position: "top-right",
+        autoClose: 3000
+      });
+    } finally {
+      setCancellingBookingId(null);
     }
   };
 
@@ -178,7 +219,6 @@ const MyBookingsSection = () => {
         autoClose: 3000
       });
 
-      // Update the reviewed bookings state
       setReviewedBookings(prev => ({
         ...prev,
         [selectedBooking._id]: true
@@ -222,76 +262,6 @@ const MyBookingsSection = () => {
       day: 'numeric',
       year: 'numeric'
     });
-  };
-
-  const handleViewDetails = async (bookingId) => {
-    try {
-      const token = localStorage.getItem('token');
-
-      const response = await fetch(`${API_URL}/${bookingId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch booking details');
-      }
-
-      const data = await response.json();
-
-      // You can navigate to a details page or show a modal with the booking details
-      console.log('Booking details:', data.data);
-      toast.info(`Viewing details for booking ${data.data.bookingId}`, {
-        position: "top-right",
-        autoClose: 2000
-      });
-
-      // Optional: Navigate to details page
-      // window.location.href = `/booking-details/${bookingId}`;
-    } catch (err) {
-      console.error('Error fetching booking details:', err);
-      toast.error(err.message || 'Failed to load booking details', {
-        position: "top-right",
-        autoClose: 3000
-      });
-    }
-  };
-
-  const handlePayNow = async (bookingId) => {
-    try {
-      const token = localStorage.getItem('token');
-
-      const response = await fetch(`http://localhost:3000/api/payment/create-checkout-session`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ bookingId })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create payment session');
-      }
-
-      const data = await response.json();
-
-      if (data.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.url;
-      } else {
-        throw new Error('Payment URL not received');
-      }
-    } catch (err) {
-      console.error('Error creating payment session:', err);
-      toast.error(err.message || 'Failed to initiate payment', {
-        position: "top-right",
-        autoClose: 3000
-      });
-    }
   };
 
   if (loading) {
@@ -343,7 +313,6 @@ const MyBookingsSection = () => {
       />
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
-        {/* Page Title */}
         <div style={{ 
           textAlign: 'center', 
           marginBottom: '50px' 
@@ -369,7 +338,6 @@ const MyBookingsSection = () => {
           </h2>
         </div>
 
-        {/* Filter Buttons */}
         <div style={{
           display: 'flex',
           flexWrap: 'wrap',
@@ -420,7 +388,6 @@ const MyBookingsSection = () => {
           ))}
         </div>
 
-        {/* Bookings List */}
         {filteredBookings.length === 0 ? (
           <div style={{
             backgroundColor: '#fff',
@@ -462,7 +429,6 @@ const MyBookingsSection = () => {
                 onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 5px 25px rgba(0,0,0,0.12)'}
                 onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 2px 15px rgba(0,0,0,0.08)'}
               >
-                {/* Header */}
                 <div style={{
                   backgroundColor: '#dfa974',
                   padding: '20px 30px',
@@ -518,7 +484,6 @@ const MyBookingsSection = () => {
                   </div>
                 </div>
 
-                {/* Body */}
                 <div style={{ padding: '30px' }}>
                   <div style={{ 
                     display: 'grid',
@@ -526,7 +491,6 @@ const MyBookingsSection = () => {
                     gap: '20px',
                     marginBottom: '20px'
                   }}>
-                    {/* Check-in */}
                     <div>
                       <div style={{
                         color: '#707079',
@@ -549,7 +513,6 @@ const MyBookingsSection = () => {
                       </div>
                     </div>
 
-                    {/* Check-out */}
                     <div>
                       <div style={{
                         color: '#707079',
@@ -572,7 +535,6 @@ const MyBookingsSection = () => {
                       </div>
                     </div>
 
-                    {/* Guests */}
                     <div>
                       <div style={{
                         color: '#707079',
@@ -595,7 +557,6 @@ const MyBookingsSection = () => {
                       </div>
                     </div>
 
-                    {/* Duration */}
                     <div>
                       <div style={{
                         color: '#707079',
@@ -619,7 +580,6 @@ const MyBookingsSection = () => {
                     </div>
                   </div>
 
-                  {/* Footer */}
                   <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -658,10 +618,47 @@ const MyBookingsSection = () => {
                       </div>
                     </div>
 
-                    {/* Action Button */}
-                    {booking.status === 'checked-out' && (
-                      <div>
-                        {reviewedBookings[booking._id] ? (
+                    {/* Action Buttons */}
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      {/* Cancel Button - Only show if payment is pending */}
+                      {booking.paymentStatus === 'pending' && booking.status !== 'cancelled' && booking.status !== 'checked-out' && (
+                        <button
+                          onClick={() => handleCancelBooking(booking._id)}
+                          disabled={cancellingBookingId === booking._id}
+                          style={{
+                            height: '45px',
+                            padding: '0 25px',
+                            backgroundColor: '#dc3545',
+                            color: '#fff',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            letterSpacing: '1px',
+                            textTransform: 'uppercase',
+                            border: 'none',
+                            cursor: cancellingBookingId === booking._id ? 'not-allowed' : 'pointer',
+                            transition: 'all 0.3s',
+                            fontFamily: '"Cabin", sans-serif',
+                            borderRadius: '4px',
+                            opacity: cancellingBookingId === booking._id ? 0.6 : 1
+                          }}
+                          onMouseEnter={(e) => {
+                            if (cancellingBookingId !== booking._id) {
+                              e.target.style.backgroundColor = '#c82333';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (cancellingBookingId !== booking._id) {
+                              e.target.style.backgroundColor = '#dc3545';
+                            }
+                          }}
+                        >
+                          {cancellingBookingId === booking._id ? '⏳ Cancelling...' : '✗ Cancel Booking'}
+                        </button>
+                      )}
+
+                      {/* Review Button - Only show for checked-out bookings */}
+                      {booking.status === 'checked-out' && (
+                        reviewedBookings[booking._id] ? (
                           <div style={{
                             backgroundColor: '#f0f0f0',
                             color: '#666',
@@ -699,9 +696,9 @@ const MyBookingsSection = () => {
                           >
                             ⭐ Write Review
                           </button>
-                        )}
-                      </div>
-                    )}
+                        )
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -736,7 +733,6 @@ const MyBookingsSection = () => {
             boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
           }}
           onClick={(e) => e.stopPropagation()}>
-            {/* Modal Header */}
             <div style={{
               backgroundColor: '#dfa974',
               padding: '25px 30px',
@@ -785,9 +781,7 @@ const MyBookingsSection = () => {
               </button>
             </div>
 
-            {/* Modal Body */}
             <div style={{ padding: '30px' }}>
-              {/* Rating */}
               <div style={{ marginBottom: '30px' }}>
                 <label style={{
                   display: 'block',
@@ -833,7 +827,6 @@ const MyBookingsSection = () => {
                 )}
               </div>
 
-              {/* Comment */}
               <div style={{ marginBottom: '30px' }}>
                 <label style={{
                   display: 'block',
@@ -876,7 +869,6 @@ const MyBookingsSection = () => {
                 </div>
               </div>
 
-              {/* Buttons */}
               <div style={{ display: 'flex', gap: '15px', justifyContent: 'flex-end' }}>
                 <button
                   onClick={closeReviewModal}

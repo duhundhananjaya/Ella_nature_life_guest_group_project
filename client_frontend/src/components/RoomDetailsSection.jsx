@@ -289,102 +289,103 @@ const RoomDetailsSection = () => {
         }
     };
 
-    const proceedToBooking = async (availabilityData) => {
-        // Check if user is logged in
-        if (!checkAuthentication()) {
-            toast.warning('Please login to proceed with the booking.', {
-                position: "top-right",
-                autoClose: 3000
-            });
-            
-            // Save booking data to session storage to resume after login
-            setTimeout(() => {
-                sessionStorage.setItem('pendingBooking', JSON.stringify({
-                    roomId: id,
-                    bookingData: bookingData,
-                    availabilityData: availabilityData
-                }));
-                navigate('/login', { state: { from: `/room-details/${id}` } });
-            }, 1000);
-            return;
-        }
+    const proceedToBooking = async (availabilityData, withPayment = true) => {
+    // Check if user is logged in
+    if (!checkAuthentication()) {
+        toast.warning('Please login to proceed with the booking.', {
+            position: "top-right",
+            autoClose: 3000
+        });
+        
+        // Save booking data to session storage to resume after login
+        setTimeout(() => {
+            sessionStorage.setItem('pendingBooking', JSON.stringify({
+                roomId: id,
+                bookingData: bookingData,
+                availabilityData: availabilityData
+            }));
+            navigate('/login', { state: { from: `/room-details/${id}` } });
+        }, 1000);
+        return;
+    }
 
-        // Proceed with booking
-        try {
-            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            
-            // Show loading toast
-            const loadingToast = toast.loading('Processing your booking...', {
-                position: "top-right"
-            });
+    // Proceed with booking
+    try {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        
+        // Show loading toast
+        const loadingToast = toast.loading('Processing your booking...', {
+            position: "top-right"
+        });
 
-            const response = await axios.post('http://localhost:3000/api/bookings/create', {
-                roomTypeId: id,
-                checkIn: bookingData.checkIn,
-                checkOut: bookingData.checkOut,
-                adults: parseInt(bookingData.adults),
-                children: parseInt(bookingData.children),
-                roomsBooked: parseInt(bookingData.rooms),
-                totalPrice: availabilityData.totalPrice
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            // Dismiss loading toast
-            toast.dismiss(loadingToast);
-
-            // Check if payment is required
-            if (response.data.payment && response.data.payment.url) {
-                // Show success message for booking creation
-                toast.success(
-                    `Booking created! Redirecting to payment...`,
-                    {
-                        position: "top-right",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true
-                    }
-                );
-
-                // Redirect to Stripe checkout
-                setTimeout(() => {
-                    window.location.href = response.data.payment.url;
-                }, 1500);
-            } else {
-                // No payment required or payment setup failed
-                toast.success(
-                    `Booking confirmed! ID: ${response.data.booking.bookingId || response.data.booking._id}`,
-                    {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true
-                    }
-                );
-
-                // Redirect to bookings page after delay
-                setTimeout(() => {
-                    navigate('/my-bookings');
-                }, 2000);
+        const response = await axios.post('http://localhost:3000/api/bookings/create', {
+            roomTypeId: id,
+            checkIn: bookingData.checkIn,
+            checkOut: bookingData.checkOut,
+            adults: parseInt(bookingData.adults),
+            children: parseInt(bookingData.children),
+            roomsBooked: parseInt(bookingData.rooms),
+            totalPrice: availabilityData.totalPrice,
+            requirePayment: withPayment  // New parameter to indicate payment requirement
+        }, {
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
+        });
 
-        } catch (error) {
-            console.error('Booking error:', error);
-            toast.error(
-                error.response?.data?.message || 'Failed to create booking. Please try again.', 
+        // Dismiss loading toast
+        toast.dismiss(loadingToast);
+
+        // Check if payment is required and available
+        if (withPayment && response.data.payment && response.data.payment.url) {
+            // Show success message for booking creation
+            toast.success(
+                `Booking created! Redirecting to payment...`,
                 {
                     position: "top-right",
-                    autoClose: 4000
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true
                 }
             );
+
+            // Redirect to Stripe checkout
+            setTimeout(() => {
+                window.location.href = response.data.payment.url;
+            }, 1500);
+        } else {
+            // No payment required - booking confirmed with pending payment
+            toast.success(
+                `Booking confirmed! ID: ${response.data.booking.bookingId}. Payment status: Pending`,
+                {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true
+                }
+            );
+
+            // Redirect to bookings page after delay
+            setTimeout(() => {
+                navigate('/my-bookings');
+            }, 2000);
         }
-    };
+
+    } catch (error) {
+        console.error('Booking error:', error);
+        toast.error(
+            error.response?.data?.message || 'Failed to create booking. Please try again.', 
+            {
+                position: "top-right",
+                autoClose: 4000
+            }
+        );
+    }
+};
 
     if (loading) {
         return (
@@ -719,30 +720,57 @@ const RoomDetailsSection = () => {
 
                                     {/* Book Now Button - Only shows when rooms are available */}
                                     {availabilityResult && availabilityResult.available && (
-                                        <button 
-                                            type="button"
-                                            onClick={() => proceedToBooking(availabilityResult)}
-                                            style={{
-                                                marginTop: '10px',
-                                                backgroundColor: '#28a745',
-                                                border: 'none',
-                                                color: 'white',
-                                                padding: '13px 28px',
-                                                fontSize: '13px',
-                                                fontWeight: '700',
-                                                textTransform: 'uppercase',
-                                                letterSpacing: '2px',
-                                                borderRadius: '2px',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.3s',
-                                                width: '100%'
-                                            }}
-                                            onMouseOver={(e) => e.target.style.backgroundColor = '#218838'}
-                                            onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
-                                        >
-                                            Book Now
-                                        </button>
-                                    )}
+    <div style={{ marginTop: '10px', display: 'flex', gap: '10px', flexDirection: 'column' }}>
+        {/* Book & Pay Button */}
+        <button 
+            type="button"
+            onClick={() => proceedToBooking(availabilityResult, true)}
+            style={{
+                backgroundColor: '#28a745',
+                border: 'none',
+                color: 'white',
+                padding: '13px 28px',
+                fontSize: '13px',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                borderRadius: '2px',
+                cursor: 'pointer',
+                transition: 'all 0.3s',
+                width: '100%'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#218838'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
+        >
+            Book & Pay Now
+        </button>
+
+        {/* Book Without Payment Button */}
+        <button 
+            type="button"
+            onClick={() => proceedToBooking(availabilityResult, false)}
+            style={{
+                backgroundColor: '#dfa974',
+                border: 'none',
+                color: 'white',
+                padding: '13px 28px',
+                fontSize: '13px',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                borderRadius: '2px',
+                cursor: 'pointer',
+                transition: 'all 0.3s',
+                width: '100%'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#c89461'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#dfa974'}
+        >
+            Book (Pay Later)
+        </button>
+    </div>
+)}
+
                                 </form>
                             </div>
                         </div>
