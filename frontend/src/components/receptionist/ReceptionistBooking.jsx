@@ -11,7 +11,7 @@ const ReceptionistBooking = () => {
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
   const [availabilityResult, setAvailabilityResult] = useState(null);
   const [isCreatingBooking, setIsCreatingBooking] = useState(false);
-  const [showClientForm, setShowClientForm] = useState(false); // NEW
+  const [showClientForm, setShowClientForm] = useState(false);
 
   const [clientData, setClientData] = useState({
     fullName: '',
@@ -29,8 +29,7 @@ const ReceptionistBooking = () => {
     rooms: 1,
     specialRequests: '',
     paymentMethod: 'cash',
-    paymentStatus: 'paid',
-    advancePayment: ''
+    paymentStatus: 'paid'
   });
 
   const fetchRooms = async () => {
@@ -60,18 +59,18 @@ const ReceptionistBooking = () => {
   };
 
   const handleBookingInputChange = (e) => {
-  const { name, value } = e.target;
-  setBookingData(prev => ({
-    ...prev,
-    [name]: value
-  }));
-  
-  // Only reset if actual booking details changed (not payment fields)
-  if (name !== 'paymentMethod' && name !== 'paymentStatus' && name !== 'advancePayment' && name !== 'specialRequests') {
-    setAvailabilityResult(null);
-    setShowClientForm(false);
-  }
-};
+    const { name, value } = e.target;
+    setBookingData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Only reset if actual booking details changed (not payment fields)
+    if (name !== 'paymentMethod' && name !== 'paymentStatus' && name !== 'specialRequests') {
+      setAvailabilityResult(null);
+      setShowClientForm(false);
+    }
+  };
 
   const handleSelectRoom = (room) => {
     setSelectedRoom(room);
@@ -92,8 +91,7 @@ const ReceptionistBooking = () => {
       rooms: 1,
       specialRequests: '',
       paymentMethod: 'cash',
-      paymentStatus: 'paid',
-      advancePayment: ''
+      paymentStatus: 'paid'
     });
     setAvailabilityResult(null);
   };
@@ -179,7 +177,7 @@ const ReceptionistBooking = () => {
 
       if (response.data.available) {
         setAvailabilityResult(response.data);
-        setShowClientForm(true); // Show client form after successful availability check
+        setShowClientForm(true);
         setSuccess(`Great! ${response.data.availableRooms} room(s) available. Please fill in client details below.`);
         setTimeout(() => setSuccess(null), 5000);
       } else {
@@ -228,8 +226,7 @@ const ReceptionistBooking = () => {
           totalPrice: availabilityResult.totalPrice,
           specialRequests: bookingData.specialRequests,
           paymentMethod: bookingData.paymentMethod,
-          paymentStatus: bookingData.paymentStatus,
-          advancePayment: bookingData.advancePayment ? parseFloat(bookingData.advancePayment) : 0
+          paymentStatus: bookingData.paymentStatus
         },
         {
           headers: {
@@ -274,8 +271,7 @@ const ReceptionistBooking = () => {
       rooms: 1,
       specialRequests: '',
       paymentMethod: 'cash',
-      paymentStatus: 'paid',
-      advancePayment: ''
+      paymentStatus: 'paid'
     });
   };
 
@@ -559,7 +555,7 @@ const ReceptionistBooking = () => {
                 </div>
               )}
 
-              {/* STEP 2: Client Information & Payment (Only show if availability is confirmed) */}
+              {/* STEP 2: Client Information & Payment */}
               {showClientForm && (
                 <form onSubmit={handleCreateBooking}>
                   {/* Client Information Section */}
@@ -653,7 +649,7 @@ const ReceptionistBooking = () => {
                         </h5>
                       </div>
                     </div>
-                    <div className="col-md-4 mb-3">
+                    <div className="col-md-6 mb-3">
                       <label className="form-label fw-medium">
                         Payment Method <span className="text-danger">*</span>
                       </label>
@@ -668,9 +664,10 @@ const ReceptionistBooking = () => {
                         <option value="card">Card</option>
                         <option value="bank_transfer">Bank Transfer</option>
                         <option value="check">Check</option>
+                        <option value="online">Online</option>
                       </select>
                     </div>
-                    <div className="col-md-4 mb-3">
+                    <div className="col-md-6 mb-3">
                       <label className="form-label fw-medium">
                         Payment Status <span className="text-danger">*</span>
                       </label>
@@ -683,22 +680,7 @@ const ReceptionistBooking = () => {
                       >
                         <option value="paid">Paid</option>
                         <option value="pending">Pending</option>
-                        <option value="partial">Partial</option>
                       </select>
-                    </div>
-                    <div className="col-md-4 mb-3">
-                      <label className="form-label fw-medium">
-                        Advance Payment (LKR)
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control shadow-none"
-                        name="advancePayment"
-                        value={bookingData.advancePayment}
-                        onChange={handleBookingInputChange}
-                        placeholder="Enter amount"
-                        min="0"
-                      />
                     </div>
                   </div>
 
