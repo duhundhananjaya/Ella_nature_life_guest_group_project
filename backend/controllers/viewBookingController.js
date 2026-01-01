@@ -14,11 +14,12 @@ const getBookings = async (req, res) => {
 const updateBooking = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, paymentStatus } = req.body;
         
         console.log('=== BOOKING UPDATE START ===');
         console.log('Booking ID:', id);
         console.log('New Status:', status);
+        console.log('New Payment Status:', paymentStatus);
         
         const booking = await Booking.findById(id);
         
@@ -29,6 +30,8 @@ const updateBooking = async (req, res) => {
         
         console.log('📦 Booking found:', booking._id);
         console.log('📦 Current status:', booking.status);
+        console.log('📦 Current payment status:', booking.paymentStatus);
+        console.log('📦 Is manual booking:', booking.isManualBooking);
         console.log('📦 Room instances (before populate):', booking.roomInstances);
         
         // Now populate the room instances
@@ -38,7 +41,17 @@ const updateBooking = async (req, res) => {
         console.log('📦 Number of room instances:', booking.roomInstances?.length || 0);
         
         const previousStatus = booking.status;
+        const previousPaymentStatus = booking.paymentStatus;
+        
+        // Update booking status
         booking.status = status;
+        
+        // Update payment status only if provided and if it's a manual booking
+        if (paymentStatus && booking.isManualBooking) {
+            booking.paymentStatus = paymentStatus;
+            console.log('💳 Payment status updated:', previousPaymentStatus, '->', paymentStatus);
+        }
+        
         await booking.save();
         
         console.log('✅ Booking status saved:', previousStatus, '->', status);
@@ -132,7 +145,12 @@ const updateBooking = async (req, res) => {
 
         return res.status(200).json({ 
             success: true, 
-            message: 'Booking updated successfully' 
+            message: 'Booking updated successfully',
+            booking: {
+                _id: booking._id,
+                status: booking.status,
+                paymentStatus: booking.paymentStatus
+            }
         });
     } catch (error) {
         console.error('❌ Error updating booking:', error);

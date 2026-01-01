@@ -12,7 +12,8 @@ const ViewBookings = () => {
   const [deleteBooking, setDeleteBooking] = useState(null);
   const [viewBooking, setViewBooking] = useState(null);
   const [formData, setFormData] = useState({
-    status: "",  
+    status: "",
+    paymentStatus: "",
   });
 
   const handleInputChange = (e) => {
@@ -25,9 +26,10 @@ const ViewBookings = () => {
 
   const handleEdit = (booking) => {
     setShowBooking(true);
-    setEditBooking(booking._id);
+    setEditBooking(booking);
     setFormData({
       status: booking.status || "",
+      paymentStatus: booking.paymentStatus || "",
     });
   };
 
@@ -62,7 +64,7 @@ const ViewBookings = () => {
     if(editBooking){
       try {
         const response = await axios.put(
-          `http://localhost:3000/api/view-bookings/update/${editBooking}`,
+          `http://localhost:3000/api/view-bookings/update/${editBooking._id}`,
           formData,
           {
             headers: {
@@ -71,10 +73,11 @@ const ViewBookings = () => {
           }
         );
         if(response.data.success){
-          setSuccess("Booking status updated successfully");
+          setSuccess("Booking updated successfully");
           setTimeout(() => setSuccess(null), 5000);
           setFormData({
             status: "",
+            paymentStatus: "",
           });
           fetchBookings();
           handleCloseModal();
@@ -129,7 +132,7 @@ const ViewBookings = () => {
     setFilteredBookings(
       bookings.filter((booking) =>
         booking.bookingId.toLowerCase().includes(searchValue) ||
-        booking.client?.name?.toLowerCase().includes(searchValue)
+        booking.client?.fullName?.toLowerCase().includes(searchValue)
       )
     );
   };
@@ -139,6 +142,7 @@ const ViewBookings = () => {
     setEditBooking(null);
     setFormData({
       status: "",
+      paymentStatus: "",
     });
   };
 
@@ -177,6 +181,7 @@ const ViewBookings = () => {
     const statusColors = {
       'pending': 'warning',
       'paid': 'success',
+      'partial': 'info',
       'refunded': 'danger'
     };
     return `badge bg-${statusColors[status] || 'secondary'} px-2 py-1`;
@@ -332,137 +337,148 @@ const ViewBookings = () => {
             }}
           >
             <div className="modal-dialog modal-dialog-scrollable modal-lg">
-        <div className="modal-content">
-          <div className="modal-header bg-success text-white">
-            <h5 className="modal-title fw-semibold">
-              Booking Details
-            </h5>
-            <button 
-              type="button" 
-              className="btn-close btn-close-white shadow-none" 
-              onClick={closeViewModal}
-            ></button>
-          </div>
-          
-          <div className="modal-body p-0">
-            <table className="table table-bordered mb-0">
-              <tbody>
-                <tr>
-                  <td className="bg-light fw-medium" style={{width: '35%'}}>Booking ID</td>
-                  <td className="fw-semibold">{viewBooking.bookingId}</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Client Name</td>
-                  <td>{viewBooking.client?.fullName || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Client Phone number</td>
-                  <td>{viewBooking.client?.phone || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Client Country</td>
-                  <td>{viewBooking.client?.country || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Client Email</td>
-                  <td>{viewBooking.client?.email || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Room Type</td>
-                  <td>{viewBooking.roomType?.room_name || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Room Numbers</td>
-                  <td>
-                    {viewBooking.roomInstances && viewBooking.roomInstances.length > 0 
-                      ? viewBooking.roomInstances.map((room, index) => (
-                          <span key={index} className="badge bg-primary me-1">{room.room_number}</span>
-                        ))
-                      : 'N/A'}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Rooms Booked</td>
-                  <td>{viewBooking.roomsBooked}</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Check-In Date</td>
-                  <td>{formatDate(viewBooking.checkIn)}</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Check-Out Date</td>
-                  <td>{formatDate(viewBooking.checkOut)}</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Number of Nights</td>
-                  <td>{viewBooking.numberOfNights} night(s)</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Adults</td>
-                  <td>{viewBooking.adults}</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Children</td>
-                  <td>{viewBooking.children}</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Price Per Night</td>
-                  <td>LKR {viewBooking.pricePerNight?.toLocaleString()}</td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Total Price</td>
-                  <td className="fw-bold text-success fs-5">
-                    LKR {viewBooking.totalPrice?.toLocaleString()}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Booking Status</td>
-                  <td>
-                    <span className={getStatusBadge(viewBooking.status)}>
-                      {viewBooking.status}
-                    </span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="bg-light fw-medium">Payment Status</td>
-                  <td>
-                    <span className={getPaymentStatusBadge(viewBooking.paymentStatus)}>
-                      {viewBooking.paymentStatus}
-                    </span>
-                  </td>
-                </tr>
-                {viewBooking.specialRequests && (
-                  <tr>
-                    <td className="bg-light fw-medium">Special Requests</td>
-                    <td>{viewBooking.specialRequests}</td>
-                  </tr>
-                )}
-                <tr>
-                  <td className="bg-light fw-medium">Booking Date</td>
-                  <td>{formatDate(viewBooking.created_at)}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          
-          <div className="modal-footer bg-light">
-            <button 
-              type="button" 
-              className="btn btn-secondary shadow-none" 
-              onClick={closeViewModal}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
+              <div className="modal-content">
+                <div className="modal-header bg-success text-white">
+                  <h5 className="modal-title fw-semibold">
+                    Booking Details
+                  </h5>
+                  <button 
+                    type="button" 
+                    className="btn-close btn-close-white shadow-none" 
+                    onClick={closeViewModal}
+                  ></button>
+                </div>
+                
+                <div className="modal-body p-0">
+                  <table className="table table-bordered mb-0">
+                    <tbody>
+                      <tr>
+                        <td className="bg-light fw-medium" style={{width: '35%'}}>Booking ID</td>
+                        <td className="fw-semibold">
+                          {viewBooking.bookingId}
+                          {viewBooking.isManualBooking && (
+                            <span className="badge bg-info ms-2">Manual</span>
+                          )}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Client Name</td>
+                        <td>{viewBooking.client?.fullName || 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Client Phone number</td>
+                        <td>{viewBooking.client?.phone || 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Client Country</td>
+                        <td>{viewBooking.client?.country || 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Client Email</td>
+                        <td>{viewBooking.client?.email || 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Room Type</td>
+                        <td>{viewBooking.roomType?.room_name || 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Room Numbers</td>
+                        <td>
+                          {viewBooking.roomInstances && viewBooking.roomInstances.length > 0 
+                            ? viewBooking.roomInstances.map((room, index) => (
+                                <span key={index} className="badge bg-primary me-1">{room.room_number}</span>
+                              ))
+                            : 'N/A'}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Rooms Booked</td>
+                        <td>{viewBooking.roomsBooked}</td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Check-In Date</td>
+                        <td>{formatDate(viewBooking.checkIn)}</td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Check-Out Date</td>
+                        <td>{formatDate(viewBooking.checkOut)}</td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Number of Nights</td>
+                        <td>{viewBooking.numberOfNights} night(s)</td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Adults</td>
+                        <td>{viewBooking.adults}</td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Children</td>
+                        <td>{viewBooking.children}</td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Price Per Night</td>
+                        <td>LKR {viewBooking.pricePerNight?.toLocaleString()}</td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Total Price</td>
+                        <td className="fw-bold text-success fs-5">
+                          LKR {viewBooking.totalPrice?.toLocaleString()}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Booking Status</td>
+                        <td>
+                          <span className={getStatusBadge(viewBooking.status)}>
+                            {viewBooking.status}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="bg-light fw-medium">Payment Status</td>
+                        <td>
+                          <span className={getPaymentStatusBadge(viewBooking.paymentStatus)}>
+                            {viewBooking.paymentStatus}
+                          </span>
+                        </td>
+                      </tr>
+                      {viewBooking.isManualBooking && (
+                        <tr>
+                          <td className="bg-light fw-medium">Payment Method</td>
+                          <td className="text-capitalize">{viewBooking.paymentMethod?.replace('_', ' ') || 'N/A'}</td>
+                        </tr>
+                      )}
+                      {viewBooking.specialRequests && (
+                        <tr>
+                          <td className="bg-light fw-medium">Special Requests</td>
+                          <td>{viewBooking.specialRequests}</td>
+                        </tr>
+                      )}
+                      <tr>
+                        <td className="bg-light fw-medium">Booking Date</td>
+                        <td>{formatDate(viewBooking.created_at)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                
+                <div className="modal-footer bg-light">
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary shadow-none" 
+                    onClick={closeViewModal}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="modal-backdrop fade show"></div>
         </>
       )}
 
       {/* Edit Booking Status Modal */}
-      {showBooking && (
+      {showBooking && editBooking && (
         <>
           <div 
             className="modal fade show" 
@@ -476,7 +492,10 @@ const ViewBookings = () => {
               <div className="modal-content">
                 <div className="modal-header bg-primary text-white">
                   <h5 className="modal-title fw-semibold">
-                    Update Booking Status
+                    Update Booking
+                    {editBooking.isManualBooking && (
+                      <span className="badge bg-light text-primary ms-2">Manual</span>
+                    )}
                   </h5>
                   <button 
                     type="button" 
@@ -507,6 +526,31 @@ const ViewBookings = () => {
                         <option value="cancelled">Cancelled</option>
                       </select>
                     </div>
+
+                    {/* Show payment status field only for manual bookings */}
+                    {editBooking.isManualBooking && (
+                      <div className="mb-3">
+                        <label htmlFor="paymentStatus" className="form-label fw-medium">
+                          Payment Status <span className="text-danger">*</span>
+                        </label>
+                        <select 
+                          className="form-select shadow-none" 
+                          id="paymentStatus"
+                          name="paymentStatus" 
+                          value={formData.paymentStatus} 
+                          onChange={handleInputChange} 
+                          required
+                        >
+                          <option value="">Select Payment Status</option>
+                          <option value="pending">Pending</option>
+                          <option value="paid">Paid</option>
+                        </select>
+                        <div className="form-text">
+                          <i className="fas fa-info-circle me-1"></i>
+                          You can update the payment status for manual bookings
+                        </div>
+                      </div>
+                    )}
                   </form>
                 </div>
                 
@@ -523,7 +567,7 @@ const ViewBookings = () => {
                     className="btn btn-primary shadow-none" 
                     form="bookingForm"
                   >
-                    Update Status
+                    Update Booking
                   </button>
                 </div>
               </div>
