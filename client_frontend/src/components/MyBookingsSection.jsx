@@ -264,6 +264,26 @@ const MyBookingsSection = () => {
     });
   };
 
+  const canCancelBooking = (booking) => {
+    // Can't cancel if already cancelled or checked out
+    if (booking.status === 'cancelled' || booking.status === 'checked-out') {
+      return false;
+    }
+    
+    // Can only cancel if payment is pending
+    if (booking.paymentStatus !== 'pending') {
+      return false;
+    }
+    
+    // Check if booking was created within last 24 hours
+    const bookingCreatedAt = new Date(booking.created_at);
+    const now = new Date();
+    const hoursSinceBooking = (now - bookingCreatedAt) / (1000 * 60 * 60);
+    
+    // Allow cancellation only within 24 hours
+    return hoursSinceBooking <= 24;
+  };
+
   if (loading) {
     return (
       <div style={{ 
@@ -621,7 +641,7 @@ const MyBookingsSection = () => {
                     {/* Action Buttons */}
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                       {/* Cancel Button - Only show if payment is pending */}
-                      {booking.paymentStatus === 'pending' && booking.status !== 'cancelled' && booking.status !== 'checked-out' && (
+                      {canCancelBooking(booking) && (
                         <button
                           onClick={() => handleCancelBooking(booking._id)}
                           disabled={cancellingBookingId === booking._id}
@@ -654,6 +674,23 @@ const MyBookingsSection = () => {
                         >
                           {cancellingBookingId === booking._id ? '⏳ Cancelling...' : '✗ Cancel Booking'}
                         </button>
+                      )}
+
+                      {/* Show message if cancellation period expired */}
+                      {booking.paymentStatus === 'pending' && 
+                       booking.status !== 'cancelled' && 
+                       booking.status !== 'checked-out' && 
+                       !canCancelBooking(booking) && (
+                        <div style={{
+                          backgroundColor: '#f0f0f0',
+                          color: '#666',
+                          padding: '12px 20px',
+                          borderRadius: '4px',
+                          fontSize: '12px',
+                          fontFamily: '"Cabin", sans-serif'
+                        }}>
+                          ⚠️ 24-hour cancellation period expired
+                        </div>
                       )}
 
                       {/* Review Button - Only show for checked-out bookings */}
