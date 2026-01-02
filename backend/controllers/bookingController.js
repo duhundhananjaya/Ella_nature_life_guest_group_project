@@ -3,6 +3,7 @@ import Room from '../models/Room.js';
 import RoomInstance from '../models/RoomInstance.js';
 import stripe from 'stripe';
 import 'dotenv/config';
+import { sendBookingConfirmationEmail } from '../services/emailService.js';
 
 // Initialize Stripe
 const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
@@ -343,11 +344,40 @@ const createBooking = async (req, res) => {
     await booking.populate('roomInstances', 'room_number');
     await booking.populate('client', 'fullName email phone');
 
+    // Send booking confirmation email
+    const emailData = {
+      bookingId: booking.bookingId,
+      guestName: req.client.fullName,
+      userEmail: req.client.email,
+      roomName: roomType.room_name,
+      checkIn: checkInDate,
+      checkOut: checkOutDate,
+      adults: parseInt(adults),
+      children: parseInt(children) || 0,
+      roomsBooked: parseInt(roomsBooked),
+      totalPrice: parseFloat(totalPrice),
+      paymentStatus: requirePayment ? 'paid' : 'pending',
+      bookingDate: new Date()
+    };
+
+    // Send email asynchronously (don't wait for it)
+    sendBookingConfirmationEmail(emailData)
+      .then(result => {
+        if (result.success) {
+          console.log('✅ Booking confirmation email sent to:', req.client.email);
+        } else {
+          console.error('❌ Failed to send booking email:', result.error);
+        }
+      })
+      .catch(err => {
+        console.error('❌ Email error:', err);
+      });
+
     return res.status(201).json({
       success: true,
       message: requirePayment 
-        ? 'Booking created successfully. Please complete payment.' 
-        : 'Booking created successfully. Payment pending.',
+        ? 'Booking created successfully. Please complete payment. Confirmation email sent!' 
+        : 'Booking created successfully. Payment pending. Confirmation email sent!',
       booking: {
         _id: booking._id,
         bookingId: booking.bookingId,

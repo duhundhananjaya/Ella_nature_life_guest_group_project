@@ -358,7 +358,7 @@ const RoomDetailsSection = () => {
         } else {
             // No payment required - booking confirmed with pending payment
             toast.success(
-                `Booking confirmed! ID: ${response.data.booking.bookingId}. Payment status: Pending`,
+                `Booking confirmed! ID: ${response.data.booking.bookingId}. Check your email for details.`,
                 {
                     position: "top-right",
                     autoClose: 5000,
