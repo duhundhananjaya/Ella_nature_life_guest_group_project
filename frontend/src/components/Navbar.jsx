@@ -72,6 +72,11 @@ const Navbar = () => {
         >
           <i className="fas fa-bars"></i>
         </button>
+        {user && (
+          <span className="ms-2 text-white fw-semibold d-none d-md-inline">
+            Welcome, {user.name}
+          </span>
+        )}
 
         <div className="d-none d-md-inline-block ms-auto me-0 me-md-3 my-2 my-md-0 text-white fw-semibold">
           {new Date().toLocaleDateString('en-US', {
