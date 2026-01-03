@@ -95,7 +95,7 @@ const Footer = () => {
                         </div>
                         <div class="col-lg-5">
                             <div class="co-text"><p>
-                                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Developed by BSc(Hons) Computer Science 44 batch</p></div>
+                                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Developed by Department of Computer Science</p></div>
                         </div>
                     </div>
                 </div>
