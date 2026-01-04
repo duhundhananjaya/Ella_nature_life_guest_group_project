@@ -260,6 +260,9 @@ const Navbar = () => {
             <li className={isActive('/gallery')}>
               <Link to="/gallery">Gallery</Link>
             </li>
+            <li className={isActive('/travel')}>
+              <Link to="/travel">Travelling</Link>
+            </li>
             <li>
               <Link to="#">Room Types</Link>
               <ul className="dropdown">
@@ -317,6 +320,9 @@ const Navbar = () => {
                       </li>
                       <li className={isActive('/gallery')}>
                         <Link to="/gallery">Gallery</Link>
+                      </li>
+                      <li className={isActive('/travel')}>
+                        <Link to="/travel">Travelling</Link>
                       </li>
                       <li>
                         <Link to="#">Room Types</Link>
