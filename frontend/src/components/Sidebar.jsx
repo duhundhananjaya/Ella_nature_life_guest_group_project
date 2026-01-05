@@ -41,6 +41,7 @@ const Sidebar = () => {
         { name: "Dashboard", path: "/attendant-dashboard", icon: "fas fa-tachometer-alt", end: true },
         { name: "My Salary", path: "/attendant-dashboard/salary", icon: "fas fa-money-bill-wave", end: false },
         { name: "Rooms", path: "/attendant-dashboard/rooms", icon: "fas fa-door-open", end: false },
+        { name: "Attendant Alerts", path: "/attendant-dashboard/attendant-alert", icon: "fab fa-telegram-plane", end: false },
     ];
 
     const [menuLinks, setMenuLinks] = useState([]);
