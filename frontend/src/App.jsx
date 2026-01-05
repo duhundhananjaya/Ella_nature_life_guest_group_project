@@ -32,6 +32,7 @@ import Reports from './components/Reports'
 import Salary from './components/Salary'
 import ViewSalary from './components/ViewSalary'
 import ClerkViewBookings from './components/clerk/ClerkViewBookings'
+import AttendantAlert from './components/attendant/AttendantAlert'
 
 function App() {
 
@@ -92,6 +93,7 @@ function App() {
           <Route index element={<AttendantHome />} />
           <Route path="salary" element={<ViewSalary />} />
           <Route path="rooms" element={<AttendantRoom />} />
+          <Route path="attendant-alert" element={<AttendantAlert />} />
           <Route path="profile" element={<ProfileView />} />
           <Route path="profile-settings" element={<Profile />} />
         </Route>

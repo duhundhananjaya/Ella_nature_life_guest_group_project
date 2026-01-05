@@ -33,6 +33,7 @@ import adminDashboardRoutes from './routes/adminDashboard.js';
 import clerkDashboardRoutes from './routes/clerkDashboard.js';
 import receptionistDashboardRoutes from './routes/receptionistDashboard.js';
 import attendantDashboardRoutes from './routes/attendantDashboard.js';
+import attendantTelegramSettingsRoutes from './routes/attendantTelegramSettings.js';
 import salaryRoutes from './routes/salary.js';
 
 const app = express();
@@ -83,6 +84,7 @@ app.use('/api/admin-dashboard', adminDashboardRoutes);
 app.use('/api/clerk-dashboard', clerkDashboardRoutes);
 app.use('/api/receptionist-dashboard', receptionistDashboardRoutes);
 app.use('/api/attendant-dashboard', attendantDashboardRoutes);
+app.use('/api/attendant-telegram-settings', attendantTelegramSettingsRoutes);
 
 server.listen(process.env.PORT, () =>{
     connectDB();
