@@ -538,7 +538,6 @@ const ReceptionistViewBookings = () => {
                       </select>
                     </div>
 
-                    {/* Show payment status field only for manual bookings */}
                     {editBooking.isManualBooking && (
                       <div className="mb-3">
                         <label htmlFor="paymentStatus" className="form-label fw-medium">
