@@ -59,6 +59,17 @@ const ReceptionistViewBookings = () => {
     fetchBookings();
   }, []);
 
+  const getAvailableStatuses = (currentStatus) => {
+    const statusOptions = {
+      'pending': ['pending', 'confirmed', 'cancelled'],
+      'confirmed': ['confirmed', 'checked-in', 'cancelled'],
+      'checked-in': ['checked-in', 'checked-out', 'cancelled'],
+      'checked-out': ['checked-out', 'pending']
+    };
+    
+    return statusOptions[currentStatus] || ['pending', 'confirmed', 'checked-in', 'checked-out', 'cancelled'];
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if(editBooking){
@@ -519,11 +530,11 @@ const ReceptionistViewBookings = () => {
                         required
                       >
                         <option value="">Select Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="checked-in">Checked-In</option>
-                        <option value="checked-out">Checked-Out</option>
-                        <option value="cancelled">Cancelled</option>
+                        {getAvailableStatuses(editBooking.status).map(status => (
+                          <option key={status} value={status}>
+                            {status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')}
+                          </option>
+                        ))}
                       </select>
                     </div>
 

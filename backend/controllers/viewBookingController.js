@@ -1,6 +1,6 @@
 import Booking from "../models/Booking.js";
 import RoomInstance from "../models/RoomInstance.js";
-import { sendRoomCleaningAlert } from "../controllers/attendantTelegramSettingsController.js";
+import { sendRoomCleaningAlert } from "./attendantTelegramSettingsController.js";
 
 const getBookings = async (req, res) => {
     try {
