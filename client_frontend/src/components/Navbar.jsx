@@ -254,10 +254,6 @@ const Navbar = () => {
             <li className={isActive('/rooms')}>
               <Link to="/rooms">Rooms</Link>
             </li>
-            <li className={isActive('/halls')}>
-  <Link to="/halls">Halls</Link>
-</li>
-
             <li className={isActive('/about')}>
               <Link to="/about">About Us</Link>
             </li>
@@ -319,10 +315,6 @@ const Navbar = () => {
                       <li className={isActive('/rooms')}>
                         <Link to="/rooms">Rooms</Link>
                       </li>
-                      <li className={isActive('/halls')}>
-  <Link to="/halls">Halls</Link>
-</li>
-
                       <li className={isActive('/about')}>
                         <Link to="/about">About Us</Link>
                       </li>
