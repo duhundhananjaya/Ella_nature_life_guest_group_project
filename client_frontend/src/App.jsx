@@ -16,6 +16,8 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import ResendVerification from './pages/ResendVerification'
 
+import Travel from './pages/Travel'
+
 import Profile from './pages/Profile'
 import Dashboard from './pages/Dashboard'
 import MyBooking from './pages/MyBookings'
@@ -34,6 +36,8 @@ function App() {
         <Route path="/halls" element={<Halls />} />
         <Route path="/hall-details/:id" element={<HallDetail />} />
         <Route path="/room-details/:id" element={<RoomDetails />} />
+
+        <Route path="/travel" element={<Travel />} />
 
         <Route path="/about" element={<About />} />
         <Route path="/gallery" element={<Gallery />} />
