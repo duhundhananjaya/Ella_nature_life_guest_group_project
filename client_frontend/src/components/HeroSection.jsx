@@ -140,7 +140,44 @@ const HeroSection = () => {
                 <p>Ella Nature Life Guest and Restaurant offers a peaceful stay with modern rooms,
                    a garden, and a diverse restaurant. Guests enjoy free WiFi, airport transfers, 
                    and bike rentals to explore Ella Spice Garden and Little Adam's Peak.</p>
-                <Link to="/rooms" className="primary-btn">Book Now</Link>
+                <Link 
+                  to="/rooms"
+                  style={{
+                    display: 'inline-block',
+                    fontSize: '16px',
+                    fontWeight: '700',
+                    letterSpacing: '3px',
+                    textTransform: 'uppercase',
+                    color: '#ffffff',
+                    background: 'linear-gradient(135deg, #dfa974 0%, #c89860 100%)',
+                    padding: '18px 50px',
+                    textDecoration: 'none',
+                    borderRadius: '50px',
+                    fontFamily: '"Cabin", sans-serif',
+                    boxShadow: '0 8px 25px rgba(223, 169, 116, 0.4)',
+                    border: '2px solid transparent',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    transition: 'all 0.4s ease',
+                    marginTop: '10px'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!loading) {
+                      e.currentTarget.style.transform = 'translateY(-3px) scale(1.05)';
+                      e.currentTarget.style.boxShadow = '0 12px 35px rgba(223, 169, 116, 0.6)';
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #c89860 0%, #b5844d 100%)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!loading) {
+                      e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                      e.currentTarget.style.boxShadow = '0 8px 25px rgba(223, 169, 116, 0.4)';
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #dfa974 0%, #c89860 100%)';
+                    }
+                  }}
+                >
+                  Book Now
+                </Link>
               </div>
             </div>
 
