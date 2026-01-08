@@ -133,13 +133,13 @@ const ContactSection = () => {
                 <form className="contact-form" onSubmit={handleSubmit}>
                 <div className="row">
                     <div className="col-lg-6">
-                    <input type="text" onChange={handleInputChange} placeholder="Your Name" name="name" required />
+                    <input type="text" onChange={handleInputChange} value={formData.name} placeholder="Your Name" name="name" required />
                     </div>
                     <div className="col-lg-6">
-                    <input type="email" onChange={handleInputChange} placeholder="Your Email" name="email" required />
+                    <input type="email" onChange={handleInputChange} value={formData.email} placeholder="Your Email" name="email" required />
                     </div>
                     <div className="col-lg-12">
-                    <textarea onChange={handleInputChange} placeholder="Your Message" name="message" required></textarea>
+                    <textarea onChange={handleInputChange} value={formData.message} placeholder="Your Message" name="message" required></textarea>
                     <button type="submit" className="site-btn">
                         Submit Now
                     </button>
