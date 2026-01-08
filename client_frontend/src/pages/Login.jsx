@@ -178,7 +178,7 @@ const Login = () => {
                       fontFamily: '"Cabin", sans-serif',
                       letterSpacing: '0.5px'
                     }}>
-                      USERNAME OR EMAIL <span style={{ color: '#dfa974' }}>*</span>
+                      EMAIL <span style={{ color: '#dfa974' }}>*</span>
                     </label>
                     <input
                       type="text"
