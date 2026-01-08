@@ -263,24 +263,6 @@ const Navbar = () => {
             <li className={isActive('/travel')}>
               <Link to="/travel">Travelling</Link>
             </li>
-            <li>
-              <Link to="#">Room Types</Link>
-              <ul className="dropdown">
-                {roomsLoading ? (
-                  <li><Link to="#">Loading...</Link></li>
-                ) : roomTypes.length === 0 ? (
-                  <li><Link to="/rooms">View All Rooms</Link></li>
-                ) : (
-                  roomTypes.map((room) => (
-                    <li key={room._id}>
-                      <Link to={`/room-details/${room._id}`}>
-                        {room.room_name}
-                      </Link>
-                    </li>
-                  ))
-                )}
-              </ul>
-            </li>
             <li className={isActive('/contact')}>
               <Link to="/contact">Contact</Link>
             </li>
@@ -323,24 +305,6 @@ const Navbar = () => {
                       </li>
                       <li className={isActive('/travel')}>
                         <Link to="/travel">Travelling</Link>
-                      </li>
-                      <li>
-                        <Link to="#">Room Types</Link>
-                        <ul className="dropdown">
-                          {roomsLoading ? (
-                            <li><Link to="#">Loading...</Link></li>
-                          ) : roomTypes.length === 0 ? (
-                            <li><Link to="/rooms">View All Rooms</Link></li>
-                          ) : (
-                            roomTypes.map((room) => (
-                              <li key={room._id}>
-                                <Link to={`/room-details/${room._id}`}>
-                                  {room.room_name}
-                                </Link>
-                              </li>
-                            ))
-                          )}
-                        </ul>
                       </li>
                       <li className={isActive('/contact')}>
                         <Link to="/contact">Contact</Link>
@@ -485,26 +449,6 @@ const Navbar = () => {
                               onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}>
                               <i className="fa fa-calendar" style={{ width: '16px' }}></i>
                               <span>My Bookings</span>
-                            </Link>
-
-                            <Link
-                              to="/favorites"
-                              onClick={() => setShowDropdown(false)}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '12px 15px',
-                                color: '#333',
-                                textDecoration: 'none',
-                                fontSize: '14px',
-                                borderBottom: '1px solid #eee',
-                                transition: 'background-color 0.2s'
-                              }}
-                              onMouseEnter={(e) => (e.target.style.backgroundColor = '#f8f9fa')}
-                              onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}>
-                              <i className="fa fa-heart" style={{ width: '16px' }}></i>
-                              <span>Favorites</span>
                             </Link>
 
                             <button
