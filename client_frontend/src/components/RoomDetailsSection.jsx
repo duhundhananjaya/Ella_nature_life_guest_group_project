@@ -118,7 +118,6 @@ const RoomDetailsSection = () => {
                         } else if (fieldId === 'date-out') {
                             setBookingData(prev => ({ ...prev, checkOut: dateText }));
                         }
-                        // Reset availability when dates change
                         setAvailabilityResult(null);
                     }
                 });
