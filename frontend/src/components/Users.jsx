@@ -23,6 +23,7 @@ const Users = () => {
     confirm_password: "",
     address: "",
     role: "",
+    baseSalary: "",
   })
 
   const handleInputChange = (e) => {
@@ -89,9 +90,9 @@ const Users = () => {
         ? `http://localhost:3000/api/users/update/${editingUser._id}` : "http://localhost:3000/api/users/add";
       const method = editingUser ? 'put' : 'post';
       
-      const dataToSend = editingUser 
-        ? { name: formData.name, email: formData.email, phone_number: formData.phone_number, address: formData.address, role: formData.role }
-        : { name: formData.name, email: formData.email, phone_number: formData.phone_number, address: formData.address, role: formData.role, password: formData.password };
+      const dataToSend = editingUser
+        ? { name: formData.name, email: formData.email, phone_number: formData.phone_number, address: formData.address, role: formData.role, baseSalary: parseFloat(formData.baseSalary) || 0 }
+        : { name: formData.name, email: formData.email, phone_number: formData.phone_number, address: formData.address, role: formData.role, password: formData.password, baseSalary: parseFloat(formData.baseSalary) || 0 };
 
       const response = await axios[method](endpoint, dataToSend, {
         headers: {
@@ -110,6 +111,7 @@ const Users = () => {
           confirm_password: "",
           address: "",
           role: "",
+          baseSalary: "",
         });
         fetchUsers();
         handleCloseModal();
@@ -134,6 +136,7 @@ const Users = () => {
       phone_number: user.phone_number || "",
       address: user.address,
       role: user.role,
+      baseSalary: user.baseSalary || "",
       password: "",
       confirm_password: ""
     })
@@ -192,7 +195,8 @@ const Users = () => {
       password: '',
       confirm_password: '',
       address: '',
-      role: ''
+      role: '',
+      baseSalary: ''
     })
   }
 
@@ -275,6 +279,7 @@ const Users = () => {
                     <th className="py-3">Email</th>
                     <th className="py-3">Phone</th>
                     <th className="py-3">Address</th>
+                    <th className="py-3">Base Salary</th>
                     <th className="py-3" style={{ width: '120px' }}>Role</th>
                     <th className="py-3 text-center" style={{ width: '120px' }}>Actions</th>
                   </tr>
@@ -295,6 +300,7 @@ const Users = () => {
                         <td className="text-muted">{user.email}</td>
                         <td className="text-muted">{user.phone_number || '-'}</td>
                         <td className="text-muted">{user.address}</td>
+                        <td className="fw-medium">LKR {user.baseSalary?.toLocaleString() || '0'}</td>
                         <td>
                           {user.role === "admin" && (<span className="badge bg-success px-2 py-1">Admin</span>)}
                           {user.role === "clerk" && (<span className="badge bg-primary px-2 py-1">Clerk</span>)}
@@ -334,7 +340,7 @@ const Users = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="7" className="text-center py-5 text-muted">
+                      <td colSpan="8" className="text-center py-5 text-muted">
                         <i className="fas fa-users fa-3x mb-3 opacity-25"></i>
                         <p className="mb-0">No users found</p>
                       </td>
@@ -412,6 +418,28 @@ const Users = () => {
                         Address <span className="text-danger">*</span>
                       </label>
                       <input  type="text"  className="form-control shadow-none"  id="address"  name="address"  value={formData.address}  onChange={handleInputChange}  placeholder="Enter address"  autoComplete="street-address" required/>
+                    </div>
+
+                    <div className="col-12">
+                      <label htmlFor="baseSalary" className="form-label fw-medium">
+                        <i className="fas fa-money-bill-wave me-2"></i>Base Salary (LKR) <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control shadow-none"
+                        id="baseSalary"
+                        name="baseSalary"
+                        value={formData.baseSalary}
+                        onChange={handleInputChange}
+                        placeholder="Enter base salary"
+                        min="0"
+                        step="0.01"
+                        required
+                      />
+                      <small className="text-muted">
+                        <i className="fas fa-info-circle me-1"></i>
+                        This base salary will be used for salary calculations
+                      </small>
                     </div>
 
                     {!editingUser && (
