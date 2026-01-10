@@ -222,7 +222,6 @@ const ProfileSection = () => {
       />
 
       <div className="container mt-4">
-        {/* Page Title */}
         <div style={{ 
           textAlign: 'center', 
           marginBottom: '50px' 
