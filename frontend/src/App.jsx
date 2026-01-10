@@ -30,6 +30,7 @@ import ReceptionistBooking from './components/receptionist/ReceptionistBooking'
 import ReceptionistViewBookings from './components/receptionist/ReceptionistViewBooking'
 import Reports from './components/Reports'
 import Salary from './components/Salary'
+import SalaryRates from './components/SalaryRates'
 import ViewSalary from './components/ViewSalary'
 import ClerkViewBookings from './components/clerk/ClerkViewBookings'
 import AttendantAlert from './components/attendant/AttendantAlert'
@@ -46,6 +47,7 @@ function App() {
           <Route index element={<AdminHome />} />
           <Route path="users" element={<Users />} />
           <Route path="salary" element={<Salary />} />
+          <Route path="salary-rates" element={<SalaryRates />} />
           <Route path="features" element={<Features />} />
           <Route path="facilities" element={<Facilities />} />
           <Route path="bookings" element={<ViewBookings />} />

@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
     password: {type: String, required: true},
     address: {type: String},
     phone_number: {type: String},
-    role: {type: String, enum:["admin", "clerk", "receptionist", "attendant"], default: "attendant"}
+    role: {type: String, enum:["admin", "clerk", "receptionist", "attendant"], default: "attendant"},
+    baseSalary: {type: Number, default: 0}
 })
 
 const User = mongoose.model("User", userSchema);

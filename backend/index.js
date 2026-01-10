@@ -36,6 +36,7 @@ import receptionistDashboardRoutes from './routes/receptionistDashboard.js';
 import attendantDashboardRoutes from './routes/attendantDashboard.js';
 import attendantTelegramSettingsRoutes from './routes/attendantTelegramSettings.js';
 import salaryRoutes from './routes/salary.js';
+import salaryRateRoutes from './routes/salaryRate.js';
 
 const app = express();
 const server = createServer(app);
@@ -84,6 +85,7 @@ app.use('/api/view-feedbacks', viewFeedbackRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/salary', salaryRoutes);
+app.use('/api/salary-rates', salaryRateRoutes);
 app.use('/api/admin-dashboard', adminDashboardRoutes);
 app.use('/api/clerk-dashboard', clerkDashboardRoutes);
 app.use('/api/receptionist-dashboard', receptionistDashboardRoutes);
