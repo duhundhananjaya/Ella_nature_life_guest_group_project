@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 
 const addUser =async (req, res) =>{
     try {
-        const { name, email, password, address, phone_number, role } =req.body;
+        const { name, email, password, address, phone_number, role, baseSalary } =req.body;
 
         const existingUser = await User.findOne({email});
         if(existingUser){
@@ -18,7 +18,8 @@ const addUser =async (req, res) =>{
             password: hashedPassword,
             address,
             phone_number,
-            role
+            role,
+            baseSalary: baseSalary || 0
         });
 
         await newUser.save();
@@ -32,7 +33,7 @@ const addUser =async (req, res) =>{
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, email, address, phone_number, role } = req.body;
+        const { name, email, address, phone_number, role, baseSalary } = req.body;
 
         const user = await User.findById(id);
         if (!user) {
@@ -58,6 +59,7 @@ const updateUser = async (req, res) => {
         user.address = address;
         user.phone_number = phone_number;
         user.role = role;
+        user.baseSalary = baseSalary !== undefined ? baseSalary : user.baseSalary;
 
         await user.save();
         return res.status(200).json({ success: true, message: 'User updated successfully' });
