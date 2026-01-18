@@ -39,7 +39,7 @@ const sendBookingConfirmationEmail = async (bookingDetails) => {
         
         const mailOptions = {
             from: {
-                name: 'Your Hotel Name',
+                name: 'Ella nature life guest',
                 address: process.env.EMAIL_USERNAME
             },
             to: userEmail,

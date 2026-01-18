@@ -182,7 +182,7 @@ const generateBookingConfirmationEmail = (bookingDetails) => {
                                 This is an automated email. Please do not reply directly to this message.
                             </p>
                             <p style="margin: 10px 0 0; color: #999; font-size: 12px;">
-                                © 2026 Your Hotel. All rights reserved.
+                                © 2026 Ella nature life guest. All rights reserved.
                             </p>
                         </td>
                     </tr>
