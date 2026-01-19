@@ -283,7 +283,7 @@ const Navbar = () => {
               <div className="col-lg-2">
                 <div className="logo">
                   <Link to="/">
-                    <img src="/img/logo.png" alt="Logo" />
+                    <img src="/img/logo.jpeg" alt="Logo" className="img-fluid" style={{ width: "80px", height: "50px" }} />
                   </Link>
                 </div>
               </div>

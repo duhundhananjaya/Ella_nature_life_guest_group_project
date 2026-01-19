@@ -11,7 +11,7 @@ const Register = () => {
     fullName: '',
     email: '',
     phone: '',
-    username: '',
+    countryCode: '+94',
     password: '',
     confirmPassword: '',
     country: ''
@@ -67,14 +67,6 @@ const Register = () => {
       newErrors.phone = 'Phone number is required';
     }
 
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
-    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-      newErrors.username = 'Username can only contain letters, numbers, and underscores';
-    }
-
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
@@ -96,41 +88,51 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!validateForm()) {
-      toast.error('Please fix the errors in the form', {
+  if (!validateForm()) {
+    toast.error('Please fix the errors in the form', {
+      position: "top-right",
+      autoClose: 3000
+    });
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    // Combine country code and phone number before sending
+    const registrationData = {
+      fullName: formData.fullName,
+      email: formData.email,
+      phone: formData.countryCode + formData.phone, // ✅ COMBINE HERE
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+      country: formData.country
+    };
+    
+    const response = await authService.register(registrationData); // ✅ Send registrationData instead of formData
+    
+    if (response.data.success) {
+      toast.success('Registration successful! Redirecting to login...', {
         position: "top-right",
-        autoClose: 3000
+        autoClose: 2000
       });
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await authService.register(formData);
       
-      if (response.data.success) {
-        toast.success('Registration successful! Redirecting to login...', {
-          position: "top-right",
-          autoClose: 2000
-        });
-        
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
-      }
-    } catch (error) {
-      const message = error.response?.data?.message || 'Registration failed. Please try again.';
-      toast.error(message, {
-        position: "top-right",
-        autoClose: 4000
-      });
-    } finally {
-      setLoading(false);
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     }
-  };
+  } catch (error) {
+    const message = error.response?.data?.message || 'Registration failed. Please try again.';
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 4000
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div 
@@ -207,7 +209,7 @@ const Register = () => {
                   marginBottom: '0',
                   fontFamily: '"Cabin", sans-serif'
                 }}>
-                  Join our hotel booking platform
+                  Join Ella nature life guest
                 </p>
               </div>
               
@@ -310,27 +312,63 @@ const Register = () => {
                       }}>
                         PHONE NUMBER <span style={{ color: '#dfa974' }}>*</span>
                       </label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        style={{
-                          width: '100%',
-                          height: '50px',
-                          border: errors.phone ? '2px solid #dc3545' : '2px solid #e5e5e5',
-                          padding: '0 20px',
-                          fontSize: '14px',
-                          color: '#19191a',
-                          backgroundColor: '#f9f9f9',
-                          outline: 'none',
-                          transition: 'all 0.3s',
-                          fontFamily: '"Cabin", sans-serif'
-                        }}
-                        placeholder="+94771234567"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        onFocus={(e) => e.target.style.borderColor = '#dfa974'}
-                        onBlur={(e) => e.target.style.borderColor = errors.phone ? '#dc3545' : '#e5e5e5'}
-                      />
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        {/* Country Code Dropdown */}
+                        <select
+                          name="countryCode"
+                          style={{
+                            width: '110px',
+                            height: '50px',
+                            border: '2px solid #e5e5e5',
+                            padding: '0 10px',
+                            fontSize: '14px',
+                            color: '#19191a',
+                            backgroundColor: '#f9f9f9',
+                            outline: 'none',
+                            transition: 'all 0.3s',
+                            fontFamily: '"Cabin", sans-serif',
+                            cursor: 'pointer'
+                          }}
+                          value={formData.countryCode || '+94'}
+                          onChange={handleChange}
+                          onFocus={(e) => e.target.style.borderColor = '#dfa974'}
+                          onBlur={(e) => e.target.style.borderColor = '#e5e5e5'}
+                        >
+                          <option value="+1">+1 (US)</option>
+                          <option value="+44">+44 (UK)</option>
+                          <option value="+91">+91 (IN)</option>
+                          <option value="+94">+94 (LK)</option>
+                          <option value="+61">+61 (AU)</option>
+                          <option value="+86">+86 (CN)</option>
+                          <option value="+81">+81 (JP)</option>
+                          <option value="+82">+82 (KR)</option>
+                          <option value="+65">+65 (SG)</option>
+                          <option value="+971">+971 (AE)</option>
+                        </select>
+                        
+                        {/* Phone Number Input */}
+                        <input
+                          type="tel"
+                          name="phone"
+                          style={{
+                            flex: 1,
+                            height: '50px',
+                            border: errors.phone ? '2px solid #dc3545' : '2px solid #e5e5e5',
+                            padding: '0 20px',
+                            fontSize: '14px',
+                            color: '#19191a',
+                            backgroundColor: '#f9f9f9',
+                            outline: 'none',
+                            transition: 'all 0.3s',
+                            fontFamily: '"Cabin", sans-serif'
+                          }}
+                          placeholder="771234567"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          onFocus={(e) => e.target.style.borderColor = '#dfa974'}
+                          onBlur={(e) => e.target.style.borderColor = errors.phone ? '#dc3545' : '#e5e5e5'}
+                        />
+                      </div>
                       {errors.phone && (
                         <div style={{ color: '#dc3545', fontSize: '13px', marginTop: '5px' }}>
                           {errors.phone}
@@ -338,7 +376,7 @@ const Register = () => {
                       )}
                     </div>
 
-                    {/* Username */}
+                                        {/* Country */}
                     <div className="col-md-6" style={{ marginBottom: '25px' }}>
                       <label style={{
                         display: 'block',
@@ -349,32 +387,36 @@ const Register = () => {
                         fontFamily: '"Cabin", sans-serif',
                         letterSpacing: '0.5px'
                       }}>
-                        USERNAME <span style={{ color: '#dfa974' }}>*</span>
+                        COUNTRY <span style={{ color: '#dfa974' }}>*</span>
                       </label>
-                      <input
-                        type="text"
-                        name="username"
+                      <select
+                        name="country"
                         style={{
                           width: '100%',
                           height: '50px',
-                          border: errors.username ? '2px solid #dc3545' : '2px solid #e5e5e5',
+                          border: errors.country ? '2px solid #dc3545' : '2px solid #e5e5e5',
                           padding: '0 20px',
                           fontSize: '14px',
                           color: '#19191a',
                           backgroundColor: '#f9f9f9',
                           outline: 'none',
                           transition: 'all 0.3s',
-                          fontFamily: '"Cabin", sans-serif'
+                          fontFamily: '"Cabin", sans-serif',
+                          cursor: 'pointer'
                         }}
-                        placeholder="Choose a username"
-                        value={formData.username}
+                        value={formData.country}
                         onChange={handleChange}
                         onFocus={(e) => e.target.style.borderColor = '#dfa974'}
-                        onBlur={(e) => e.target.style.borderColor = errors.username ? '#dc3545' : '#e5e5e5'}
-                      />
-                      {errors.username && (
+                        onBlur={(e) => e.target.style.borderColor = errors.country ? '#dc3545' : '#e5e5e5'}
+                      >
+                        <option value="">Select your country</option>
+                        {countries.map(country => (
+                          <option key={country} value={country}>{country}</option>
+                        ))}
+                      </select>
+                      {errors.country && (
                         <div style={{ color: '#dc3545', fontSize: '13px', marginTop: '5px' }}>
-                          {errors.username}
+                          {errors.country}
                         </div>
                       )}
                     </div>
@@ -481,77 +523,35 @@ const Register = () => {
                       )}
                     </div>
 
-                    {/* Country */}
-                    <div className="col-12" style={{ marginBottom: '25px' }}>
-                      <label style={{
-                        display: 'block',
-                        color: '#19191a',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        marginBottom: '10px',
-                        fontFamily: '"Cabin", sans-serif',
-                        letterSpacing: '0.5px'
-                      }}>
-                        COUNTRY <span style={{ color: '#dfa974' }}>*</span>
-                      </label>
-                      <select
-                        name="country"
-                        style={{
-                          width: '100%',
-                          height: '50px',
-                          border: errors.country ? '2px solid #dc3545' : '2px solid #e5e5e5',
-                          padding: '0 20px',
-                          fontSize: '14px',
-                          color: '#19191a',
-                          backgroundColor: '#f9f9f9',
-                          outline: 'none',
-                          transition: 'all 0.3s',
-                          fontFamily: '"Cabin", sans-serif',
-                          cursor: 'pointer'
-                        }}
-                        value={formData.country}
-                        onChange={handleChange}
-                        onFocus={(e) => e.target.style.borderColor = '#dfa974'}
-                        onBlur={(e) => e.target.style.borderColor = errors.country ? '#dc3545' : '#e5e5e5'}
-                      >
-                        <option value="">Select your country</option>
-                        {countries.map(country => (
-                          <option key={country} value={country}>{country}</option>
-                        ))}
-                      </select>
-                      {errors.country && (
-                        <div style={{ color: '#dc3545', fontSize: '13px', marginTop: '5px' }}>
-                          {errors.country}
-                        </div>
-                      )}
-                    </div>
                   </div>
 
                   {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    style={{
-                      width: '100%',
-                      height: '50px',
-                      backgroundColor: loading ? '#c89860' : '#dfa974',
-                      color: '#fff',
-                      fontSize: '14px',
-                      fontWeight: '700',
-                      letterSpacing: '2px',
-                      textTransform: 'uppercase',
-                      border: 'none',
-                      cursor: loading ? 'not-allowed' : 'pointer',
-                      transition: 'all 0.3s',
-                      fontFamily: '"Cabin", sans-serif',
-                      opacity: loading ? 0.7 : 1,
-                      marginTop: '10px'
-                    }}
-                    onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#c89860')}
-                    onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#dfa974')}
-                  >
-                    {loading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}
-                  </button>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      style={{
+                        width: '50%',
+                        height: '50px',
+                        backgroundColor: loading ? '#c89860' : '#dfa974',
+                        color: '#fff',
+                        fontSize: '14px',
+                        fontWeight: '700',
+                        letterSpacing: '2px',
+                        textTransform: 'uppercase',
+                        border: 'none',
+                        cursor: loading ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.3s',
+                        fontFamily: '"Cabin", sans-serif',
+                        opacity: loading ? 0.7 : 1,
+                        marginTop: '10px'
+                      }}
+                      onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#c89860')}
+                      onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#dfa974')}
+                    >
+                      {loading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}
+                    </button>
+                  </div>
                 </form>
               </div>
 

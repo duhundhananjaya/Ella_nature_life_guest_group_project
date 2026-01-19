@@ -46,7 +46,7 @@ const Footer = () => {
                             <div class="ft-about">
                                 <div class="logo">
                                     <a href="#">
-                                        <img src="img/footer-logo.png" alt="" />
+                                        <img src="img/logo.jpeg" alt="" className="img-fluid" style={{ width: "100px", height: "100px" }} />
                                     </a>
                                 </div>
                                 <p>Ella Nature Life Guest and Restaurant offers a peaceful stay with modern rooms, a garden, and a diverse restaurant</p>
