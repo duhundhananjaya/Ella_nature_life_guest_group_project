@@ -7,10 +7,10 @@ import crypto from 'crypto';
 // @access  Public
 export const register = async (req, res) => {
   try {
-    const { fullName, email, phone, username, password, confirmPassword, country } = req.body;
+    const { fullName, email, phone, password, confirmPassword, country } = req.body;
 
-    // Validation
-    if (!fullName || !email || !phone || !username || !password || !confirmPassword || !country) {
+    // Validation - REMOVED username from here
+    if (!fullName || !email || !phone || !password || !confirmPassword || !country) {
       return res.status(400).json({
         success: false,
         message: 'Please provide all required fields'
@@ -25,26 +25,21 @@ export const register = async (req, res) => {
       });
     }
 
-    // Check if client already exists
-    const existingClient = await Client.findOne({
-      $or: [{ email }, { username }]
-    });
+    // Check if client already exists - REMOVED username from check
+    const existingClient = await Client.findOne({ email });
 
     if (existingClient) {
       return res.status(400).json({
         success: false,
-        message: existingClient.email === email 
-          ? 'Email already registered' 
-          : 'Username already taken'
+        message: 'Email already registered'
       });
     }
 
-    // Create client
+    // Create client - REMOVED username from creation
     const client = await Client.create({
       fullName,
       email,
       phone,
-      username,
       password,
       country
     });
@@ -71,7 +66,6 @@ export const register = async (req, res) => {
           id: client._id,
           fullName: client.fullName,
           email: client.email,
-          username: client.username,
           isEmailVerified: client.isEmailVerified
         }
       });
@@ -157,7 +151,6 @@ export const login = async (req, res) => {
         id: client._id,
         fullName: client.fullName,
         email: client.email,
-        username: client.username,
         phone: client.phone,
         country: client.country,
         isEmailVerified: client.isEmailVerified,
